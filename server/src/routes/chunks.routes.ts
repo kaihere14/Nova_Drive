@@ -1,19 +1,37 @@
 import { Router } from "express";
-import multer from "multer";
-import { completeUpload, computeHashCheck, deleteHashSession, getUploadStatus, loggingHash, preAssignUrls, uploadChunk, uploadInitiate } from "../controllers/chunks.controller.js";
+import {
+  completeUpload,
+  computeHashCheck,
+  deleteHashSession,
+  getUploadStatus,
+  loggingHash,
+  preAssignUrls,
+  uploadInitiate,
+} from "../controllers/chunks.controller.js";
+import {
+  r2ListObjects,
+  getDownloadUrl,
+  deleteUserFile,
+} from "../controllers/cloudflare.controller.js";
 
 const router = Router();
-const upload = multer({ storage: multer.memoryStorage() });
 
-// Example chunk routes
+// Multipart upload routes
 router.post("/compute-hash-check", computeHashCheck);
 router.post("/logging-hash", loggingHash);
 router.post("/upload-initiate", uploadInitiate);
-router.post("/upload-chunk",upload.single("chunk"), uploadChunk);
+router.post("/get-presigned-url", preAssignUrls);
 router.post("/upload-complete", completeUpload);
 router.post("/upload-status/:sessionId", getUploadStatus);
 router.delete("/delete-hash-session/:sessionId", deleteHashSession);
-router.post("/get-presigned-url", preAssignUrls);
 
+// File listing route
+router.get("/list-files/:userId", r2ListObjects);
+
+// Download route
+router.post("/get-download-url", getDownloadUrl);
+
+// Delete route
+router.delete("/delete-file", deleteUserFile);
 
 export default router;

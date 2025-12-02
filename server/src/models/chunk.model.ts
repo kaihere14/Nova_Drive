@@ -2,22 +2,13 @@ import { Schema, model, Document } from "mongoose";
 
 export interface IUploadSession extends Document {
   userId: Schema.Types.ObjectId;
-  uploadId: string; 
+  uploadId: string;
   fileName: string;
   fileSize: number;
   contentType: string;
   totalChunks: number;
   chunkSize: number;
-  receivedChunks: Map<string, boolean>;
-  tempStorageKey: string;
-  finalStorageKey: string;
-  status:
-    | "initiated"
-    | "uploading"
-    | "merging"
-    | "completed"
-    | "failed"
-    | "expired";
+  status: "initiated" | "completed" | "failed" | "expired";
   expiresAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -32,23 +23,9 @@ const uploadSessionSchema = new Schema<IUploadSession>(
     contentType: { type: String, required: true },
     totalChunks: { type: Number, required: true },
     chunkSize: { type: Number, required: true },
-    receivedChunks: {
-      type: Map,
-      of: Boolean,
-      default: {},
-    },
-    tempStorageKey: { type: String, required: true },
-    finalStorageKey: { type: String, required: true },
     status: {
       type: String,
-      enum: [
-        "initiated",
-        "uploading",
-        "merging",
-        "completed",
-        "failed",
-        "expired",
-      ],
+      enum: ["initiated", "completed", "failed", "expired"],
       default: "initiated",
     },
     expiresAt: { type: Date, required: true },

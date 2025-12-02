@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import chunkModel from "../models/chunk.model.js";
-import fs from "fs";
-import { v4 as uuid } from "uuid";
 import Hash from "../models/hashModel.js";
-import { r2CreateMultipart, r2GetPresignedUrl } from "./cloudflare.controller.js";
+import {
+  r2CreateMultipart,
+  r2GetPresignedUrl,
+  r2CompleteMultipart,
+} from "./cloudflare.controller.js";
 
 interface UploadInitiateBody {
   userId: string;
@@ -15,16 +17,10 @@ interface UploadInitiateBody {
   chunkSize: number;
 }
 
-interface UploadChunkBody {
-  sessionId: string;
-  index: string;
-}
-
-interface MulterRequest extends Request {
-  file?: Express.Multer.File;
-}
-
-export const loggingHash = async (req: Request, res: Response): Promise<void> => {
+export const loggingHash = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { fileHash, sessionId } = req.body;
 
@@ -43,13 +39,10 @@ export const loggingHash = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-
-
 export const computeHashCheck = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-
   try {
     const { fileHash } = req.body;
 
@@ -60,7 +53,20 @@ export const computeHashCheck = async (
 
     const existingHash = await Hash.findOne({ fileHash });
     if (existingHash) {
-      res.status(200).json({ exists: true, sessionId: existingHash.sessionId });
+      // Check if hash is still valid (within 5 minutes)
+      const now = new Date();
+      const createdAt = new Date(existingHash.createdAt);
+      const fiveMinutesInMs = 5 * 60 * 1000;
+
+      if (now.getTime() - createdAt.getTime() > fiveMinutesInMs) {
+        // Hash expired, delete it and allow re-upload
+        await Hash.findOneAndDelete({ fileHash });
+        res.status(200).json({ exists: false, expired: true });
+      } else {
+        res
+          .status(200)
+          .json({ exists: true, sessionId: existingHash.sessionId });
+      }
     } else {
       res.status(200).json({ exists: false });
     }
@@ -75,8 +81,15 @@ export const uploadInitiate = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { userId, fileName, fileSize, contentType, totalChunks, chunkSize ,fileHash } =
-      req.body;
+    const {
+      userId,
+      fileName,
+      fileSize,
+      contentType,
+      totalChunks,
+      chunkSize,
+      fileHash,
+    } = req.body;
 
     if (
       !userId ||
@@ -90,14 +103,12 @@ export const uploadInitiate = async (
       res.status(400).json({ message: "Missing required fields" });
       return;
     }
-    const uploadId = await r2CreateMultipart(fileHash);
+
+    // Create key with userId path structure
+    const key = `uploads/${userId}/${fileHash}`;
+    const uploadId = await r2CreateMultipart(key, fileName, contentType);
 
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // Expires in 24 hours
-    const tempSessionDir = `./uploads/temp/${userId}/${uuid()}/`;
-    if (!fs.existsSync(tempSessionDir)) {
-      fs.mkdirSync(tempSessionDir, { recursive: true });
-    }
-    const finalStorageKey = `./uploads/final/${userId}/${uuid() + fileName}`;
 
     const newUploadSession = new chunkModel({
       userId,
@@ -107,18 +118,16 @@ export const uploadInitiate = async (
       contentType,
       totalChunks,
       chunkSize,
-      tempStorageKey: tempSessionDir,
-      finalStorageKey,
       expiresAt,
     });
 
     const savedSession = await newUploadSession.save();
 
-
     res.status(201).json({
       message: "Upload session initiated",
       uploadSessionId: savedSession._id,
       uploadId: uploadId,
+      key: key,
     });
   } catch (error) {
     console.error("Error initiating upload session:", error);
@@ -130,72 +139,10 @@ export const preAssignUrls = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const {key, uploadId, PartNumber} = req.body;
+  const { key, uploadId, PartNumber } = req.body;
   try {
-    const url = await r2GetPresignedUrl(
-      key,
-      uploadId,
-      PartNumber,
-    );
-    res.status(200).json({url});
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
-export const uploadChunk = async (
-  req: MulterRequest & Request<{}, {}, UploadChunkBody>,
-  res: Response
-): Promise<unknown> => {
-  try {
-    const { sessionId, index } = req.body;
-    const chunkIndex = parseInt(index);
-    console.log("Uploading chunk:", { sessionId, chunkIndex });
-
-    // 1. Fetch session
-    const session = await chunkModel.findById(sessionId);
-    if (!session) {
-      return res.status(404).json({ error: "Invalid session" });
-    }
-
-    // 2. Validate index
-    if (
-      isNaN(chunkIndex) ||
-      chunkIndex < 0 ||
-      chunkIndex >= session.totalChunks
-    ) {
-      return res.status(400).json({ error: "Invalid chunk index" });
-    }
-
-    // 3. Ensure chunk uploaded only once
-    if (session.receivedChunks.get(chunkIndex.toString())) {
-      res.status(409).json({ error: "Chunk already uploaded" });
-      return;
-    }
-
-    // 4. Ensure chunk exists in request
-    if (!req.file) {
-      res.status(400).json({ error: "Missing chunk file" });
-      return;
-    }
-
-    // 5. Determine chunk path
-    const chunkDir = session.tempStorageKey; // e.g. "./uploads/temp/...uuid..."
-    const chunkPath = `${chunkDir}/chunk-${chunkIndex}`;
-
-    // 6. Save chunk to disk
-    await fs.promises.writeFile(chunkPath, req.file.buffer);
-
-    // 7. Mark chunk as received in DB
-    session.receivedChunks.set(chunkIndex.toString(), true);
-    session.status = "uploading";
-    await session.save();
-
-    res.json({
-      success: true,
-      received: chunkIndex,
-    });
+    const url = await r2GetPresignedUrl(key, uploadId, PartNumber);
+    res.status(200).json({ url });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -207,70 +154,53 @@ export const completeUpload = async (
   res: Response
 ): Promise<unknown> => {
   try {
-    const { sessionId } = req.body;
+    const { sessionId, uploadId, key, parts } = req.body;
 
     const session = await chunkModel.findById(sessionId);
     if (!session) return res.status(404).json({ error: "Invalid session" });
 
-    // 1. Ensure all chunks arrived
-    const missing: any = [];
-    for (let i = 0; i < session.totalChunks; i++) {
-      if (!session.receivedChunks.get(i.toString())) {
-        missing.push(i);
-      }
-    }
-
-    if (missing.length > 0) {
+    // Validate required parameters for multipart completion
+    if (!uploadId || !key || !Array.isArray(parts) || parts.length === 0) {
       return res.status(400).json({
-        error: "Missing chunks",
-        missing,
+        error: "Missing required fields: uploadId, key, and parts are required",
       });
     }
 
-    // 2. Merge chunks
-    const finalPath = session.finalStorageKey;
-    if (!fs.existsSync(finalPath)) {
-      fs.mkdirSync(finalPath.substring(0, finalPath.lastIndexOf("/")), {
-        recursive: true,
+    // Validate that all parts are present
+    if (parts.length !== session.totalChunks) {
+      return res.status(400).json({
+        error: "Parts count mismatch",
+        expected: session.totalChunks,
+        received: parts.length,
       });
     }
-    const finalWriteStream = fs.createWriteStream(finalPath);
 
-for (let i = 0; i < session.totalChunks; i++) {
-    const chunkPath = `${session.tempStorageKey}/chunk-${i}`;
-    await new Promise((resolve:any, reject) => {
-        const readStream = fs.createReadStream(chunkPath);
-        readStream.pipe(finalWriteStream, { end: false });
-        readStream.on("end", resolve);
-        readStream.on("error", reject);
-    });
-}
+    // Complete the multipart upload on R2
+    const result = await r2CompleteMultipart(uploadId, key, parts);
 
-finalWriteStream.end();
-
-
-
-    // 3. Cleanup temp folder
-    await fs.promises.rm(session.tempStorageKey, {
-      recursive: true,
-      force: true,
-    });
-
-    // 4. Update session
+    // Update session status
     session.status = "completed";
     await session.save();
 
     res.json({
       success: true,
-      file: finalPath,
+      result,
+      location: result.Location,
+      key: result.Key,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error completing upload:", err);
+    res.status(500).json({
+      error: "Server error",
+      details: err instanceof Error ? err.message : "Unknown error",
+    });
   }
 };
 
-export const deleteHashSession = async (req: Request, res: Response): Promise<void> => {
+export const deleteHashSession = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { sessionId } = req.params;
   try {
     await Hash.findOneAndDelete({ sessionId: sessionId });
@@ -293,24 +223,16 @@ export const getUploadStatus = async (
       return;
     }
 
-
-    
-
-    const receivedChunks: number[] = [];
-    session.receivedChunks.forEach((value, key) => {
-      if (value) receivedChunks.push(parseInt(key));
-    });
     if (session.status === "completed") {
       Hash.findOneAndDelete({ sessionId: sessionId }).catch((err) => {
         console.error("Error deleting hash after completion:", err);
       });
     }
-    
+
     res.json({
       status: session.status,
-      receivedChunks,
-      totalReceived: receivedChunks.length,
       totalChunks: session.totalChunks,
+      uploadId: session.uploadId,
     });
   } catch (err) {
     console.error(err);
