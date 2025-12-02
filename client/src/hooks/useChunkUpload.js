@@ -87,7 +87,7 @@ export const useChunkUpload = () => {
         const uploadId = initiateResponse.data.uploadId;
         let uploaded = 0;
 
-        // Upload all chunks sequentially
+        // Loop through all chunks from 0 to total
         for (let chunkIndex = 0; chunkIndex < total; chunkIndex++) {
           // Get presigned URL for this chunk
           const urlResponse = await axios.post(
@@ -103,12 +103,18 @@ export const useChunkUpload = () => {
           // Get chunk data
           const chunk = getChunk(file, chunkIndex, form.chunkSize);
           
-          // Upload chunk directly to R2 using presigned URL
-          await axios.put(presignedUrl, chunk, {
+          // Upload chunk directly to R2 using presigned URL with fetch (NOT axios to avoid extra headers)
+          const uploadResponse = await fetch(presignedUrl, {
+            method: "PUT",
+            body: chunk,
             headers: {
               "Content-Type": "application/octet-stream",
             },
           });
+          
+          if (!uploadResponse.ok) {
+            throw new Error(`Chunk ${chunkIndex} upload failed: ${uploadResponse.statusText}`);
+          }
           
           uploaded++;
           setProgress(Math.round((uploaded / total) * 100));
