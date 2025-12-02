@@ -3,9 +3,11 @@ import chunkModel from "../models/chunk.model.js";
 import fs from "fs";
 import { v4 as uuid } from "uuid";
 import Hash from "../models/hashModel.js";
+import { r2CreateMultipart, r2GetPresignedUrl } from "./cloudflare.controller.js";
 
 interface UploadInitiateBody {
   userId: string;
+  fileHash?: string;
   fileName: string;
   fileSize: number;
   contentType: string;
@@ -73,7 +75,7 @@ export const uploadInitiate = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { userId, fileName, fileSize, contentType, totalChunks, chunkSize } =
+    const { userId, fileName, fileSize, contentType, totalChunks, chunkSize ,fileHash } =
       req.body;
 
     if (
@@ -82,11 +84,13 @@ export const uploadInitiate = async (
       !fileSize ||
       !contentType ||
       !totalChunks ||
-      !chunkSize
+      !chunkSize ||
+      !fileHash
     ) {
       res.status(400).json({ message: "Missing required fields" });
       return;
     }
+    const uploadId = await r2CreateMultipart(fileHash);
 
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // Expires in 24 hours
     const tempSessionDir = `./uploads/temp/${userId}/${uuid()}/`;
@@ -97,6 +101,7 @@ export const uploadInitiate = async (
 
     const newUploadSession = new chunkModel({
       userId,
+      uploadId,
       fileName,
       fileSize,
       contentType,
@@ -109,13 +114,33 @@ export const uploadInitiate = async (
 
     const savedSession = await newUploadSession.save();
 
+
     res.status(201).json({
       message: "Upload session initiated",
       uploadSessionId: savedSession._id,
+      uploadId: uploadId,
     });
   } catch (error) {
     console.error("Error initiating upload session:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const preAssignUrls = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const {key, uploadId, PartNumber} = req.body;
+  try {
+    const url = await r2GetPresignedUrl(
+      key,
+      uploadId,
+      PartNumber,
+    );
+    res.status(200).json({url});
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 

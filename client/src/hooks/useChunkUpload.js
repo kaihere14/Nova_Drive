@@ -11,6 +11,7 @@ export const useChunkUpload = () => {
     totalChunks: 0,
     chunkSize: 5 * 1024 * 1024, // 5MB
     userId: "",
+    fileHash: "",
   });
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -69,9 +70,10 @@ export const useChunkUpload = () => {
     try {
       // Step 1: Initiate upload session
       if (!checkingHashResponse.data.exists) {
+
         const initiateResponse = await axios.post(
           "http://localhost:3000/api/chunks/upload-initiate",
-          form
+          { ...form, fileHash }
         );
         const sessionId = initiateResponse.data.uploadSessionId;
         const logHash = await axios.post("http://localhost:3000/api/chunks/logging-hash", {
@@ -80,55 +82,38 @@ export const useChunkUpload = () => {
         });
         console.log("Hash logging response:", logHash.data);
         
-        // Step 2: Upload chunks
+        // Step 2: Upload all chunks using presigned URLs
         const total = form.totalChunks;
+        const uploadId = initiateResponse.data.uploadId;
         let uploaded = 0;
-        let nextChunk = 0;
-        const uploadChunk = async (chunkIndex) => {
-          const chunk = getChunk(file, chunkIndex, form.chunkSize);
-          const formData = new FormData();
-          formData.append("chunk", chunk);
-          formData.append("sessionId", sessionId);
-          formData.append("index", chunkIndex.toString());
-          await axios.post(
-            "http://localhost:3000/api/chunks/upload-chunk",
-            formData,
+
+        // Upload all chunks sequentially
+        for (let chunkIndex = 0; chunkIndex < total; chunkIndex++) {
+          // Get presigned URL for this chunk
+          const urlResponse = await axios.post(
+            "http://localhost:3000/api/chunks/get-presigned-url",
             {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
+              key: fileHash,
+              uploadId: uploadId,
+              PartNumber: chunkIndex + 1,
             }
           );
+          const presignedUrl = urlResponse.data.url;
+          
+          // Get chunk data
+          const chunk = getChunk(file, chunkIndex, form.chunkSize);
+          
+          // Upload chunk directly to R2 using presigned URL
+          await axios.put(presignedUrl, chunk, {
+            headers: {
+              "Content-Type": "application/octet-stream",
+            },
+          });
+          
           uploaded++;
           setProgress(Math.round((uploaded / total) * 100));
-        };
-
-        // Start up to 4 uploads, and as each finishes, start the next
-        await new Promise((resolve, reject) => {
-          let inFlight = 0;
-          let hasError = false;
-          function launchNext() {
-            if (hasError) return;
-            if (uploaded === total) return resolve();
-            if (nextChunk >= total) return;
-            const chunkIndex = nextChunk++;
-            inFlight++;
-            uploadChunk(chunkIndex)
-              .then(() => {
-                inFlight--;
-                if (uploaded === total) return resolve();
-                launchNext();
-              })
-              .catch((err) => {
-                hasError = true;
-                reject(err);
-              });
-          }
-          // Start initial pool
-          for (let i = 0; i < Math.min(4, total); i++) {
-            launchNext();
-          }
-        });
+          console.log(`Uploaded chunk ${chunkIndex + 1}/${total}`);
+        }
 
         // Switch to processing loader
         setProcessing(true);
