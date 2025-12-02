@@ -2,6 +2,7 @@ import { Schema, model, Document } from "mongoose";
 
 export interface IUploadSession extends Document {
   userId: Schema.Types.ObjectId;
+  uploadId: string; 
   fileName: string;
   fileSize: number;
   contentType: string;
@@ -25,6 +26,7 @@ export interface IUploadSession extends Document {
 const uploadSessionSchema = new Schema<IUploadSession>(
   {
     userId: { type: Schema.Types.ObjectId, required: true },
+    uploadId: { type: String, required: true, unique: true },
     fileName: { type: String, required: true },
     fileSize: { type: Number, required: true },
     contentType: { type: String, required: true },

@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import chunkModel from "../models/chunk.model.js";
 import fs from "fs";
 import { v4 as uuid } from "uuid";
-import multer from "multer";
-import { ResolveHook } from "module";
 import Hash from "../models/hashModel.js";
 
 interface UploadInitiateBody {
