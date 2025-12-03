@@ -94,53 +94,65 @@ export const useChunkUpload = () => {
         const uploadId = initiateResponse.data.uploadId;
         const key = initiateResponse.data.key; // Use key from server response
         const partsArray = [];
+        const PARALLEL_UPLOADS = 4; // Number of parallel uploads
 
-        // Loop through all chunks from 0 to total
-        for (let chunkIndex = 0; chunkIndex < total; chunkIndex++) {
-          // Get presigned URL for this chunk
-          const urlResponse = await axios.post(
-            "http://localhost:3000/api/chunks/get-presigned-url",
-            {
+        // Process chunks in batches of 4
+        for (let batchStart = 0; batchStart < total; batchStart += PARALLEL_UPLOADS) {
+          const batchEnd = Math.min(batchStart + PARALLEL_UPLOADS, total);
+          const batchIndices = Array.from(
+            { length: batchEnd - batchStart },
+            (_, i) => batchStart + i
+          );
+
+          // Step 1: Get presigned URLs for batch in parallel
+          const urlPromises = batchIndices.map((chunkIndex) =>
+            axios.post("http://localhost:3000/api/chunks/get-presigned-url", {
               key: key,
               uploadId: uploadId,
               PartNumber: chunkIndex + 1,
-            }
+            })
           );
-          const presignedUrl = urlResponse.data.url;
+          const urlResponses = await Promise.all(urlPromises);
 
-          // Get chunk data
-          const chunk = getChunk(file, chunkIndex, form.chunkSize);
+          // Step 2: Upload all chunks in batch in parallel
+          const uploadPromises = batchIndices.map(async (chunkIndex, idx) => {
+            const presignedUrl = urlResponses[idx].data.url;
+            const chunk = getChunk(file, chunkIndex, form.chunkSize);
 
-          // Upload chunk directly to R2 using presigned URL with fetch (NOT axios to avoid extra headers)
-          const uploadResponse = await fetch(presignedUrl, {
-            method: "PUT",
-            body: chunk,
-            headers: {
-              "Content-Type": "application/octet-stream",
-            },
+            // Upload chunk directly to R2 using presigned URL
+            const uploadResponse = await fetch(presignedUrl, {
+              method: "PUT",
+              body: chunk,
+              headers: {
+                "Content-Type": "application/octet-stream",
+              },
+            });
+
+            if (!uploadResponse.ok) {
+              throw new Error(
+                `Chunk ${chunkIndex + 1} upload failed: ${
+                  uploadResponse.statusText
+                }`
+              );
+            }
+
+            // Capture ETag from response headers
+            const etag =
+              uploadResponse.headers.get("ETag") ||
+              uploadResponse.headers.get("etag");
+            if (!etag) {
+              throw new Error(`Missing ETag for chunk ${chunkIndex + 1}`);
+            }
+
+            return { partNumber: chunkIndex + 1, ETag: etag };
           });
 
-          if (!uploadResponse.ok) {
-            throw new Error(
-              `Chunk ${chunkIndex + 1} upload failed: ${
-                uploadResponse.statusText
-              }`
-            );
-          }
+          const batchResults = await Promise.all(uploadPromises);
+          partsArray.push(...batchResults);
 
-          // Capture ETag from response headers
-          const etag =
-            uploadResponse.headers.get("ETag") ||
-            uploadResponse.headers.get("etag");
-          if (!etag) {
-            throw new Error(`Missing ETag for chunk ${chunkIndex + 1}`);
-          }
-          partsArray.push({ partNumber: chunkIndex + 1, ETag: etag });
-
-          setProgress(Math.round(((chunkIndex + 1) / total) * 100));
-          console.log(
-            `Uploaded chunk ${chunkIndex + 1}/${total} with ETag: ${etag}`
-          );
+          // Update progress after each batch
+          setProgress(Math.round((batchEnd / total) * 100));
+          console.log(`Uploaded batch: chunks ${batchStart + 1}-${batchEnd}/${total}`);
         }
 
         // Sort parts by partNumber (S3 expects ordered list)

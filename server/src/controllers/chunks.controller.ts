@@ -106,7 +106,7 @@ export const uploadInitiate = async (
     }
 
     // Create key with userId path structure
-    const key = `uploads/${userId}/${fileHash}`;
+    const key = `uploads/${userId}/${fileHash}+${new Date().getSeconds()}`;
     const uploadId = await r2CreateMultipart(key, fileName, contentType);
 
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // Expires in 24 hours
