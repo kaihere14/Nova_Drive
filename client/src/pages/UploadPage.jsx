@@ -216,11 +216,14 @@ const UploadPage = () => {
             <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
               <Settings className="w-5 h-5 text-zinc-400" />
             </button>
-            <div className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors">
+            <div
+              onClick={() => navigate("/profile")}
+              className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-cyan-500/50 transition-colors"
+            >
               <span className="text-sm font-medium text-zinc-200">
                 {user?.username || "User"}
               </span>
-              <div className="w-8 h-8 bg-gradient-to-br from-white to-zinc-300 rounded-lg flex items-center justify-center text-black text-xs font-semibold">
+              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
                 {user?.username
                   ? user.username.substring(0, 2).toUpperCase()
                   : "U"}
