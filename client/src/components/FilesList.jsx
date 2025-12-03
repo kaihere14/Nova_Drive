@@ -15,7 +15,7 @@ import {
   Check,
 } from "lucide-react";
 
-const FilesList = ({ userId, activeView = "files", onStorageUpdate }) => {
+const FilesList = ({ userId, activeView = "files", onStorageUpdate, username = "User" }) => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -171,7 +171,7 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate }) => {
   if (loading) {
     return (
       <div className="w-full">
-        <div className="text-center py-10 text-gray-600">Loading files...</div>
+        <div className="text-center py-10 text-zinc-400">Loading files...</div>
       </div>
     );
   }
@@ -179,7 +179,7 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate }) => {
   if (error) {
     return (
       <div className="w-full">
-        <div className="text-center py-10 text-red-500">{error}</div>
+        <div className="text-center py-10 text-red-400">{error}</div>
       </div>
     );
   }
@@ -212,70 +212,70 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate }) => {
     <div className="w-full">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <div className="bg-white rounded-xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-all hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
             <BarChart3 className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <div className="text-sm text-gray-500 mb-1">Total Files</div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-sm text-zinc-400 mb-1 font-mono">TOTAL_FILES</div>
+            <div className="text-2xl font-bold text-zinc-100">
               {filteredFiles.length}
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-all hover:-translate-y-0.5">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
             <HardDrive className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <div className="text-sm text-gray-500 mb-1">Storage Used</div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-sm text-zinc-400 mb-1 font-mono">STORAGE_USED</div>
+            <div className="text-2xl font-bold text-zinc-100">
               {formatFileSize(totalSize)}
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-all hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
             <Folder className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <div className="text-sm text-gray-500 mb-1">Folders</div>
-            <div className="text-2xl font-bold text-gray-900">1</div>
+            <div className="text-sm text-zinc-400 mb-1 font-mono">FOLDERS</div>
+            <div className="text-2xl font-bold text-zinc-100">1</div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 flex items-center gap-4 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-all hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
             <Star className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <div className="text-sm text-gray-500 mb-1">Favorites</div>
-            <div className="text-2xl font-bold text-gray-900">0</div>
+            <div className="text-sm text-zinc-400 mb-1 font-mono">FAVORITES</div>
+            <div className="text-2xl font-bold text-zinc-100">0</div>
           </div>
         </div>
       </div>
 
       {/* Files Table */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="flex justify-between items-center px-6 py-5 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Your Files</h3>
+      <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden">
+        <div className="flex justify-between items-center px-6 py-5 border-b border-zinc-800">
+          <h3 className="text-lg font-semibold text-zinc-100 font-mono">YOUR_FILES</h3>
           <button
-            className="w-9 h-9 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
             onClick={fetchFiles}
           >
-            <RefreshCw className="w-4 h-4 text-gray-600" />
+            <RefreshCw className="w-4 h-4 text-zinc-400" />
           </button>
         </div>
 
         {filteredFiles.length === 0 ? (
           <div className="text-center py-16">
-            <Folder className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-semibold text-gray-900 mb-2">
-              {activeView === "files" && "No files uploaded yet"}
-              {activeView === "recent" && "No recent files"}
-              {activeView === "favorites" && "No favorite files"}
-              {activeView === "trash" && "Recycle bin is empty"}
+            <Folder className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
+            <p className="text-lg font-semibold text-zinc-200 mb-2 font-mono">
+              {activeView === "files" && "NO_FILES_UPLOADED"}
+              {activeView === "recent" && "NO_RECENT_FILES"}
+              {activeView === "favorites" && "NO_FAVORITE_FILES"}
+              {activeView === "trash" && "RECYCLE_BIN_EMPTY"}
             </p>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-zinc-400">
               {activeView === "files" &&
                 "Upload your first file to get started"}
               {activeView === "recent" &&
@@ -288,34 +288,34 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate }) => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-zinc-900/50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    File Name
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                    FILE_NAME
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Owner
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                    OWNER
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Last Modified
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                    LAST_MODIFIED
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    File Size
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                    FILE_SIZE
                   </th>
                   <th className="px-6 py-4"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-zinc-800">
                 {filteredFiles.map((file, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-zinc-800/50 transition-colors"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-gray-400" />
+                        <FileText className="w-5 h-5 text-blue-400" />
                         <span
-                          className="font-medium text-gray-900"
+                          className="font-medium text-zinc-200"
                           title={file.originalName}
                         >
                           {file.originalName && file.originalName.length > 30
@@ -324,37 +324,37 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate }) => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      Karuna Mahi
+                    <td className="px-6 py-4 text-sm text-zinc-300">
+                      {username}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-zinc-400">
                       {formatDate(file.lastModified)}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-zinc-300">
                       {formatFileSize(file.size)}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-end">
                         <button
-                          className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-md transition-colors"
+                          className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
                           title="Download"
                           onClick={() => handleDownload(file)}
                         >
-                          <Download className="w-4 h-4 text-gray-600" />
+                          <Download className="w-4 h-4 text-zinc-400" />
                         </button>
                         <button
-                          className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-md transition-colors"
+                          className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
                           title="Share"
                           onClick={() => handleShare(file)}
                         >
-                          <Share2 className="w-4 h-4 text-gray-600" />
+                          <Share2 className="w-4 h-4 text-zinc-400" />
                         </button>
                         <button
-                          className="w-8 h-8 flex items-center justify-center hover:bg-red-50 rounded-md transition-colors group"
+                          className="w-8 h-8 flex items-center justify-center hover:bg-red-500/10 rounded-md transition-colors group"
                           title="Delete"
                           onClick={() => handleDelete(file)}
                         >
-                          <Trash2 className="w-4 h-4 text-gray-600 group-hover:text-red-600" />
+                          <Trash2 className="w-4 h-4 text-zinc-400 group-hover:text-red-400" />
                         </button>
                       </div>
                     </td>
@@ -369,33 +369,33 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate }) => {
       {/* Share Modal */}
       {shareModal.open && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
           onClick={closeShareModal}
         >
           <div
-            className="bg-white rounded-2xl w-full max-w-lg mx-4"
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center px-6 py-5 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Share File
+            <div className="flex justify-between items-center px-6 py-5 border-b border-zinc-800">
+              <h3 className="text-lg font-semibold text-zinc-100 font-mono">
+                SHARE_FILE
               </h3>
               <button
-                className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="w-8 h-8 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
                 onClick={closeShareModal}
               >
-                <X className="w-5 h-5 text-gray-600" />
+                <X className="w-5 h-5 text-zinc-400" />
               </button>
             </div>
             <div className="px-6 py-6 space-y-4">
               <div>
                 <div className="flex items-center gap-3 mb-3">
-                  <FileText className="w-5 h-5 text-gray-400" />
-                  <span className="font-medium text-gray-900">
+                  <FileText className="w-5 h-5 text-blue-400" />
+                  <span className="font-medium text-zinc-200">
                     {shareModal.file?.originalName}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-zinc-400 mb-4">
                   Anyone with this link can download the file. Link expires in
                   60 seconds.
                 </p>
@@ -405,11 +405,11 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate }) => {
                   type="text"
                   value={shareModal.url}
                   readOnly
-                  className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-sm text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                 />
                 <button
                   onClick={handleCopyLink}
-                  className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors flex items-center gap-2"
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)]"
                 >
                   {copied ? (
                     <>

@@ -3,3 +3,5 @@ dist
 .env
 .DS_Store
 .uploads
+
+CODEBASE_SUMMARY.md

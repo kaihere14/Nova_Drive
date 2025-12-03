@@ -142,8 +142,6 @@ export async function r2ListObjects(req: Request, res: Response) {
       Bucket,
       Prefix: `uploads/${userId}/`,
     });
-
-    console.log("Listing objects with prefix:", `uploads/${userId}/`);
     const response = await r2.send(cmd);
 
     // Retrieve metadata for each file to get original filename

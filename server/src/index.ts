@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import "dotenv/config"
 import connectDB from "./config/db.config.js";
 import chunkRoutes from "./routes/chunks.routes.js";
+import userRouted from "./routes/user.routes.js"
 import cors from "cors";
 import statusMonitor from "express-status-monitor";
 
@@ -22,6 +23,8 @@ app.use(cors({
 
 // Routes
 app.use("/api/chunks", chunkRoutes);
+app.use("/api/user", userRouted);
+
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {

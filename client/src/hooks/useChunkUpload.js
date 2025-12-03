@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
+import { useUser } from "./useUser";
 
 export const useChunkUpload = () => {
+  const {user} = useUser();
   const [file, setFile] = useState(null);
   const [totalChunks, setTotalChunks] = useState(0);
   const [form, setForm] = useState({
@@ -50,7 +52,7 @@ export const useChunkUpload = () => {
         contentType: selectedFile.type || "application/octet-stream",
         totalChunks: calculatedTotalChunks,
         chunkSize: chunkSize,
-        userId: "67b92a46b8ef91e1e4f6c111", // Replace with actual user ID from auth
+        userId: user?._id || "", // User ID from auth context
       });
     }
   };
