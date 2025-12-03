@@ -44,9 +44,7 @@ export async function r2CreateMultipart(
         originalname: sanitizedFilename, // 💾 Store sanitized filename in metadata
       },
     });
-    console.log("Creating multipart upload for key:", key, "with metadata:", {
-      originalname: sanitizedFilename,
-    });
+    
 
     const response = await r2.send(cmd);
     return response.UploadId!;
@@ -67,7 +65,7 @@ export async function r2GetPresignedUrl(
     UploadId: uploadId,
     PartNumber: partNumber,
   });
-  console.log("Getting presigned URL for key:", key, "partNumber:", partNumber);
+
 
   const url = await getSignedUrl(r2, cmd, { expiresIn: 600 });
   return url;
@@ -98,14 +96,8 @@ export async function r2CompleteMultipart(
       },
     });
 
-    console.log(
-      "Completing multipart upload for key:",
-      key,
-      "uploadId:",
-      uploadId
-    );
     const result = await r2.send(cmd);
-    console.log("Multipart upload completed successfully");
+ 
 
     return result;
   } catch (err) {

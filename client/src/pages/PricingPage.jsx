@@ -16,9 +16,9 @@ const PricingPage = () => {
 
       <Navbar />
 
-      <main className="relative z-10 pt-32 pb-20 px-6 max-w-7xl mx-auto">
+      <main className="relative z-10 pt-24 sm:pt-32 pb-20 px-4 sm:px-6 max-w-7xl mx-auto">
         {/* Hero Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 sm:mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1] mb-6">
             Transparent Resource Allocation
           </h1>
@@ -29,7 +29,7 @@ const PricingPage = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden mb-12 sm:mb-20">
           {[
             {
               name: "Developer",
@@ -64,7 +64,7 @@ const PricingPage = () => {
           ].map((plan, i) => (
             <div
               key={i}
-              className={`p-8 bg-zinc-950 flex flex-col h-full ${
+              className={`p-6 sm:p-8 bg-zinc-950 flex flex-col h-full ${
                 plan.highlight ? "bg-zinc-900/80 border-2 border-white/10" : ""
               }`}
             >

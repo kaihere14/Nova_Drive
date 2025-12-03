@@ -87,9 +87,9 @@ const HomePage = () => {
 
       <Navbar />
 
-      <main className="relative z-10 pt-32 pb-20 px-6 max-w-7xl mx-auto">
+      <main className="relative z-10 pt-24 sm:pt-32 pb-20 px-4 sm:px-6 max-w-7xl mx-auto">
         {/* --- Hero Section: Asymmetrical & Technical --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-20 sm:mb-32">
           <div>
             <Badge>v1.0 Now Available</Badge>
             <h1 className="mt-6 text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1]">
@@ -109,22 +109,22 @@ const HomePage = () => {
               </button>
             </div>
 
-            <div className="mt-12 flex items-center gap-6 text-xs font-mono text-zinc-500">
+            <div className="mt-8 sm:mt-12 flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono text-zinc-500">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>SYSTEM OPERATIONAL</span>
+                <span className="text-xs sm:text-sm">OPERATIONAL</span>
               </div>
-              <div>LATENCY: 12ms</div>
-              <div>ENCRYPTION: AES-256</div>
+              <div className="text-xs sm:text-sm">LATENCY: 12ms</div>
+              <div className="text-xs sm:text-sm">AES-256</div>
             </div>
           </div>
 
           {/* Technical Visual Right Side */}
-          <div className="relative">
+          <div className="relative mt-8 lg:mt-0">
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-transparent opacity-20 blur-xl"></div>
             <ChunkUploadVisual />
             {/* Floating 'Tagging' Card */}
-            <div className="absolute -bottom-8 -left-8 bg-black border border-zinc-800 p-4 rounded-lg shadow-xl w-64">
+            <div className="absolute -bottom-4 sm:-bottom-8 -left-4 sm:-left-8 bg-black border border-zinc-800 p-3 sm:p-4 rounded-lg shadow-xl w-56 sm:w-64">
               <div className="text-xs text-zinc-500 uppercase mb-2 font-mono tracking-wider">
                 AI Analysis Output
               </div>

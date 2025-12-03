@@ -20,6 +20,7 @@ import {
   HardDrive,
   Zap,
   LogOut,
+  Menu,
 } from "lucide-react";
 import { useUser } from "../hooks/useUser";
 
@@ -41,6 +42,8 @@ const UploadPage = () => {
   const [activeView, setActiveView] = useState("files");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [storageInfo, setStorageInfo] = useState({
     usedBytes: 0,
     totalBytes: 10 * 1024 * 1024 * 1024, // 10 GB
@@ -65,6 +68,19 @@ const UploadPage = () => {
 
     verifyAuth();
   }, []);
+
+  // Watch for successful upload completion and refresh file list
+  useEffect(() => {
+    if (uploadStatus === "Upload complete!") {
+      // Refresh the file list
+      setRefreshKey(prev => prev + 1);
+      
+      // Close modal after a brief delay
+      setTimeout(() => {
+        setShowUploadModal(false);
+      }, 1500);
+    }
+  }, [uploadStatus]);
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return "0 Bytes";
@@ -107,16 +123,32 @@ const UploadPage = () => {
         }}
       ></div>
 
+      {/* Mobile Sidebar Overlay */}
+      {showSidebar && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setShowSidebar(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="relative z-10 w-64 bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col">
+      <aside className={`fixed lg:relative z-50 lg:z-10 ${showSidebar ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 w-64 h-screen bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col`}>
         <div className="px-5 py-6 border-b border-zinc-800">
-          <div className="flex items-center gap-2 text-xl font-bold text-white">
-            <img
-              src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
-              alt="NovaDrive logo"
-              className="w-8 h-8 object-contain"
-            />
-            <span className="text-xl font-bold text-white">NovaDrive</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xl font-bold text-white">
+              <img
+                src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
+                alt="NovaDrive logo"
+                className="w-8 h-8 object-contain"
+              />
+              <span className="text-xl font-bold text-white">NovaDrive</span>
+            </div>
+            <button
+              className="lg:hidden p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+              onClick={() => setShowSidebar(false)}
+            >
+              <X className="w-5 h-5 text-zinc-400" />
+            </button>
           </div>
         </div>
         <nav className="flex-1 px-3 py-5 space-y-1">
@@ -198,9 +230,16 @@ const UploadPage = () => {
 
       {/* Main Content */}
       <main className="relative z-10 flex-1 flex flex-col overflow-hidden">
-        <header className="flex justify-between items-center px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
-          <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg w-96 border border-zinc-700">
-            <Search className="w-4 h-4 text-zinc-500" />
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button
+              className="lg:hidden p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+              onClick={() => setShowSidebar(true)}
+            >
+              <Menu className="w-5 h-5 text-zinc-400" />
+            </button>
+            <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg flex-1 sm:w-96 border border-zinc-700">
+            <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
             <input
               type="text"
               placeholder="Search files..."
@@ -208,8 +247,9 @@ const UploadPage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
             />
+            </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
             <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
               <Bell className="w-5 h-5 text-zinc-400" />
             </button>
@@ -217,7 +257,7 @@ const UploadPage = () => {
               <Settings className="w-5 h-5 text-zinc-400" />
             </button>
             <div className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors">
-              <span className="text-sm font-medium text-zinc-200">
+              <span className="text-sm font-medium text-zinc-200 hidden sm:inline">
                 {user?.username || "User"}
               </span>
               <div className="w-8 h-8 bg-gradient-to-br from-white to-zinc-300 rounded-lg flex items-center justify-center text-black text-xs font-semibold">
@@ -229,16 +269,16 @@ const UploadPage = () => {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-8 py-8 bg-zinc-950">
-          <div className="flex justify-between items-center mb-8">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 bg-zinc-950">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                 {activeView === "files" && "My Files"}
                 {activeView === "recent" && "Recent Files"}
                 {activeView === "favorites" && "Favorites"}
                 {activeView === "trash" && "Recycle Bin"}
               </h1>
-              <p className="mt-2 text-zinc-500 font-mono text-sm">
+              <p className="mt-2 text-zinc-500 font-mono text-xs sm:text-sm">
                 {activeView === "files" && "All your uploaded files"}
                 {activeView === "recent" && "Recently accessed files"}
                 {activeView === "favorites" && "Starred files"}
@@ -246,15 +286,17 @@ const UploadPage = () => {
               </p>
             </div>
             <button
-              className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] flex items-center gap-2"
+              className="w-full sm:w-auto px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2"
               onClick={() => setShowUploadModal(true)}
             >
               <Upload className="w-5 h-5" />
-              Upload New File
+              <span className="hidden sm:inline">Upload New File</span>
+              <span className="sm:hidden">Upload File</span>
             </button>
           </div>
 
           <FilesList
+            key={refreshKey}
             userId={user?._id || ""}
             username={user?.username || "User"}
             activeView={activeView}
@@ -267,7 +309,7 @@ const UploadPage = () => {
       {/* Upload Modal */}
       {showUploadModal && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setShowUploadModal(false)}
         >
           <div
