@@ -9,7 +9,7 @@ import {
   uploadInitiate,
 } from "../controllers/chunks.controller.js";
 import {
-  r2ListObjects,
+  
   getDownloadUrl,
   deleteUserFile,
 } from "../controllers/cloudflare.controller.js";
@@ -25,8 +25,7 @@ router.post("/upload-complete", completeUpload);
 router.post("/upload-status/:sessionId", getUploadStatus);
 router.delete("/delete-hash-session/:sessionId", deleteHashSession);
 
-// File listing route
-router.get("/list-files/:userId", r2ListObjects);
+
 
 // Download route
 router.post("/get-download-url", getDownloadUrl);

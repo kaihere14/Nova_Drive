@@ -152,6 +152,9 @@ export const useChunkUpload = () => {
         await axios.post("http://localhost:3000/api/chunks/upload-complete", {
           sessionId: sessionId,
           uploadId: uploadId,
+          fileName: form.fileName,
+          mimeType : form.contentType,
+          size: form.fileSize,
           key: key,
           parts: partsArray,
         });

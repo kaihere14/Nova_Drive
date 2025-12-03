@@ -13,7 +13,8 @@ export const generateToken = (
     const accessToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15m" });
     return { refreshToken, accessToken };
   } catch (error) {
-    throw new Error("Error generating tokens");
+    console.error("Error generating tokens:", error);
+    return { refreshToken: "", accessToken: "" };
   }
 };
 
@@ -113,6 +114,7 @@ export const refreshAccessToken = (req: Request, res: Response) => {
     if (!refreshToken) {
       return res.status(400).json({ message: "Missing refresh token" });
     }
+
     interface RefreshTokenPayload {
       userId: string;
       iat?: number;
@@ -124,17 +126,27 @@ export const refreshAccessToken = (req: Request, res: Response) => {
       JWT_SECRET,
       (err: Error | null, decoded?: unknown) => {
         if (err) {
+          console.error("Refresh token verification error:", err);
           return res.status(401).json({ message: "Invalid refresh token" });
         }
-        const userId = (decoded as RefreshTokenPayload).userId;
-        const { accessToken, refreshToken: newRefreshToken } =
-          generateToken(userId);
-        return res
-          .status(200)
-          .json({ accessToken, refreshToken: newRefreshToken });
+
+        try {
+          const userId = (decoded as RefreshTokenPayload).userId;
+          const { accessToken, refreshToken: newRefreshToken } =
+            generateToken(userId);
+          return res
+            .status(200)
+            .json({ accessToken, refreshToken: newRefreshToken });
+        } catch (error) {
+          console.error("Error generating new tokens:", error);
+          return res
+            .status(500)
+            .json({ message: "Error generating new tokens", error });
+        }
       }
     );
   } catch (error) {
+    console.error("Unhandled error in refreshAccessToken:", error);
     return res
       .status(500)
       .json({ message: "Error refreshing access token", error });

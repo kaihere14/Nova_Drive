@@ -40,7 +40,11 @@ const FilesList = ({
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:3000/api/chunks/list-files/${userId}`
+        `http://localhost:3000/api/files/list-files`,{
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+          }
+        }
       );
       setFiles(response.data.files);
       setError(null);
@@ -79,9 +83,9 @@ const FilesList = ({
     return date.toLocaleDateString() + " " + date.toLocaleTimeString();
   };
 
-  const getFileName = (key) => {
-    // Extract filename from key: uploads/userId/hash
-    const parts = key.split("/");
+  const getFileName = (r2Key) => {
+    // Extract filename from r2Key: uploads/userId/hash
+    const parts = r2Key.split("/");
     return parts[parts.length - 1];
   };
 
@@ -90,8 +94,8 @@ const FilesList = ({
       const response = await axios.post(
         "http://localhost:3000/api/chunks/get-download-url",
         {
-          key: file.key,
-          filename: file.originalName,
+          key: file.r2Key,
+          filename: file.originalFileName,
           userId: userId,
         }
       );
@@ -109,7 +113,7 @@ const FilesList = ({
   const handleDelete = async (file) => {
     // Show confirmation dialog
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${file.originalName}"?\n\nThis action cannot be undone.`
+      `Are you sure you want to delete "${file.originalFileName}"?\n\nThis action cannot be undone.`
     );
 
     if (!confirmed) {
@@ -121,7 +125,7 @@ const FilesList = ({
         "http://localhost:3000/api/chunks/delete-file",
         {
           data: {
-            key: file.key,
+            key: file.r2Key,
             userId: userId,
           },
         }
@@ -142,8 +146,8 @@ const FilesList = ({
       const response = await axios.post(
         "http://localhost:3000/api/chunks/get-download-url",
         {
-          key: file.key,
-          filename: file.originalName,
+          key: file.r2Key,
+          filename: file.originalFileName,
           userId: userId,
         }
       );
@@ -201,7 +205,7 @@ const FilesList = ({
       case "recent":
         // Show files modified in last 24 hours
         filtered = files.filter(
-          (file) => new Date(file.lastModified) > oneDayAgo
+          (file) => new Date(file.createdAt) > oneDayAgo
         );
         break;
       case "favorites":
@@ -222,7 +226,7 @@ const FilesList = ({
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((file) => {
         const fileName = (
-          file.originalName || getFileName(file.key)
+          file.originalFileName || getFileName(file.r2Key)
         ).toLowerCase();
         return fileName.includes(query);
       });
@@ -350,11 +354,11 @@ const FilesList = ({
                         <FileText className="w-5 h-5 text-cyan-400" />
                         <span
                           className="font-medium text-zinc-200"
-                          title={file.originalName}
+                          title={file.originalFileName}
                         >
-                          {file.originalName && file.originalName.length > 30
-                            ? file.originalName.slice(0, 30) + "..."
-                            : file.originalName || getFileName(file.key)}
+                          {file.originalFileName && file.originalFileName.length > 30
+                            ? file.originalFileName.slice(0, 30) + "..."
+                            : file.originalFileName || getFileName(file.r2Key)}
                         </span>
                       </div>
                     </td>
@@ -362,7 +366,7 @@ const FilesList = ({
                       {username}
                     </td>
                     <td className="px-6 py-4 text-sm text-zinc-400">
-                      {formatDate(file.lastModified)}
+                      {formatDate(file.createdAt)}
                     </td>
                     <td className="px-6 py-4 text-sm text-zinc-300">
                       {formatFileSize(file.size)}

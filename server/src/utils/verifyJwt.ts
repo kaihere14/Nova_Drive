@@ -7,12 +7,12 @@ export const verifyJwt = (req:Request,res:Response,next:NextFunction) => {
     try{
         const authHeader = req.headers.authorization;
         if(!authHeader || !authHeader.startsWith("Bearer ")){
-            return Promise.reject({ status: 401, message: "Unauthorized: No token provided" });
+            return res.status(401).json({ message: "Unauthorized" });
         }
         const token = authHeader.split(" ")[1];
         jwt.verify(token, JWT_SECRET, (err, decoded) => {
             if(err){
-                return Promise.reject({ status: 401, message: "Unauthorized: Invalid token" });
+                return res.status(401).json({ message: "Unauthorized: Invalid token" });
             }
             // decoded can be string or JwtPayload; cast to JwtPayload to access userId
             const payload = decoded as import("jsonwebtoken").JwtPayload;
@@ -21,6 +21,6 @@ export const verifyJwt = (req:Request,res:Response,next:NextFunction) => {
         });
     }
     catch(error){
-        return Promise.reject({ status: 500, message: "Internal Server Error" });
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };

@@ -11,6 +11,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { Request, Response } from "express";
+import FileModel from "../models/fileSchema.model";
 
 export const r2 = new S3Client({
   region: "auto",
@@ -135,57 +136,7 @@ export async function r2AbortMultipart(uploadId: string, key: string) {
   }
 }
 
-export async function r2ListObjects(req: Request, res: Response) {
-  const { userId } = req.params;
-  try {
-    const cmd = new ListObjectsV2Command({
-      Bucket,
-      Prefix: `uploads/${userId}/`,
-    });
-    const response = await r2.send(cmd);
 
-    // Retrieve metadata for each file to get original filename
-    const filesWithMetadata = await Promise.all(
-      (response.Contents || []).map(async (file) => {
-        try {
-          const headCmd = new HeadObjectCommand({
-            Bucket,
-            Key: file.Key,
-          });
-          const headResponse = await r2.send(headCmd);
-
-          return {
-            key: file.Key,
-            size: file.Size,
-            lastModified: file.LastModified,
-            eTag: file.ETag,
-            originalName: headResponse.Metadata?.originalname || "unknown",
-            contentType: headResponse.ContentType,
-          };
-        } catch (err) {
-          console.error(`Error getting metadata for ${file.Key}:`, err);
-          return {
-            key: file.Key,
-            size: file.Size,
-            lastModified: file.LastModified,
-            eTag: file.ETag,
-            originalName: "unknown",
-          };
-        }
-      })
-    );
-
-    return res.json({
-      success: true,
-      userId,
-      count: filesWithMetadata.length,
-      files: filesWithMetadata,
-    });
-  } catch (err) {
-    console.error("List objects failed:", err);
-    return res.status(500).json({ error: "Server error" });
-  }
-}
 
 export const getDownloadUrl = async (req: Request, res: Response) => {
   try {
@@ -244,6 +195,8 @@ export const deleteUserFile = async (req: Request, res: Response) => {
         Key: key,
       })
     );
+
+    await FileModel.deleteOne({ r2Key: key, owner: userId });
 
     return res.json({ success: true, message: "File deleted successfully" });
   } catch (err) {

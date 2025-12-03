@@ -6,6 +6,7 @@ import {
   r2GetPresignedUrl,
   r2CompleteMultipart,
 } from "./cloudflare.controller.js";
+import FileModel from "../models/fileSchema.model.js";
 
 interface UploadInitiateBody {
   userId: string;
@@ -154,7 +155,8 @@ export const completeUpload = async (
   res: Response
 ): Promise<unknown> => {
   try {
-    const { sessionId, uploadId, key, parts } = req.body;
+    const { sessionId, uploadId, key, parts,fileName,mimeType, size } = req.body;
+    console.log("completeUpload called with:", { sessionId, uploadId, key, parts,fileName,mimeType, size });
 
     const session = await chunkModel.findById(sessionId);
     if (!session) return res.status(404).json({ error: "Invalid session" });
@@ -179,8 +181,29 @@ export const completeUpload = async (
     const result = await r2CompleteMultipart(uploadId, key, parts);
 
     // Update session status
+    console.log("result from R2 complete multipart:", result);
     session.status = "completed";
     await session.save();
+    const file = await FileModel.create({
+      owner: session.userId,              
+
+      originalFileName: fileName,         
+      mimeType: mimeType,                 
+      size: size,                         
+
+      bucket: result.Bucket,             
+      r2Key: key,                       
+
+      etag: result.ETag,                
+      versionId: result.VersionId,        
+
+      aiStatus: "pending",                
+      tags: [],
+      summary: "",
+
+      createdAt: new Date(),
+    });
+    await file.save();
 
     res.json({
       success: true,
