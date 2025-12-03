@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, Links } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 // --- Shared Components ---
 
@@ -84,61 +85,13 @@ const HomePage = () => {
         }}
       ></div>
 
-      {/* --- Navbar: Industrial & Sticky --- */}
-      <nav className="fixed top-0 z-50 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img
-              src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
-              alt="NovaDrive logo"
-              className="w-8 h-8 object-contain"
-            />
-            <span className="font-bold text-white tracking-tight">
-              NovaDrive
-            </span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-            <Link
-              to="#features"
-              className="text-zinc-400 hover:text-white transition-colors"
-            >
-              Architecture
-            </Link>
-            <Link
-              to="#pricing"
-              className="text-zinc-400 hover:text-white transition-colors"
-            >
-              Pricing
-            </Link>
-            <Link
-              to="#docs"
-              className="text-zinc-400 hover:text-white transition-colors"
-            >
-              API
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link
-              to="/login"
-              className="text-sm font-medium text-zinc-300 hover:text-white"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/signup"
-              className="text-sm font-medium bg-white text-black px-4 py-2 rounded hover:bg-zinc-200 transition-colors"
-            >
-              Start Free
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <main className="relative z-10 pt-32 pb-20 px-6 max-w-7xl mx-auto">
         {/* --- Hero Section: Asymmetrical & Technical --- */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
           <div>
-            <Badge>v2.0 Now Available</Badge>
+            <Badge>v1.0 Now Available</Badge>
             <h1 className="mt-6 text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1]">
               Storage infrastructure <br />
               <span className="text-zinc-500">for the AI era.</span>
@@ -351,7 +304,7 @@ const HomePage = () => {
               },
               {
                 name: "Organization",
-                price: "$49",
+                price: "Custom",
                 storage: "20 TB",
                 band: "Priority",
                 highlight: false,
@@ -389,7 +342,7 @@ const HomePage = () => {
                   <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
                     <span>API Access</span>
                     <span className="font-mono text-white">
-                      {i === 2 ? "Full" : "Read-Only"}
+                      {i === 0 ? "Read-Only" : "Full"}
                     </span>
                   </li>
                 </ul>
@@ -401,7 +354,7 @@ const HomePage = () => {
                       : "text-white border-zinc-700 hover:bg-zinc-800"
                   }`}
                 >
-                  Select Plan
+                  {i === 2 ? "Contact Us" : "Select Plan"}
                 </button>
               </div>
             ))}
