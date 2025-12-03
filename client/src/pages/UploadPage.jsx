@@ -40,6 +40,7 @@ const UploadPage = () => {
 
   const [activeView, setActiveView] = useState("files");
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [storageInfo, setStorageInfo] = useState({
     usedBytes: 0,
     totalBytes: 10 * 1024 * 1024 * 1024, // 10 GB
@@ -53,9 +54,9 @@ const UploadPage = () => {
         navigate("/login");
         return;
       }
-      
+
       await checkAuth();
-      
+
       // If still no user after auth check, redirect to login
       if (!user) {
         navigate("/login");
@@ -64,8 +65,6 @@ const UploadPage = () => {
 
     verifyAuth();
   }, []);
-
-
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return "0 Bytes";
@@ -89,7 +88,7 @@ const UploadPage = () => {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-zinc-400 font-mono">VERIFYING_ACCESS...</p>
         </div>
       </div>
@@ -97,23 +96,34 @@ const UploadPage = () => {
   }
 
   return (
-    <div className="flex h-screen bg-zinc-950 font-sans selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="flex h-screen bg-zinc-950 font-sans selection:bg-white/20 selection:text-white">
       {/* Subtle Grid Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#27272a 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: '0.3' }}></div>
-      
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#27272a 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+          opacity: "0.3",
+        }}
+      ></div>
+
       {/* Sidebar */}
       <aside className="relative z-10 w-64 bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col">
         <div className="px-5 py-6 border-b border-zinc-800">
           <div className="flex items-center gap-2 text-xl font-bold text-white">
-            <div className="w-5 h-5 bg-white rounded-sm"></div>
-            <span>NovaDrive</span>
+            <img
+              src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
+              alt="NovaDrive logo"
+              className="w-8 h-8 object-contain"
+            />
+            <span className="text-xl font-bold text-white">NovaDrive</span>
           </div>
         </div>
         <nav className="flex-1 px-3 py-5 space-y-1">
           <button
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
               activeView === "files"
-                ? "bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20"
+                ? "bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/30"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
             }`}
             onClick={() => setActiveView("files")}
@@ -124,7 +134,7 @@ const UploadPage = () => {
           <button
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
               activeView === "recent"
-                ? "bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20"
+                ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
             }`}
             onClick={() => setActiveView("recent")}
@@ -135,7 +145,7 @@ const UploadPage = () => {
           <button
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
               activeView === "favorites"
-                ? "bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20"
+                ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
             }`}
             onClick={() => setActiveView("favorites")}
@@ -146,7 +156,7 @@ const UploadPage = () => {
           <button
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
               activeView === "trash"
-                ? "bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20"
+                ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
             }`}
             onClick={() => setActiveView("trash")}
@@ -163,12 +173,13 @@ const UploadPage = () => {
             </div>
             <div className="h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all"
+                className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all"
                 style={{ width: `${storagePercentage}%` }}
               ></div>
             </div>
             <div className="text-zinc-500 font-mono">
-              {formatFileSize(storageInfo.usedBytes)} / {formatFileSize(storageInfo.totalBytes)}
+              {formatFileSize(storageInfo.usedBytes)} /{" "}
+              {formatFileSize(storageInfo.totalBytes)}
             </div>
             <div className="mt-3 flex items-center gap-2 text-green-500">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -193,6 +204,8 @@ const UploadPage = () => {
             <input
               type="text"
               placeholder="Search files..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
             />
           </div>
@@ -207,8 +220,10 @@ const UploadPage = () => {
               <span className="text-sm font-medium text-zinc-200">
                 {user?.username || "User"}
               </span>
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-                {user?.username ? user.username.substring(0, 2).toUpperCase() : "U"}
+              <div className="w-8 h-8 bg-gradient-to-br from-white to-zinc-300 rounded-lg flex items-center justify-center text-black text-xs font-semibold">
+                {user?.username
+                  ? user.username.substring(0, 2).toUpperCase()
+                  : "U"}
               </div>
             </div>
           </div>
@@ -231,7 +246,7 @@ const UploadPage = () => {
               </p>
             </div>
             <button
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] flex items-center gap-2"
+              className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] flex items-center gap-2"
               onClick={() => setShowUploadModal(true)}
             >
               <Upload className="w-5 h-5" />
@@ -243,6 +258,7 @@ const UploadPage = () => {
             userId={user?._id || ""}
             username={user?.username || "User"}
             activeView={activeView}
+            searchQuery={searchQuery}
             onStorageUpdate={setStorageInfo}
           />
         </div>
@@ -263,7 +279,9 @@ const UploadPage = () => {
                 <h2 className="text-xl font-semibold text-white">
                   Upload New File
                 </h2>
-                <p className="text-sm text-zinc-500 font-mono mt-1">Chunked upload with resume support</p>
+                <p className="text-sm text-zinc-500 font-mono mt-1">
+                  Chunked upload with resume support
+                </p>
               </div>
               <button
                 className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors"
@@ -274,14 +292,14 @@ const UploadPage = () => {
             </div>
             <div className="px-6 py-6 space-y-5">
               {/* File Input Area */}
-              <div className="border-2 border-dashed border-zinc-700 rounded-lg p-8 hover:border-blue-500/50 transition-colors bg-zinc-800/30">
+              <div className="border-2 border-dashed border-zinc-700 rounded-lg p-8 hover:border-cyan-500/40 transition-colors bg-zinc-800/30">
                 <div className="text-center">
                   <Upload className="w-12 h-12 mx-auto mb-3 text-zinc-600" />
                   <label
                     htmlFor="file-input"
                     className="cursor-pointer inline-block"
                   >
-                    <span className="text-blue-400 hover:text-blue-300 font-semibold">
+                    <span className="text-cyan-400 hover:text-cyan-300 font-semibold">
                       Click to upload
                     </span>
                     <span className="text-zinc-500"> or drag and drop</span>

@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { HardDrive, Lock, Mail, Eye, EyeOff, Zap, Shield, User } from "lucide-react";
+import {
+  HardDrive,
+  Lock,
+  Mail,
+  Eye,
+  EyeOff,
+  Zap,
+  Shield,
+  User,
+} from "lucide-react";
 import { useUser } from "../hooks/useUser";
 
 const SignupPage = () => {
   const navigate = useNavigate();
   const { register, isAuthenticated } = useUser();
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -52,8 +61,12 @@ const SignupPage = () => {
     }
 
     try {
-      const result = await register(formData.name, formData.email, formData.password);
-      
+      const result = await register(
+        formData.name,
+        formData.email,
+        formData.password
+      );
+
       if (result.success) {
         // Redirect to upload page on successful registration
         navigate("/upload");
@@ -71,7 +84,7 @@ const SignupPage = () => {
     <div className="min-h-screen bg-zinc-950 relative overflow-hidden">
       {/* Animated Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-      
+
       {/* Glow Effects */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
@@ -82,19 +95,27 @@ const SignupPage = () => {
           {/* Logo/Brand */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_30px_-5px_rgba(37,99,235,0.5)]">
-                <HardDrive className="w-7 h-7 text-white" />
-              </div>
-              <span className="text-3xl font-bold text-zinc-100">NovaDrive</span>
+              <img
+                src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
+                alt="NovaDrive logo"
+                className="w-12 h-12 object-contain"
+              />
+              <span className="text-3xl font-bold text-white">NovaDrive</span>
             </div>
-            <p className="text-zinc-400 font-mono text-sm">SECURE_CLOUD_STORAGE</p>
+            <p className="text-zinc-400 font-mono text-sm">
+              SECURE_CLOUD_STORAGE
+            </p>
           </div>
 
           {/* Signup Card */}
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 backdrop-blur-md">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-zinc-100 mb-2 font-mono">CREATE_ACCOUNT</h2>
-              <p className="text-zinc-400 text-sm">Start your secure storage journey</p>
+              <h2 className="text-2xl font-bold text-zinc-100 mb-2 font-mono">
+                CREATE_ACCOUNT
+              </h2>
+              <p className="text-zinc-400 text-sm">
+                Start your secure storage journey
+              </p>
             </div>
 
             {error && (
@@ -109,7 +130,10 @@ const SignupPage = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name Input */}
               <div>
-                <label htmlFor="name" className="block text-sm font-mono text-zinc-400 mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-mono text-zinc-400 mb-2"
+                >
                   FULL_NAME
                 </label>
                 <div className="relative">
@@ -129,7 +153,10 @@ const SignupPage = () => {
 
               {/* Email Input */}
               <div>
-                <label htmlFor="email" className="block text-sm font-mono text-zinc-400 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-mono text-zinc-400 mb-2"
+                >
                   EMAIL_ADDRESS
                 </label>
                 <div className="relative">
@@ -149,7 +176,10 @@ const SignupPage = () => {
 
               {/* Password Input */}
               <div>
-                <label htmlFor="password" className="block text-sm font-mono text-zinc-400 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-mono text-zinc-400 mb-2"
+                >
                   PASSWORD
                 </label>
                 <div className="relative">
@@ -177,12 +207,17 @@ const SignupPage = () => {
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-zinc-500 mt-1.5">Minimum 8 characters</p>
+                <p className="text-xs text-zinc-500 mt-1.5">
+                  Minimum 8 characters
+                </p>
               </div>
 
               {/* Confirm Password Input */}
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-mono text-zinc-400 mb-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-mono text-zinc-400 mb-2"
+                >
                   CONFIRM_PASSWORD
                 </label>
                 <div className="relative">
@@ -221,11 +256,17 @@ const SignupPage = () => {
                 />
                 <label htmlFor="terms" className="text-sm text-zinc-400">
                   I agree to the{" "}
-                  <Link to="/terms" className="text-blue-400 hover:text-blue-300 transition-colors">
+                  <Link
+                    to="/terms"
+                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                  >
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link to="/privacy" className="text-blue-400 hover:text-blue-300 transition-colors">
+                  <Link
+                    to="/privacy"
+                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                  >
                     Privacy Policy
                   </Link>
                 </label>
@@ -257,7 +298,9 @@ const SignupPage = () => {
                 <div className="w-full border-t border-zinc-800"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-zinc-900/50 text-zinc-500 font-mono">OR</span>
+                <span className="px-4 bg-zinc-900/50 text-zinc-500 font-mono">
+                  OR
+                </span>
               </div>
             </div>
 

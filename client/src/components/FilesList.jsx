@@ -15,7 +15,13 @@ import {
   Check,
 } from "lucide-react";
 
-const FilesList = ({ userId, activeView = "files", onStorageUpdate, username = "User" }) => {
+const FilesList = ({
+  userId,
+  activeView = "files",
+  searchQuery = "",
+  onStorageUpdate,
+  username = "User",
+}) => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -189,20 +195,40 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate, username = "
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
+    let filtered = [];
+
     switch (activeView) {
       case "recent":
         // Show files modified in last 24 hours
-        return files.filter((file) => new Date(file.lastModified) > oneDayAgo);
+        filtered = files.filter(
+          (file) => new Date(file.lastModified) > oneDayAgo
+        );
+        break;
       case "favorites":
         // TODO: Implement favorites tracking (for now return empty)
-        return [];
+        filtered = [];
+        break;
       case "trash":
         // TODO: Implement trash/deleted files tracking (for now return empty)
-        return [];
+        filtered = [];
+        break;
       case "files":
       default:
-        return files;
+        filtered = files;
     }
+
+    // Apply search filter
+    if (searchQuery && searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((file) => {
+        const fileName = (
+          file.originalName || getFileName(file.key)
+        ).toLowerCase();
+        return fileName.includes(query);
+      });
+    }
+
+    return filtered;
   };
 
   const filteredFiles = getFilteredFiles();
@@ -212,43 +238,49 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate, username = "
     <div className="w-full">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-all hover:-translate-y-0.5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-            <BarChart3 className="w-6 h-6 text-white" />
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-cyan-500/30 transition-all hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white to-zinc-300 flex items-center justify-center">
+            <BarChart3 className="w-6 h-6 text-black" />
           </div>
           <div className="flex-1">
-            <div className="text-sm text-zinc-400 mb-1 font-mono">TOTAL_FILES</div>
+            <div className="text-sm text-zinc-400 mb-1 font-mono">
+              TOTAL_FILES
+            </div>
             <div className="text-2xl font-bold text-zinc-100">
               {filteredFiles.length}
             </div>
           </div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-all hover:-translate-y-0.5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-            <HardDrive className="w-6 h-6 text-white" />
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-white/20 transition-all hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white to-zinc-300 flex items-center justify-center">
+            <HardDrive className="w-6 h-6 text-black" />
           </div>
           <div className="flex-1">
-            <div className="text-sm text-zinc-400 mb-1 font-mono">STORAGE_USED</div>
+            <div className="text-sm text-zinc-400 mb-1 font-mono">
+              STORAGE_USED
+            </div>
             <div className="text-2xl font-bold text-zinc-100">
               {formatFileSize(totalSize)}
             </div>
           </div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-all hover:-translate-y-0.5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-            <Folder className="w-6 h-6 text-white" />
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-white/20 transition-all hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white to-zinc-300 flex items-center justify-center">
+            <Folder className="w-6 h-6 text-black" />
           </div>
           <div className="flex-1">
             <div className="text-sm text-zinc-400 mb-1 font-mono">FOLDERS</div>
             <div className="text-2xl font-bold text-zinc-100">1</div>
           </div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-blue-500/50 transition-all hover:-translate-y-0.5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-            <Star className="w-6 h-6 text-white" />
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 flex items-center gap-4 hover:border-white/20 transition-all hover:-translate-y-0.5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white to-zinc-300 flex items-center justify-center">
+            <Star className="w-6 h-6 text-black" />
           </div>
           <div className="flex-1">
-            <div className="text-sm text-zinc-400 mb-1 font-mono">FAVORITES</div>
+            <div className="text-sm text-zinc-400 mb-1 font-mono">
+              FAVORITES
+            </div>
             <div className="text-2xl font-bold text-zinc-100">0</div>
           </div>
         </div>
@@ -257,7 +289,9 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate, username = "
       {/* Files Table */}
       <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden">
         <div className="flex justify-between items-center px-6 py-5 border-b border-zinc-800">
-          <h3 className="text-lg font-semibold text-zinc-100 font-mono">YOUR_FILES</h3>
+          <h3 className="text-lg font-semibold text-zinc-100 font-mono">
+            YOUR_FILES
+          </h3>
           <button
             className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
             onClick={fetchFiles}
@@ -313,7 +347,7 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate, username = "
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-400" />
+                        <FileText className="w-5 h-5 text-cyan-400" />
                         <span
                           className="font-medium text-zinc-200"
                           title={file.originalName}
@@ -390,7 +424,7 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate, username = "
             <div className="px-6 py-6 space-y-4">
               <div>
                 <div className="flex items-center gap-3 mb-3">
-                  <FileText className="w-5 h-5 text-blue-400" />
+                  <FileText className="w-5 h-5 text-cyan-400" />
                   <span className="font-medium text-zinc-200">
                     {shareModal.file?.originalName}
                   </span>
@@ -405,11 +439,11 @@ const FilesList = ({ userId, activeView = "files", onStorageUpdate, username = "
                   type="text"
                   value={shareModal.url}
                   readOnly
-                  className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-sm text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                  className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-sm text-zinc-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
                 />
                 <button
                   onClick={handleCopyLink}
-                  className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)]"
+                  className="px-4 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)]"
                 >
                   {copied ? (
                     <>

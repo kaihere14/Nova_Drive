@@ -1,122 +1,142 @@
-import { User } from "../models/user.model.js"
-import { IUser } from "../models/user.model.js"
+import { User } from "../models/user.model.js";
+import { IUser } from "../models/user.model.js";
 import { Request, Response } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 
-
 const JWT_SECRET = process.env.JWT_SECRET as Secret;
 
-export const generateToken = (userId: string): { refreshToken: string; accessToken: string } => {
-    try {
-        const refreshToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
-        const accessToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '15m' });
-        return { refreshToken, accessToken };
-    }catch (error) {
-        throw new Error("Error generating tokens");
-    }
+export const generateToken = (
+  userId: string
+): { refreshToken: string; accessToken: string } => {
+  try {
+    const refreshToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "7d" });
+    const accessToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15m" });
+    return { refreshToken, accessToken };
+  } catch (error) {
+    throw new Error("Error generating tokens");
+  }
 };
 
-
 export const createUser = async (req: Request, res: Response) => {
-    try {
-        const { username, email, password } = req.body;
-        if(!username || !email || !password) {
-            return res.status(400).json({ message: "Missing required fields" });
-        }
-        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-        if (existingUser) {
-            return res.status(409).json({ message: "Username or email already exists" });
-        }
-        const newUser: IUser = new User({ username, email, password });
-        await newUser.save();
-        const { accessToken, refreshToken } = generateToken(newUser._id.toString());
-        res.status(201).json({ message: "User created successfully", newUser, accessToken, refreshToken });
-    } catch (error) {
-        res.status(500).json({ message: "Error creating user", error });
+  try {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res
+        .status(409)
+        .json({ message: "Username or email already exists" });
+    }
+    const newUser: IUser = new User({ username, email, password });
+    await newUser.save();
+    const { accessToken, refreshToken } = generateToken(newUser._id.toString());
+    res
+      .status(201)
+      .json({
+        message: "User created successfully",
+        newUser,
+        accessToken,
+        refreshToken,
+      });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating user", error });
+  }
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-    try {
-        const { email, password } = req.body;
-        if(!email || !password) {
-            return res.status(400).json({ message: "Missing required fields" });
-        }
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(401).json({ message: "Invalid email or password" });
-        }
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid email or password" });
-        }
-        const {accessToken,refreshToken} = generateToken(user._id.toString());
-        res.status(200).json({ message: "Login successful", user, accessToken, refreshToken });
-    } catch (error) {
-        res.status(500).json({ message: "Error logging in", error });
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    const { accessToken, refreshToken } = generateToken(user._id.toString());
+    res
+      .status(200)
+      .json({ message: "Login successful", user, accessToken, refreshToken });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Error logging in", error });
+  }
 };
 export const verifyUser = async (req: Request, res: Response) => {
-    try {
-        const  userId  = (req as any).userId;
-        const user = await User.findById(userId).select('-password');
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ message: "Error verifying user", error });
+  try {
+    const userId = (req as any).userId;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Error verifying user", error });
+  }
 };
 
-
 export const getUserProfile = async (req: Request, res: Response) => {
-    try {
-        const {userId} = req.params;
-        const user = await User.findById(userId).select('-password');
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching user profile", error });
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user profile", error });
+  }
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-    try {
-        const {userId} = req.params;
-        const user = await User.findByIdAndDelete(userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        res.status(200).json({ message: "User deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error deleting user", error });
+  try {
+    const { userId } = req.params;
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting user", error });
+  }
 };
 
 export const refreshAccessToken = (req: Request, res: Response) => {
-    try {
-        const { refreshToken } = req.body;
-        if (!refreshToken) {
-            return res.status(400).json({ message: "Missing refresh token" });
-        }
-        interface RefreshTokenPayload {
-            userId: string;
-            iat?: number;
-            exp?: number;
-        }
-
-        jwt.verify(refreshToken, JWT_SECRET, (err: Error | null, decoded?: unknown) => {
-            if (err) {
-            return res.status(401).json({ message: "Invalid refresh token" });
-            }
-            const userId = (decoded as RefreshTokenPayload).userId;
-            const {accessToken,refreshToken} = generateToken(userId);
-             return res.status(200).json({ accessToken, refreshToken });
-        });
-    } catch (error) {
-         return res.status(500).json({ message: "Error refreshing access token", error });
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Missing refresh token" });
     }
+    interface RefreshTokenPayload {
+      userId: string;
+      iat?: number;
+      exp?: number;
+    }
+
+    jwt.verify(
+      refreshToken,
+      JWT_SECRET,
+      (err: Error | null, decoded?: unknown) => {
+        if (err) {
+          return res.status(401).json({ message: "Invalid refresh token" });
+        }
+        const userId = (decoded as RefreshTokenPayload).userId;
+        const { accessToken, refreshToken: newRefreshToken } =
+          generateToken(userId);
+        return res
+          .status(200)
+          .json({ accessToken, refreshToken: newRefreshToken });
+      }
+    );
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error refreshing access token", error });
+  }
 };
