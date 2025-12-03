@@ -7,6 +7,7 @@ import {
   r2CompleteMultipart,
 } from "./cloudflare.controller.js";
 import FileModel from "../models/fileSchema.model.js";
+import { addJobs } from "../utils/bullmqJobs.js";
 
 interface UploadInitiateBody {
   userId: string;
@@ -156,7 +157,7 @@ export const completeUpload = async (
 ): Promise<unknown> => {
   try {
     const { sessionId, uploadId, key, parts,fileName,mimeType, size } = req.body;
-    console.log("completeUpload called with:", { sessionId, uploadId, key, parts,fileName,mimeType, size });
+    
 
     const session = await chunkModel.findById(sessionId);
     if (!session) return res.status(404).json({ error: "Invalid session" });
@@ -181,7 +182,7 @@ export const completeUpload = async (
     const result = await r2CompleteMultipart(uploadId, key, parts);
 
     // Update session status
-    console.log("result from R2 complete multipart:", result);
+
     session.status = "completed";
     await session.save();
     const file = await FileModel.create({
@@ -203,7 +204,11 @@ export const completeUpload = async (
 
       createdAt: new Date(),
     });
-    await file.save();
+    await file.save(); 
+    
+    // Queue AI processing job
+    await addJobs(fileName, mimeType, size, file._id.toString());
+  
 
     res.json({
       success: true,

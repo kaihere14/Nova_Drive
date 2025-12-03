@@ -29,19 +29,19 @@ const ArchitecturePage = () => {
       <Navbar />
 
       {/* Main Content */}
-      <main className="relative max-w-7xl mx-auto px-6 py-24">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
         {/* Title Section */}
-        <div className="mb-12">
-          <h1 className="text-5xl font-bold mb-4 text-white">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white">
             System Architecture
           </h1>
-          <p className="text-zinc-400 text-lg">
+          <p className="text-zinc-400 text-base sm:text-lg">
             Technical overview of NovaDrive's infrastructure
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-8 border-b border-zinc-800">
+        <div className="flex gap-1 sm:gap-2 mb-6 sm:mb-8 border-b border-zinc-800 overflow-x-auto">
           {[
             {
               id: "overview",
@@ -67,7 +67,7 @@ const ArchitecturePage = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-3 text-sm flex items-center gap-2 transition-all ${
+              className={`px-4 sm:px-6 py-3 text-xs sm:text-sm flex items-center gap-2 transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? "text-white border-b-2 border-white"
                   : "text-zinc-400 hover:text-white"
@@ -85,12 +85,12 @@ const ArchitecturePage = () => {
           {activeTab === "overview" && (
             <div className="space-y-8">
               {/* Architecture Diagram */}
-              <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8">
-                <h2 className="text-2xl font-bold mb-6 text-white">
+              <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-4 sm:p-6 md:p-8">
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">
                   System Components
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   {/* Client Layer */}
                   <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700 hover:border-zinc-600 transition-all">
                     <div className="flex items-center gap-3 mb-4">
