@@ -46,7 +46,7 @@ const UploadPage = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [storageInfo, setStorageInfo] = useState({
     usedBytes: 0,
-    totalBytes: 10 * 1024 * 1024 * 1024, // 10 GB
+    totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
   });
 
   // Verify authentication on page load
@@ -68,6 +68,16 @@ const UploadPage = () => {
 
     verifyAuth();
   }, []);
+
+  // Update storage quota when user data loads
+  useEffect(() => {
+    if (user?.storageQuota) {
+      setStorageInfo(prev => ({
+        ...prev,
+        totalBytes: user.storageQuota
+      }));
+    }
+  }, [user]);
 
   // Watch for successful upload completion and refresh file list
   useEffect(() => {
@@ -230,40 +240,68 @@ const UploadPage = () => {
 
       {/* Main Content */}
       <main className="relative z-10 flex-1 flex flex-col overflow-hidden">
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+        <header className="px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
+          {/* Mobile Layout - Single Row */}
+          <div className="flex lg:hidden items-center gap-3 w-full">
             <button
-              className="lg:hidden p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+              className="p-2 hover:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
               onClick={() => setShowSidebar(true)}
             >
               <Menu className="w-5 h-5 text-zinc-400" />
             </button>
-            <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg flex-1 sm:w-96 border border-zinc-700">
-            <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
-            <input
-              type="text"
-              placeholder="Search files..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
-            />
+            <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg flex-1 border border-zinc-700">
+              <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
+              />
             </div>
-          </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-            <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
-              <Bell className="w-5 h-5 text-zinc-400" />
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
-              <Settings className="w-5 h-5 text-zinc-400" />
-            </button>
-            <div className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors">
-              <span className="text-sm font-medium text-zinc-200 hidden sm:inline">
-                {user?.username || "User"}
-              </span>
+            <div 
+              className="p-2 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
+              onClick={() => navigate("/profile")}
+            >
               <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
                 {user?.username
                   ? user.username.substring(0, 2).toUpperCase()
                   : "U"}
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden lg:flex justify-between items-center">
+            <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg w-96 border border-zinc-700">
+              <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search files..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
+                <Bell className="w-5 h-5 text-zinc-400" />
+              </button>
+              <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
+                <Settings className="w-5 h-5 text-zinc-400" />
+              </button>
+              <div 
+                className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors"
+                onClick={() => navigate("/profile")}
+              >
+                <span className="text-sm font-medium text-zinc-200">
+                  {user?.username || "User"}
+                </span>
+                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
+                  {user?.username
+                    ? user.username.substring(0, 2).toUpperCase()
+                    : "U"}
+                </div>
               </div>
             </div>
           </div>
@@ -301,7 +339,7 @@ const UploadPage = () => {
             username={user?.username || "User"}
             activeView={activeView}
             searchQuery={searchQuery}
-            onStorageUpdate={setStorageInfo}
+            onStorageUpdate={(info) => setStorageInfo(prev => ({ ...prev, ...info }))}
           />
         </div>
       </main>

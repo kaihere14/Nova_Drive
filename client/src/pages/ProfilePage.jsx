@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/useUser";
+import axios from "axios";
 import {
   User,
   Mail,
@@ -28,19 +29,56 @@ const ProfilePage = () => {
   }, [user, loading, navigate]);
 
   useEffect(() => {
-    if (user) {
-      // Calculate account age
-      const createdDate = new Date(user.createdAt);
-      const now = new Date();
-      const diffTime = Math.abs(now - createdDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const fetchUserStats = async () => {
+      if (user) {
+        // Calculate account age
+        const createdDate = new Date(user.createdAt);
+        const now = new Date();
+        const diffTime = Math.abs(now - createdDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      setStats({
-        totalFiles: user.totalFiles || 0,
-        storageUsed: user.storageUsed || "0 GB",
-        accountAge: `${diffDays} days`,
-      });
-    }
+        try {
+          // Fetch user's files to calculate actual storage
+          const response = await axios.get(
+            `http://localhost:3000/api/files/list-files`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              },
+            }
+          );
+
+          const files = response.data.files || [];
+          const totalFiles = files.length;
+          const totalBytes = files.reduce((acc, file) => acc + (file.size || 0), 0);
+
+          // Format storage size
+          const formatSize = (bytes) => {
+            if (bytes === 0) return "0 GB";
+            const k = 1024;
+            const sizes = ["Bytes", "KB", "MB", "GB"];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+          };
+
+          setStats({
+            totalFiles,
+            storageUsed: formatSize(totalBytes),
+            accountAge: `${diffDays} days`,
+          });
+        } catch (error) {
+          console.error("Error fetching user stats:", error);
+          // Fallback to default values
+          setStats({
+            totalFiles: 0,
+            storageUsed: "0 GB",
+            accountAge: `${diffDays} days`,
+          });
+        }
+      }
+    };
+
+    fetchUserStats();
   }, [user]);
 
   const handleLogout = async () => {

@@ -4,11 +4,19 @@ import IORedis from 'ioredis';
 import { GoogleGenAI } from "@google/genai";
 import FileModel from '../models/fileSchema.model.js';
 
+const connection = new IORedis({
+  host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
+  port: 15783,
+  password: process.env.REDIS_PASSWORD,
+  maxRetriesPerRequest: null,
+});
 
 const myQueue = new Queue('ai-processing-queue', {
   connection: {
-    host: 'localhost',
-    port: 6379,
+    host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
+    port: 15783,
+    password: process.env.REDIS_PASSWORD,
+    maxRetriesPerRequest: null,
   },
 });
 
@@ -16,10 +24,6 @@ export async function addJobs(fileName: string, mimeType: string, size: number, 
   await myQueue.add('ai-processing-queue', { fileName, mimeType, size, fileId });
   console.log('Job added to AI processing queue for file:', fileName, 'with ID:', fileId);
 }
-
-
-
-const connection = new IORedis({ maxRetriesPerRequest: null });
 
 const ai = new GoogleGenAI({});
 

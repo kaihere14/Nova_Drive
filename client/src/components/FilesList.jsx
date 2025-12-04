@@ -61,7 +61,6 @@ const FilesList = ({
       if (onStorageUpdate) {
         onStorageUpdate({
           usedBytes: totalUsed,
-          totalBytes: 10 * 1024 * 1024 * 1024, // 10 GB
         });
       }
     } catch (err) {
