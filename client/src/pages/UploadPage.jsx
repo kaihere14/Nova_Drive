@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChunkUpload } from "../hooks/useChunkUpload";
 import FileInfo from "../components/FileInfo";
@@ -48,6 +48,7 @@ const UploadPage = () => {
     usedBytes: 0,
     totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
   });
+  const filesListRef = useRef();
 
   // Verify authentication on page load
   useEffect(() => {
@@ -72,9 +73,9 @@ const UploadPage = () => {
   // Update storage quota when user data loads
   useEffect(() => {
     if (user?.storageQuota) {
-      setStorageInfo(prev => ({
+      setStorageInfo((prev) => ({
         ...prev,
-        totalBytes: user.storageQuota
+        totalBytes: user.storageQuota,
       }));
     }
   }, [user]);
@@ -82,9 +83,15 @@ const UploadPage = () => {
   // Watch for successful upload completion and refresh file list
   useEffect(() => {
     if (uploadStatus === "Upload complete!") {
-      // Refresh the file list
-      setRefreshKey(prev => prev + 1);
-      
+      // Manually refresh the file list and start polling
+      if (filesListRef.current?.refresh) {
+        filesListRef.current.refresh();
+      }
+
+      if (filesListRef.current?.startPolling) {
+        filesListRef.current.startPolling();
+      }
+
       // Close modal after a brief delay
       setTimeout(() => {
         setShowUploadModal(false);
@@ -142,7 +149,11 @@ const UploadPage = () => {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:relative z-50 lg:z-10 ${showSidebar ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 w-64 h-screen bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col`}>
+      <aside
+        className={`fixed lg:relative z-50 lg:z-10 ${
+          showSidebar ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 transition-transform duration-300 w-64 h-screen bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col`}
+      >
         <div className="px-5 py-6 border-b border-zinc-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xl font-bold text-white">
@@ -259,7 +270,7 @@ const UploadPage = () => {
                 className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
               />
             </div>
-            <div 
+            <div
               className="p-2 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
               onClick={() => navigate("/profile")}
             >
@@ -290,7 +301,7 @@ const UploadPage = () => {
               <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
                 <Settings className="w-5 h-5 text-zinc-400" />
               </button>
-              <div 
+              <div
                 className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors"
                 onClick={() => navigate("/profile")}
               >
@@ -334,12 +345,14 @@ const UploadPage = () => {
           </div>
 
           <FilesList
-            key={refreshKey}
+            ref={filesListRef}
             userId={user?._id || ""}
             username={user?.username || "User"}
             activeView={activeView}
             searchQuery={searchQuery}
-            onStorageUpdate={(info) => setStorageInfo(prev => ({ ...prev, ...info }))}
+            onStorageUpdate={(info) =>
+              setStorageInfo((prev) => ({ ...prev, ...info }))
+            }
           />
         </div>
       </main>
