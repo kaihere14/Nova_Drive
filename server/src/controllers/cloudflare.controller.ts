@@ -11,7 +11,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { Request, Response } from "express";
-import FileModel from "../models/fileSchema.model";
+import FileModel from "../models/fileSchema.model.js";
 
 export const r2 = new S3Client({
   region: "auto",
