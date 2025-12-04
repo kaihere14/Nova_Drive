@@ -77,7 +77,11 @@ export const useChunkUpload = () => {
       if (!checkingHashResponse.data.exists) {
         const initiateResponse = await axios.post(
           "https://nova-drive-backend.vercel.app/api/chunks/upload-initiate",
-          { ...form, fileHash }
+          { ...form, fileHash },{
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
         );
         const sessionId = initiateResponse.data.uploadSessionId;
         const logHash = await axios.post(
@@ -185,7 +189,11 @@ export const useChunkUpload = () => {
         // Cleanup hash session after successful upload
         try {
           await axios.delete(
-            `https://nova-drive-backend.vercel.app/api/chunks/delete-hash-session/${sessionId}`
+            `https://nova-drive-backend.vercel.app/api/chunks/delete-hash-session/${sessionId}`,{
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              },  
+            }
           );
         } catch (err) {
           console.warn("Failed to cleanup hash session:", err);
