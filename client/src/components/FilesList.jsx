@@ -77,7 +77,7 @@ const FilesList = forwardRef(
       try {
         if (!silent) setLoading(true);
         const response = await axios.get(
-          `http://localhost:3000/api/files/list-files`,
+          `https://nova-drive-backend.vercel.app/api/files/list-files`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -129,7 +129,7 @@ const FilesList = forwardRef(
     const handleDownload = async (file) => {
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/chunks/get-download-url",
+          "https://nova-drive-backend.vercel.app/api/chunks/get-download-url",
           {
             key: file.r2Key,
             filename: file.originalFileName,
@@ -159,7 +159,7 @@ const FilesList = forwardRef(
 
       try {
         const response = await axios.delete(
-          "http://localhost:3000/api/chunks/delete-file",
+          "https://nova-drive-backend.vercel.app/api/chunks/delete-file",
           {
             data: {
               key: file.r2Key,
@@ -181,7 +181,7 @@ const FilesList = forwardRef(
     const handleShare = async (file) => {
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/chunks/get-download-url",
+          "https://nova-drive-backend.vercel.app/api/chunks/get-download-url",
           {
             key: file.r2Key,
             filename: file.originalFileName,

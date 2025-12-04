@@ -3,7 +3,7 @@ import axios from "axios";
 import { useUser } from "./useUser";
 
 export const useChunkUpload = () => {
-  const {user} = useUser();
+  const { user } = useUser();
   const [file, setFile] = useState(null);
   const [totalChunks, setTotalChunks] = useState(0);
   const [form, setForm] = useState({
@@ -62,7 +62,7 @@ export const useChunkUpload = () => {
     const fileHash = await computeHash(file);
     console.log("File hash:", fileHash);
     const checkingHashResponse = await axios.post(
-      "http://localhost:3000/api/chunks/compute-hash-check",
+      "https://nova-drive-backend.vercel.app/api/chunks/compute-hash-check",
       {
         fileHash: fileHash,
       }
@@ -76,12 +76,12 @@ export const useChunkUpload = () => {
       // Step 1: Initiate upload session
       if (!checkingHashResponse.data.exists) {
         const initiateResponse = await axios.post(
-          "http://localhost:3000/api/chunks/upload-initiate",
+          "https://nova-drive-backend.vercel.app/api/chunks/upload-initiate",
           { ...form, fileHash }
         );
         const sessionId = initiateResponse.data.uploadSessionId;
         const logHash = await axios.post(
-          "http://localhost:3000/api/chunks/logging-hash",
+          "https://nova-drive-backend.vercel.app/api/chunks/logging-hash",
           {
             fileHash: fileHash,
             sessionId: sessionId,
@@ -97,7 +97,11 @@ export const useChunkUpload = () => {
         const PARALLEL_UPLOADS = 4; // Number of parallel uploads
 
         // Process chunks in batches of 4
-        for (let batchStart = 0; batchStart < total; batchStart += PARALLEL_UPLOADS) {
+        for (
+          let batchStart = 0;
+          batchStart < total;
+          batchStart += PARALLEL_UPLOADS
+        ) {
           const batchEnd = Math.min(batchStart + PARALLEL_UPLOADS, total);
           const batchIndices = Array.from(
             { length: batchEnd - batchStart },
@@ -106,11 +110,14 @@ export const useChunkUpload = () => {
 
           // Step 1: Get presigned URLs for batch in parallel
           const urlPromises = batchIndices.map((chunkIndex) =>
-            axios.post("http://localhost:3000/api/chunks/get-presigned-url", {
-              key: key,
-              uploadId: uploadId,
-              PartNumber: chunkIndex + 1,
-            })
+            axios.post(
+              "https://nova-drive-backend.vercel.app/api/chunks/get-presigned-url",
+              {
+                key: key,
+                uploadId: uploadId,
+                PartNumber: chunkIndex + 1,
+              }
+            )
           );
           const urlResponses = await Promise.all(urlPromises);
 
@@ -152,7 +159,9 @@ export const useChunkUpload = () => {
 
           // Update progress after each batch
           setProgress(Math.round((batchEnd / total) * 100));
-          console.log(`Uploaded batch: chunks ${batchStart + 1}-${batchEnd}/${total}`);
+          console.log(
+            `Uploaded batch: chunks ${batchStart + 1}-${batchEnd}/${total}`
+          );
         }
 
         // Sort parts by partNumber (S3 expects ordered list)
@@ -161,19 +170,22 @@ export const useChunkUpload = () => {
         // Switch to processing loader and complete multipart upload
         setProcessing(true);
         setUploadStatus("");
-        await axios.post("http://localhost:3000/api/chunks/upload-complete", {
-          sessionId: sessionId,
-          uploadId: uploadId,
-          fileName: form.fileName,
-          mimeType : form.contentType,
-          size: form.fileSize,
-          key: key,
-          parts: partsArray,
-        });
+        await axios.post(
+          "https://nova-drive-backend.vercel.app/api/chunks/upload-complete",
+          {
+            sessionId: sessionId,
+            uploadId: uploadId,
+            fileName: form.fileName,
+            mimeType: form.contentType,
+            size: form.fileSize,
+            key: key,
+            parts: partsArray,
+          }
+        );
         // Cleanup hash session after successful upload
         try {
           await axios.delete(
-            `http://localhost:3000/api/chunks/delete-hash-session/${sessionId}`
+            `https://nova-drive-backend.vercel.app/api/chunks/delete-hash-session/${sessionId}`
           );
         } catch (err) {
           console.warn("Failed to cleanup hash session:", err);
@@ -184,7 +196,7 @@ export const useChunkUpload = () => {
         // File hash already exists - check if upload is completed
         const sessionId = checkingHashResponse.data.sessionId;
         const checkingCompletion = await axios.post(
-          `http://localhost:3000/api/chunks/upload-status/${sessionId}`
+          `https://nova-drive-backend.vercel.app/api/chunks/upload-status/${sessionId}`
         );
 
         if (checkingCompletion.data.status === "completed") {

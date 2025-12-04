@@ -40,7 +40,7 @@ const ProfilePage = () => {
         try {
           // Fetch user's files to calculate actual storage
           const response = await axios.get(
-            `http://localhost:3000/api/files/list-files`,
+            `https://nova-drive-backend.vercel.app/api/files/list-files`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -50,7 +50,10 @@ const ProfilePage = () => {
 
           const files = response.data.files || [];
           const totalFiles = files.length;
-          const totalBytes = files.reduce((acc, file) => acc + (file.size || 0), 0);
+          const totalBytes = files.reduce(
+            (acc, file) => acc + (file.size || 0),
+            0
+          );
 
           // Format storage size
           const formatSize = (bytes) => {
@@ -58,7 +61,9 @@ const ProfilePage = () => {
             const k = 1024;
             const sizes = ["Bytes", "KB", "MB", "GB"];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+            return (
+              Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
+            );
           };
 
           setStats({

@@ -23,7 +23,7 @@ export const UserProvider = ({ children }) => {
 
       // Verify token and get user data
       const response = await axios.get(
-        "http://localhost:3000/api/user/verify-auth",
+        "https://nova-drive-backend.vercel.app/api/user/verify-auth",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ export const UserProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/login",
+        "https://nova-drive-backend.vercel.app/api/user/login",
         {
           email,
           password,
@@ -62,22 +62,23 @@ export const UserProvider = ({ children }) => {
 
       if (response.data) {
         const { accessToken, refreshToken, user } = response.data;
-        
+
         // Store tokens
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        
+
         // Update state with full user object
         setUser(user);
         setIsAuthenticated(true);
-        
+
         return { success: true };
       }
     } catch (error) {
       console.error("Login failed:", error);
       return {
         success: false,
-        message: error.response?.data?.message || "Login failed. Please try again.",
+        message:
+          error.response?.data?.message || "Login failed. Please try again.",
       };
     }
   };
@@ -85,7 +86,7 @@ export const UserProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/register",
+        "https://nova-drive-backend.vercel.app/api/user/register",
         {
           username: name,
           email,
@@ -94,23 +95,24 @@ export const UserProvider = ({ children }) => {
       );
       if (response.data) {
         const { accessToken, refreshToken, newUser } = response.data;
-        
+
         // Store tokens
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        
+
         // Update state with full user object
         setUser(newUser);
         setIsAuthenticated(true);
-        
+
         return { success: true };
       }
-      
     } catch (error) {
       console.error("Registration failed:", error);
       return {
         success: false,
-        message: error.response?.data?.message || "Registration failed. Please try again.",
+        message:
+          error.response?.data?.message ||
+          "Registration failed. Please try again.",
       };
     }
   };
@@ -119,11 +121,11 @@ export const UserProvider = ({ children }) => {
       // Clear tokens
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      
+
       // Clear state
       setUser(null);
       setIsAuthenticated(false);
-      
+
       return { success: true };
     } catch (error) {
       console.error("Logout failed:", error);
@@ -142,7 +144,7 @@ export const UserProvider = ({ children }) => {
       }
 
       const response = await axios.post(
-        "http://localhost:3000/api/user/refresh-token",
+        "https://nova-drive-backend.vercel.app/api/user/refresh-token",
         {
           refreshToken,
         }
@@ -153,7 +155,7 @@ export const UserProvider = ({ children }) => {
         localStorage.setItem("accessToken", accessToken);
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error("Token refresh failed:", error);
@@ -165,7 +167,7 @@ export const UserProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.put(
-        "http://localhost:3000/api/user/profile",
+        "https://nova-drive-backend.vercel.app/api/user/profile",
         updates,
         {
           headers: {
@@ -191,7 +193,7 @@ export const UserProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.delete(
-        "http://localhost:3000/api/user/delete",
+        "https://nova-drive-backend.vercel.app/api/user/delete",
         {
           headers: {
             Authorization: `Bearer ${token}`,
