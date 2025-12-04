@@ -13,17 +13,18 @@ import {
   getDownloadUrl,
   deleteUserFile,
 } from "../controllers/cloudflare.controller.js";
+import { verifyJwt } from "../utils/verifyJwt.js";
 
 const router = Router();
 
 // Multipart upload routes
 router.post("/compute-hash-check", computeHashCheck);
 router.post("/logging-hash", loggingHash);
-router.post("/upload-initiate", uploadInitiate);
+router.post("/upload-initiate", verifyJwt, uploadInitiate);
 router.post("/get-presigned-url", preAssignUrls);
 router.post("/upload-complete", completeUpload);
 router.post("/upload-status/:sessionId", getUploadStatus);
-router.delete("/delete-hash-session/:sessionId", deleteHashSession);
+router.delete("/delete-hash-session/:sessionId", verifyJwt, deleteHashSession);
 
 
 
