@@ -34,32 +34,13 @@ app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Server is running!" });
 });
 
-// Initialize DB connection once for serverless
-let isConnected = false;
-
-const initializeDB = async () => {
-  if (!isConnected) {
-    await connectDB();
-    isConnected = true;
-  }
-};
-
-// For serverless (Vercel)
-export default async (req: Request, res: Response) => {
-  await initializeDB();
-  return app(req, res);
-};
-
-// For local development
-if (process.env.NODE_ENV !== "production") {
-  connectDB()
-    .then(() => {
-      app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-      });
-    })
-    .catch((error) => {
-      console.error("Failed to start server:", error);
-      process.exit(1);
+// Start server
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
     });
-}
+  })
+  .catch((error) => {
+    console.error("Failed to start server:", error);
+  });
