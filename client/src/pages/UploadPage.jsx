@@ -23,8 +23,13 @@ import {
   Menu,
 } from "lucide-react";
 import { useUser } from "../hooks/useUser";
+import usePageMeta from "../utils/usePageMeta";
 
 const UploadPage = () => {
+  usePageMeta(
+    "NovaDrive — Upload Files",
+    "Upload and manage files with chunked multipart uploads to Cloudflare R2."
+  );
   const navigate = useNavigate();
   const { user, checkAuth, loading, logout } = useUser();
   const {

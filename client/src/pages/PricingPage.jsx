@@ -1,7 +1,12 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import usePageMeta from "../utils/usePageMeta";
 
 const PricingPage = () => {
+  usePageMeta(
+    "Pricing — NovaDrive",
+    "Simple and transparent pricing for personal and business storage plans with AI analysis included."
+  );
   return (
     <div className="min-h-[100dvh] bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200">
       {/* --- Subtle Grid Background --- */}

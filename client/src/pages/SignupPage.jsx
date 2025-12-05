@@ -11,8 +11,13 @@ import {
   User,
 } from "lucide-react";
 import { useUser } from "../hooks/useUser";
+import usePageMeta from "../utils/usePageMeta";
 
 const SignupPage = () => {
+  usePageMeta(
+    "Sign Up — NovaDrive",
+    "Create your NovaDrive account to start storing and auto-tagging files securely."
+  );
   const navigate = useNavigate();
   const { register, isAuthenticated } = useUser();
 

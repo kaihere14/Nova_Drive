@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { HardDrive, Lock, Mail, Eye, EyeOff, Zap, Shield } from "lucide-react";
 import { useUser } from "../hooks/useUser";
+import usePageMeta from "../utils/usePageMeta";
 
 const LoginPage = () => {
+  usePageMeta(
+    "Sign In — NovaDrive",
+    "Sign in to your NovaDrive account to upload, manage and analyze files."
+  );
   const navigate = useNavigate();
   const { login, isAuthenticated } = useUser();
 

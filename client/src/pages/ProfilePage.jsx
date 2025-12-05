@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/useUser";
 import axios from "axios";
+import usePageMeta from "../utils/usePageMeta";
 import {
   User,
   Mail,
@@ -14,6 +15,10 @@ import {
 } from "lucide-react";
 
 const ProfilePage = () => {
+  usePageMeta(
+    "Profile — NovaDrive",
+    "Your NovaDrive profile, storage usage and account details."
+  );
   const navigate = useNavigate();
   const { user, loading, logout } = useUser();
   const [stats, setStats] = useState({

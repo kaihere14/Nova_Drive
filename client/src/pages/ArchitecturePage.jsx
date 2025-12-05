@@ -17,8 +17,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
+import usePageMeta from "../utils/usePageMeta";
 
 const ArchitecturePage = () => {
+  usePageMeta(
+    "Architecture — NovaDrive",
+    "Technical architecture of NovaDrive: upload orchestration, background AI processing, and storage design."
+  );
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
