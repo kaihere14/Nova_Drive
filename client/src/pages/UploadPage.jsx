@@ -119,7 +119,7 @@ const UploadPage = () => {
   // Show loading state while verifying
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-zinc-400 font-mono">VERIFYING_ACCESS...</p>
@@ -129,7 +129,7 @@ const UploadPage = () => {
   }
 
   return (
-    <div className="flex h-screen bg-zinc-950 font-sans selection:bg-white/20 selection:text-white">
+    <div className="flex min-h-[100dvh] bg-zinc-950 font-sans selection:bg-white/20 selection:text-white">
       {/* Subtle Grid Background */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"
@@ -152,7 +152,7 @@ const UploadPage = () => {
       <aside
         className={`fixed lg:relative z-50 lg:z-10 ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 transition-transform duration-300 w-64 h-screen bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col`}
+        } lg:translate-x-0 transition-transform duration-300 w-64 min-h-[100dvh] bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col`}
       >
         <div className="px-5 py-6 border-b border-zinc-800">
           <div className="flex items-center justify-between">

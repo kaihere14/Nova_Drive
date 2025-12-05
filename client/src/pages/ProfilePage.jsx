@@ -103,7 +103,7 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-zinc-400 font-mono">LOADING_PROFILE...</p>
@@ -113,7 +113,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 font-sans selection:bg-white/20 selection:text-white">
+    <div className="min-h-[100dvh] bg-zinc-950 font-sans selection:bg-white/20 selection:text-white">
       {/* Grid Background */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"
@@ -125,7 +125,7 @@ const ProfilePage = () => {
       ></div>
 
       {/* Main Content */}
-      <div className="relative z-10 min-h-screen px-6 py-8">
+      <div className="relative z-10 min-h-[100dvh] px-6 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8 flex items-center justify-between">

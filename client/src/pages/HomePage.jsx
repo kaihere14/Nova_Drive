@@ -74,7 +74,7 @@ const ChunkUploadVisual = () => {
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="min-h-[100dvh] bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200">
       {/* --- Subtle Grid Background --- */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"

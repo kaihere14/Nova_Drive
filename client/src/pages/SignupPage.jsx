@@ -81,7 +81,7 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-zinc-950 relative overflow-hidden">
       {/* Animated Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 
@@ -90,7 +90,7 @@ const SignupPage = () => {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
 
       {/* Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+      <div className="relative z-10 min-h-[100dvh] flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           {/* Logo/Brand */}
           <div className="text-center mb-8">
