@@ -3,7 +3,12 @@ import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { GoogleGenAI } from "@google/genai";
 import FileModel from '../models/fileSchema.model.js';
+import { getPresignedDownloadUrl } from '../controllers/cloudflare.controller.js';
+import { PDFParse } from 'pdf-parse';
 
+// Initialize AI instances with different API keys for specific tasks
+const aiForImageAnalysis = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 });
+const aiForTags = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2 });
 const connection = new IORedis({
   host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
   port: 15783,
@@ -11,7 +16,7 @@ const connection = new IORedis({
   maxRetriesPerRequest: null,
 });
 
-const myQueue = new Queue('ai-processing-queue', {
+const myQueue = new Queue('pdfAi-processing-queue', {
   connection: {
     host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
     port: 15783,
@@ -20,47 +25,192 @@ const myQueue = new Queue('ai-processing-queue', {
   },
 });
 
-export async function addJobs(fileName: string, mimeType: string, size: number, fileId: string) {
-  await myQueue.add('ai-processing-queue', { fileName, mimeType, size, fileId });
-  console.log('Job added to AI processing queue for file:', fileName, 'with ID:', fileId);
+const imageQueue = new Queue('imageAi-processing-queue', {
+  connection: {
+    host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
+    port: 15783,
+    password: process.env.REDIS_PASSWORD,
+    maxRetriesPerRequest: null,
+  },
+});
+
+const otherQueue = new Queue('other-processing-queue', {
+  connection: {
+    host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
+    port: 15783,
+    password: process.env.REDIS_PASSWORD,
+    maxRetriesPerRequest: null,
+  },
+});
+
+const extractionQueue = new Queue('metadata-extraction-queue', {
+  connection: {
+    host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
+    port: 15783,
+    password: process.env.REDIS_PASSWORD,
+    maxRetriesPerRequest: null,
+  },
+});
+
+
+
+export async function extractData(fileId: string, fileName: string, mimeType: string, r2Key: string, userId?: string) {
+  await extractionQueue.add('metadata-extraction-job', { fileId, fileName, mimeType, r2Key, userId });
 }
 
-const ai = new GoogleGenAI({});
+export async function pdfTags(fileName: string, mimeType: string, fileId: string, extractData: string) {
+  await myQueue.add('pdfAi-processing-queue', { fileName, mimeType, fileId, extractData });
+}
 
-const worker = new Worker(
-  'ai-processing-queue',
+export async function imageTags(fileName: string, mimeType: string, fileId: string, extractData: string) {
+  await imageQueue.add('imageAi-processing-queue', { fileName, mimeType, fileId, extractData });
+}
+
+export async function otherTags(fileName: string, mimeType: string, fileId: string) {
+  await otherQueue.add('other-processing-queue', { fileName, mimeType, fileId });
+}
+
+const workerExtraction = new Worker(
+  'metadata-extraction-queue',
   async job => {
-    const { fileName, mimeType, size, fileId } = job.data;
-
+    const { fileId, fileName, mimeType, r2Key, userId } = job.data;
     try {
       // Update status to processing
       await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'processing' });
-      console.log(`AI Processing started for file: ${fileName} (ID: ${fileId})`);
 
+      const presignedUrl = await getPresignedDownloadUrl(r2Key, userId);
+      if (!presignedUrl) {
+        throw new Error('Failed to get presigned URL');
+      }
+      if (mimeType.startsWith('image/')) {
+        const imageUrl = presignedUrl;
+        const response = await fetch(imageUrl);
+        const imageArrayBuffer = await response.arrayBuffer();
+        const base64ImageData = Buffer.from(imageArrayBuffer).toString('base64');
+        const result = await aiForImageAnalysis.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: [
+            {
+              inlineData: {
+                mimeType: 'image/jpeg',
+                data: base64ImageData,
+              },
+            },
+            { text: "Caption this image." }
+          ],
+        });
+        const extractData = result.text ?? '';
+        const summary = extractData.slice(0, 1000);
+        imageTags(fileName, mimeType, fileId, summary);
+      } else if (mimeType === 'application/pdf') {
+        const data = new PDFParse({ url: presignedUrl });
+        const result = await data.getText();
+        const textContent = result.text;
+        const summary = textContent.slice(0, 1000);
+        pdfTags(fileName, mimeType, fileId, summary);
+      }
+
+      else {
+        // For other file types, generate tags based on filename and MIME type
+        otherTags(fileName, mimeType, fileId);
+      }
+    } catch (err) {
+      try {
+        await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'failed' });
+      } catch (updateErr) {
+        console.error("Failed to update error status:", updateErr);
+      }
+      throw err;
+    }
+  },
+  { connection },
+);
+
+const worker = new Worker(
+  'pdfAi-processing-queue',
+  async job => {
+    const { fileName, mimeType, extractData, fileId } = job.data;
+    try {
+      await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'processing' });
       const prompt = `
 You are an AI file organizer for a cloud storage app.
 
 Given this file metadata:
 - File name: ${fileName}
 - MIME type: ${mimeType}
-- Size (bytes): ${size}
+- Extracted content preview: ${extractData}
 
-1. Infer what type of content this likely is.
-2. Try to guess the file's purpose or topic.
-3. Generate 3–8 short, lowercase tags (single or two words).
-4. Generate a 1–2 sentence summary describing the file in a user-friendly way.
+1. Analyze the file name and extracted content to determine the file's purpose and topic.
+2. Generate 3–8 short, lowercase tags (single or two words) that best describe the content.
+3. Generate a 1–2 sentence summary describing the file in a user-friendly way based on the extracted content.
 
 Return strictly in JSON:
 {
   "tags": ["tag1", "tag2"],
   "summary": "..."
-}
-      `.trim();
-
-      const response = await ai.models.generateContent({
+}`.trim();
+      const response = await aiForTags.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
       });
+      let rawText = response.text ?? '{}';
+      rawText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      let parsed: { tags?: string[]; summary?: string } = {};
+      try {
+        parsed = JSON.parse(rawText);
+      } catch (parseErr) {
+        await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'failed' });
+        throw parseErr;
+      }
+      await FileModel.findByIdAndUpdate(fileId, {
+        tags: parsed.tags || [],
+        summary: parsed.summary || '',
+        aiStatus: 'completed',
+      });
+    } catch (err) {
+      try {
+        await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'failed' });
+      } catch (updateErr) {
+      }
+      throw err;
+    }
+  },
+  { connection },
+);
+
+const imageWorker = new Worker(
+  'imageAi-processing-queue',
+  async job => {
+    const { fileName, mimeType, extractData, fileId } = job.data;
+
+    try {
+      // Update status to processing
+
+
+
+      const prompt = `
+You are an AI image analyzer for a cloud storage app.
+
+Given this image metadata:
+- File name: ${fileName}
+- MIME type: ${mimeType}
+- Extracted content preview: ${extractData}
+
+1. Analyze the image content to determine its purpose and topic.
+2. Generate 3–8 short, lowercase tags (single or two words) that best describe the image content.
+3. Generate a 1–2 sentence summary describing the image in a user-friendly way based on the extracted content.
+
+Return strictly in JSON:
+{
+  "tags": ["tag1", "tag2"],
+  "summary": "..."
+}`.trim();
+
+      const response = await aiForTags.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+      });
+      
 
       let rawText = response.text ?? '{}';
 
@@ -73,7 +223,7 @@ Return strictly in JSON:
       } catch (parseErr) {
         console.warn("Failed to parse AI response, using defaults:", parseErr);
         console.warn("Raw response:", rawText);
-        
+
         // Update status to failed
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'failed' });
         throw parseErr;
@@ -86,17 +236,87 @@ Return strictly in JSON:
         aiStatus: 'completed',
       });
 
-   
+      console.log(`AI Processing completed for image: ${fileName} (ID: ${fileId})`);
+
     } catch (err) {
-      console.error("AI Processing Failed for file:", fileName, err);
-      
+      console.error("AI Processing Failed for image:", fileName, err);
+
       // Update status to failed if not already done
       try {
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'failed' });
       } catch (updateErr) {
         console.error("Failed to update error status:", updateErr);
       }
-      
+
+      throw err;
+    }
+  },
+  { connection },
+);
+
+const otherWorker = new Worker(
+  'other-processing-queue',
+  async job => {
+    const { fileName, mimeType, fileId } = job.data;
+
+    try {
+      await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'processing' });
+      console.log(`AI Processing started for other file: ${fileName} (ID: ${fileId})`);
+
+      const prompt = `
+You are an AI file organizer for a cloud storage app.
+
+Given this file metadata:
+- File name: ${fileName}
+- MIME type: ${mimeType}
+
+Based ONLY on the file name and MIME type:
+1. Guess what type of content this file likely contains.
+2. Generate 3–8 short, lowercase tags (single or two words) that best describe what this file might be.
+3. Generate a 1–2 sentence summary describing what this file is likely about based on its name and type.
+
+Return strictly in JSON:
+{
+  "tags": ["tag1", "tag2"],
+  "summary": "..."
+}`.trim();
+
+      const response = await aiForTags.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+      });
+
+      let rawText = response.text ?? '{}';
+      rawText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+      let parsed: { tags?: string[]; summary?: string } = {};
+      try {
+        parsed = JSON.parse(rawText);
+      } catch (parseErr) {
+        console.warn("Failed to parse AI response for other file, using defaults:", parseErr);
+        console.warn("Raw response:", rawText);
+
+        await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'failed' });
+        throw parseErr;
+      }
+
+      await FileModel.findByIdAndUpdate(fileId, {
+        tags: parsed.tags || [],
+        summary: parsed.summary || '',
+        aiStatus: 'completed',
+      });
+
+      console.log(`AI Processing completed for other file: ${fileName} (ID: ${fileId})`);
+
+    } catch (err) {
+      console.error("AI Processing Failed for other file:", fileName, err);
+
+      try {
+        await FileModel.findByIdAndUpdate(fileId, { aiStatus: 'failed' });
+      } catch (updateErr) {
+        console.error("Failed to update error status:", updateErr);
+      }
+
       throw err;
     }
   },

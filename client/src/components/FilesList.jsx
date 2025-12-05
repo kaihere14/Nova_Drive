@@ -68,8 +68,11 @@ const FilesList = forwardRef(
         const timer1 = setTimeout(() => fetchFiles(true), 3000);
         const timer2 = setTimeout(() => fetchFiles(true), 5000);
         const timer3 = setTimeout(() => fetchFiles(true), 7000);
+        const timer4 = setTimeout(() => fetchFiles(true), 10000);
+        const timer5 = setTimeout(() => fetchFiles(true), 10000);
+        const timer6 = setTimeout(() => fetchFiles(true), 10000);
 
-        pollTimers.current = [timer1, timer2, timer3];
+        pollTimers.current = [timer1, timer2, timer3, timer4, timer5, timer6];
       },
     }));
 

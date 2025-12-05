@@ -196,3 +196,24 @@ export const deleteUserFile = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to delete file", details: err });
   }
 };
+
+export async function getPresignedDownloadUrl(
+  key: string,
+  userId?: string,
+  expiresInSeconds = 300 // default 5 min
+) {
+  if(userId && !key.startsWith(`uploads/${userId}/`)) {
+    throw new Error('Forbidden: Invalid user for this file key');
+  }
+  console.log('Generating presigned URL for key:', key);
+  const command = new GetObjectCommand({
+    Bucket: process.env.R2_BUCKET_NAME!,
+    Key: key,
+  });
+
+  const url = await getSignedUrl(r2, command, {
+    expiresIn: expiresInSeconds,
+  });
+
+  return url;
+}

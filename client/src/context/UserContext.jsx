@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import LoadingScreen from "../components/LoadingScreen";
+import BASE_URL from '../config';
 
 export const UserContext = createContext();
 
@@ -136,7 +137,7 @@ export const UserProvider = ({ children }) => {
 
       // Verify token and get user data
       const response = await axios.get(
-        "https://nova-drive-backend.vercel.app/api/user/verify-auth",
+        `${BASE_URL}/api/user/verify-auth`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -171,7 +172,7 @@ export const UserProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await axios.post(
-        "https://nova-drive-backend.vercel.app/api/user/login",
+        `${BASE_URL}/api/user/login`,
         {
           email,
           password,
@@ -204,7 +205,7 @@ export const UserProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       const response = await axios.post(
-        "https://nova-drive-backend.vercel.app/api/user/register",
+        `${BASE_URL}/api/user/register`,
         {
           username: name,
           email,
@@ -262,7 +263,7 @@ export const UserProvider = ({ children }) => {
       }
 
       const response = await axios.post(
-        "https://nova-drive-backend.vercel.app/api/user/refresh-token",
+        `${BASE_URL}/api/user/refresh-token`,
         {
           refreshToken,
         }
