@@ -9,10 +9,14 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showRefreshPopup, setShowRefreshPopup] = useState(false);
+  const [showRefreshIndicator, setShowRefreshIndicator] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState("");
 
-  // Setup axios interceptor for 401 errors
+  // Setup axios interceptor for 401 errors with auto-retry
   useEffect(() => {
+    let isCurrentlyRefreshing = false;
+    let refreshPromise = null;
+
     const interceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -22,25 +26,70 @@ export const UserProvider = ({ children }) => {
           const refreshToken = localStorage.getItem("refreshToken");
           
           if (!refreshToken) {
-            logout();
+            setRefreshMessage("Session expired. Please log in again.");
+            setTimeout(() => {
+              logout();
+            }, 2000);
             return Promise.reject(error);
           }
 
           originalRequest._retry = true;
           
+          // If already refreshing, wait for that promise
+          if (isCurrentlyRefreshing && refreshPromise) {
+            try {
+              await refreshPromise;
+              const newToken = localStorage.getItem("accessToken");
+              if (newToken) {
+                originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+                return axios(originalRequest);
+              }
+            } catch {
+              return Promise.reject(error);
+            }
+          }
+
+          // Start refresh with delayed indicator
+          isCurrentlyRefreshing = true;
+          const startTime = Date.now();
+          
+          // Show indicator only if refresh takes > 400ms
+          const indicatorTimeout = setTimeout(() => {
+            setShowRefreshIndicator(true);
+          }, 400);
+
           try {
-            const refreshed = await refreshAccessToken();
+            refreshPromise = refreshAccessToken();
+            const refreshed = await refreshPromise;
+            
+            clearTimeout(indicatorTimeout);
+            setShowRefreshIndicator(false);
+            
+            const duration = Date.now() - startTime;
             
             if (refreshed) {
-              setShowRefreshPopup(true);
-              return Promise.reject(error);
+              // Retry the original request with new token
+              const newToken = localStorage.getItem("accessToken");
+              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+              return axios(originalRequest);
             } else {
-              logout();
+              setRefreshMessage("Session expired. Please log in again.");
+              setTimeout(() => {
+                logout();
+              }, 2000);
               return Promise.reject(error);
             }
           } catch (refreshError) {
-            logout();
+            clearTimeout(indicatorTimeout);
+            setShowRefreshIndicator(false);
+            setRefreshMessage("Session expired. Please log in again.");
+            setTimeout(() => {
+              logout();
+            }, 2000);
             return Promise.reject(refreshError);
+          } finally {
+            isCurrentlyRefreshing = false;
+            refreshPromise = null;
           }
         }
         
@@ -331,19 +380,22 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider value={value}>
       {(loading || isRefreshing) && <LoadingScreen message={isRefreshing ? "Refreshing your session..." : "Verifying your session..."} />}
       
-      {/* Refresh Popup */}
-      {showRefreshPopup && (
-        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm mx-4">
-            <h3 className="text-lg font-semibold text-zinc-900 mb-2">Session Refreshed</h3>
-            <p className="text-zinc-600 mb-4">Your session has been refreshed. Please reload the page to continue.</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="w-full bg-zinc-900 text-white px-4 py-2 rounded-lg hover:bg-zinc-800 transition-colors"
-            >
-              Reload Page
-            </button>
-          </div>
+      {/* Non-blocking refresh indicator - appears at top during token refresh */}
+      {showRefreshIndicator && (
+        <div className="fixed top-0 left-0 right-0 z-[100] bg-zinc-900/95 backdrop-blur-sm border-b border-zinc-700 px-4 py-3 flex items-center justify-center gap-3 shadow-lg animate-in slide-in-from-top duration-300">
+          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          <span className="text-white text-sm font-medium font-mono">
+            REFRESHING_SESSION...
+          </span>
+        </div>
+      )}
+
+      {/* Session expired message banner */}
+      {refreshMessage && (
+        <div className="fixed top-0 left-0 right-0 z-[100] bg-red-500/95 backdrop-blur-sm border-b border-red-600 px-4 py-3 flex items-center justify-center gap-3 shadow-lg animate-in slide-in-from-top duration-300">
+          <span className="text-white text-sm font-medium">
+            {refreshMessage}
+          </span>
         </div>
       )}
       
