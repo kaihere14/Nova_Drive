@@ -4,7 +4,7 @@ import IORedis from 'ioredis';
 import { GoogleGenAI } from "@google/genai";
 import FileModel from '../models/fileSchema.model.js';
 import { getPresignedDownloadUrl } from '../controllers/cloudflare.controller.js';
-import { PDFParse } from 'pdf-parse';
+import { PDFDocument } from 'pdf-lib';
 
 // Initialize AI instances with different API keys for specific tasks
 const aiForImageAnalysis = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 });
@@ -103,10 +103,12 @@ const workerExtraction = new Worker(
         const summary = extractData.slice(0, 1000);
         imageTags(fileName, mimeType, fileId, summary);
       } else if (mimeType === 'application/pdf') {
-        const data = new PDFParse({ url: presignedUrl });
-        const result = await data.getText();
-        const textContent = result.text;
-        const summary = textContent.slice(0, 1000);
+        const response = await fetch(presignedUrl);
+        const arrayBuffer = await response.arrayBuffer();
+        const pdfDoc = await PDFDocument.load(arrayBuffer);
+        const pages = pdfDoc.getPages();
+        const textContent = `PDF with ${pages.length} pages`;
+        const summary = textContent;
         pdfTags(fileName, mimeType, fileId, summary);
       }
 
