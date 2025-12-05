@@ -8,7 +8,11 @@ import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   const data = new Uint8Array(buffer);
-  const loadingTask = pdfjsLib.getDocument({ data });
+  const loadingTask = pdfjsLib.getDocument({
+    data,
+    useSystemFonts: true,
+    standardFontDataUrl: undefined,
+  });
   const pdf = await loadingTask.promise;
   let fullText = '';
 
