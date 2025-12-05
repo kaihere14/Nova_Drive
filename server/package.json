@@ -31,6 +31,7 @@
     "mongoose": "^8.20.0",
     "multer": "^2.0.2",
     "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.449",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

@@ -4,11 +4,29 @@ import IORedis from 'ioredis';
 import { GoogleGenAI } from "@google/genai";
 import FileModel from '../models/fileSchema.model.js';
 import { getPresignedDownloadUrl } from '../controllers/cloudflare.controller.js';
-import { PDFDocument } from 'pdf-lib';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+
+async function extractTextFromPDF(buffer: Buffer): Promise<string> {
+  const data = new Uint8Array(buffer);
+  const loadingTask = pdfjsLib.getDocument({ data });
+  const pdf = await loadingTask.promise;
+  let fullText = '';
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items.map((item: any) => item.str).join(' ');
+    fullText += pageText + '\n';
+  }
+
+  return fullText.slice(0, 10000);
+}
 
 // Initialize AI instances with different API keys for specific tasks
 const aiForImageAnalysis = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 });
-const aiForTags = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2 });
+const aiForPdfTagGeneration = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2 });
+const aiForImageTagGeneration = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_3 });
+const aiForOtherFileTagGeneration = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_4 });
 const connection = new IORedis({
   host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
   port: 15783,
@@ -103,13 +121,17 @@ const workerExtraction = new Worker(
         const summary = extractData.slice(0, 1000);
         imageTags(fileName, mimeType, fileId, summary);
       } else if (mimeType === 'application/pdf') {
-        const response = await fetch(presignedUrl);
-        const arrayBuffer = await response.arrayBuffer();
-        const pdfDoc = await PDFDocument.load(arrayBuffer);
-        const pages = pdfDoc.getPages();
-        const textContent = `PDF with ${pages.length} pages`;
-        const summary = textContent;
-        pdfTags(fileName, mimeType, fileId, summary);
+        try {
+          const response = await fetch(presignedUrl);
+          const arrayBuffer = await response.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          const extractedText = await extractTextFromPDF(buffer);
+          const summary = extractedText.slice(0, 1000);
+          pdfTags(fileName, mimeType, fileId, summary);
+        } catch (error) {
+          console.error('Error extracting text from PDF:', error);
+          throw error;
+        }
       }
 
       else {
@@ -151,7 +173,7 @@ Return strictly in JSON:
   "tags": ["tag1", "tag2"],
   "summary": "..."
 }`.trim();
-      const response = await aiForTags.models.generateContent({
+      const response = await aiForPdfTagGeneration.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
       });
@@ -208,7 +230,7 @@ Return strictly in JSON:
   "summary": "..."
 }`.trim();
 
-      const response = await aiForTags.models.generateContent({
+      const response = await aiForImageTagGeneration.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
       });
@@ -283,7 +305,7 @@ Return strictly in JSON:
   "summary": "..."
 }`.trim();
 
-      const response = await aiForTags.models.generateContent({
+      const response = await aiForOtherFileTagGeneration.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
       });

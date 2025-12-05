@@ -20,6 +20,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
+import BASE_URL from "../config";
 
 const FilesList = forwardRef(
   (
@@ -80,7 +81,7 @@ const FilesList = forwardRef(
       try {
         if (!silent) setLoading(true);
         const response = await axios.get(
-          `https://nova-drive-backend.vercel.app/api/files/list-files`,
+          `${BASE_URL}/api/files/list-files`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
