@@ -4,6 +4,30 @@ import IORedis from 'ioredis';
 import { GoogleGenAI } from "@google/genai";
 import FileModel from '../models/fileSchema.model.js';
 import { getPresignedDownloadUrl } from '../controllers/cloudflare.controller.js';
+
+// Polyfill DOM APIs for pdfjs-dist in Node.js environment
+(globalThis as any).DOMMatrix = class DOMMatrix {
+  constructor() {
+    this.a = 1; this.b = 0; this.c = 0; this.d = 1; this.e = 0; this.f = 0;
+  }
+  a: number; b: number; c: number; d: number; e: number; f: number;
+};
+
+(globalThis as any).Path2D = class Path2D {};
+
+if (typeof ImageData === 'undefined') {
+  (globalThis as any).ImageData = class ImageData {
+    constructor(width: number, height: number) {
+      this.width = width;
+      this.height = height;
+      this.data = new Uint8ClampedArray(width * height * 4);
+    }
+    width: number;
+    height: number;
+    data: Uint8ClampedArray;
+  };
+}
+
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 async function extractTextFromPDF(buffer: Buffer): Promise<string> {
@@ -11,7 +35,8 @@ async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   const loadingTask = pdfjsLib.getDocument({
     data,
     useSystemFonts: true,
-    standardFontDataUrl: undefined,
+    isEvalSupported: false,
+    disableFontFace: true,
   });
   const pdf = await loadingTask.promise;
   let fullText = '';
