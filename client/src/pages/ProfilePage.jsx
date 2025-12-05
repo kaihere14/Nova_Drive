@@ -45,7 +45,7 @@ const ProfilePage = () => {
         try {
           // Fetch user's files to calculate actual storage
           const response = await axios.get(
-            `https://nova-drive-backend.vercel.app/api/files/list-files`,
+            `${BASE_URL}/api/files/list-files`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

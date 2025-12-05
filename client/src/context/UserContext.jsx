@@ -287,7 +287,7 @@ export const UserProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.put(
-        "https://nova-drive-backend.vercel.app/api/user/profile",
+        `${BASE_URL}/api/user/profile`,
         updates,
         {
           headers: {
@@ -313,7 +313,7 @@ export const UserProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.delete(
-        "https://nova-drive-backend.vercel.app/api/user/delete",
+        `${BASE_URL}/api/user/delete`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -346,7 +346,7 @@ export const UserProvider = ({ children }) => {
         isAuthenticated(false);
       }
       const response = await axios.post(
-        "https://nova-drive-backend.vercel.app/api/user/refresh-token",
+        `${BASE_URL}/api/user/refresh-token`,
         {
           refreshToken,
         }

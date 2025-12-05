@@ -4,52 +4,7 @@ import IORedis from 'ioredis';
 import { GoogleGenAI } from "@google/genai";
 import FileModel from '../models/fileSchema.model.js';
 import { getPresignedDownloadUrl } from '../controllers/cloudflare.controller.js';
-
-// Polyfill DOM APIs for pdfjs-dist in Node.js environment
-(globalThis as any).DOMMatrix = class DOMMatrix {
-  constructor() {
-    this.a = 1; this.b = 0; this.c = 0; this.d = 1; this.e = 0; this.f = 0;
-  }
-  a: number; b: number; c: number; d: number; e: number; f: number;
-};
-
-(globalThis as any).Path2D = class Path2D {};
-
-if (typeof ImageData === 'undefined') {
-  (globalThis as any).ImageData = class ImageData {
-    constructor(width: number, height: number) {
-      this.width = width;
-      this.height = height;
-      this.data = new Uint8ClampedArray(width * height * 4);
-    }
-    width: number;
-    height: number;
-    data: Uint8ClampedArray;
-  };
-}
-
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
-
-async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-  const data = new Uint8Array(buffer);
-  const loadingTask = pdfjsLib.getDocument({
-    data,
-    useSystemFonts: true,
-    isEvalSupported: false,
-    disableFontFace: true,
-  });
-  const pdf = await loadingTask.promise;
-  let fullText = '';
-
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const textContent = await page.getTextContent();
-    const pageText = textContent.items.map((item: any) => item.str).join(' ');
-    fullText += pageText + '\n';
-  }
-
-  return fullText.slice(0, 10000);
-}
+import pdf from 'pdf-parse';
 
 // Initialize AI instances with different API keys for specific tasks
 const aiForImageAnalysis = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 });
@@ -150,17 +105,13 @@ const workerExtraction = new Worker(
         const summary = extractData.slice(0, 1000);
         imageTags(fileName, mimeType, fileId, summary);
       } else if (mimeType === 'application/pdf') {
-        try {
-          const response = await fetch(presignedUrl);
-          const arrayBuffer = await response.arrayBuffer();
-          const buffer = Buffer.from(arrayBuffer);
-          const extractedText = await extractTextFromPDF(buffer);
-          const summary = extractedText.slice(0, 1000);
-          pdfTags(fileName, mimeType, fileId, summary);
-        } catch (error) {
-          console.error('Error extracting text from PDF:', error);
-          throw error;
-        }
+        const response = await fetch(presignedUrl);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const data = await pdf(buffer);
+        const textContent = data.text;
+        const summary = textContent.slice(0, 1000);
+        pdfTags(fileName, mimeType, fileId, summary);
       }
 
       else {
