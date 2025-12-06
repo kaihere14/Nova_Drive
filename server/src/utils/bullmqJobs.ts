@@ -11,48 +11,21 @@ const aiForImageAnalysis = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_
 const aiForPdfTagGeneration = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2 });
 const aiForImageTagGeneration = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_3 });
 const aiForOtherFileTagGeneration = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_4 });
+
+// Create a single shared Redis connection
 const connection = new IORedis({
   host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
   port: 15783,
   password: process.env.REDIS_PASSWORD,
   maxRetriesPerRequest: null,
+  enableReadyCheck: false,
 });
 
-const myQueue = new Queue('pdfAi-processing-queue', {
-  connection: {
-    host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
-    port: 15783,
-    password: process.env.REDIS_PASSWORD,
-    maxRetriesPerRequest: null,
-  },
-});
-
-const imageQueue = new Queue('imageAi-processing-queue', {
-  connection: {
-    host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
-    port: 15783,
-    password: process.env.REDIS_PASSWORD,
-    maxRetriesPerRequest: null,
-  },
-});
-
-const otherQueue = new Queue('other-processing-queue', {
-  connection: {
-    host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
-    port: 15783,
-    password: process.env.REDIS_PASSWORD,
-    maxRetriesPerRequest: null,
-  },
-});
-
-const extractionQueue = new Queue('metadata-extraction-queue', {
-  connection: {
-    host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
-    port: 15783,
-    password: process.env.REDIS_PASSWORD,
-    maxRetriesPerRequest: null,
-  },
-});
+// Reuse the same connection for all queues
+const myQueue = new Queue('pdfAi-processing-queue', { connection });
+const imageQueue = new Queue('imageAi-processing-queue', { connection });
+const otherQueue = new Queue('other-processing-queue', { connection });
+const extractionQueue = new Queue('metadata-extraction-queue', { connection });
 
 
 
