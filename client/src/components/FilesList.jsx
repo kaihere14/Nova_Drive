@@ -44,6 +44,7 @@ const FilesList = forwardRef(
     const [copied, setCopied] = useState(false);
     const [selectedTag, setSelectedTag] = useState("");
     const [showAllTags, setShowAllTags] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const pollTimers = useRef([]);
 
     useEffect(() => {
@@ -79,7 +80,10 @@ const FilesList = forwardRef(
 
     const fetchFiles = async (silent = false) => {
       try {
-        if (!silent) setLoading(true);
+        if (!silent) {
+          setLoading(true);
+        }
+        setIsRefreshing(true);
         const response = await axios.get(
           `${BASE_URL}/api/files/list-files`,
           {
@@ -107,7 +111,10 @@ const FilesList = forwardRef(
         setError("Failed to load files");
         console.error("Error fetching files:", err);
       } finally {
-        if (!silent) setLoading(false);
+        if (!silent) {
+          setLoading(false);
+        }
+        setTimeout(() => setIsRefreshing(false), 500);
       }
     };
 
@@ -416,7 +423,7 @@ const FilesList = forwardRef(
               className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
               onClick={fetchFiles}
             >
-              <RefreshCw className="w-4 h-4 text-zinc-400" />
+              <RefreshCw className={`w-4 h-4 text-zinc-400 transition-transform duration-500 ${isRefreshing ? 'animate-spin' : ''}`} />
             </button>
           </div>
 

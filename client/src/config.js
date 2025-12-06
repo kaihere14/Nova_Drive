@@ -1,5 +1,5 @@
 const BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://backend.novadrive.space' 
-  : 'http://localhost:3000';
+  : 'https://backend.novadrive.space';
 
 export default BASE_URL;
