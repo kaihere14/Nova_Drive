@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useUser } from "../hooks/useUser";
 import usePageMeta from "../utils/usePageMeta";
+import axios from "axios";
+import BASE_URL from "../config";
 
 const SignupPage = () => {
   usePageMeta(
@@ -31,6 +33,10 @@ const SignupPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError, setOtpError] = useState("");
 
   // Redirect if already authenticated (checked by UserContext)
   useEffect(() => {
@@ -66,22 +72,58 @@ const SignupPage = () => {
     }
 
     try {
-      const result = await register(
-        formData.name,
-        formData.email,
-        formData.password
-      );
+      // Step 1: Request OTP
+      const otpResponse = await axios.post(`${BASE_URL}/api/otp/create-otp`, {
+        email: formData.email,
+      });
 
-      if (result.success) {
-        // Redirect to upload page on successful registration
-        navigate("/upload");
-      } else {
-        setError(result.message || "Registration failed. Please try again.");
+      if (otpResponse.status === 201) {
+        // Show OTP modal
+        setShowOtpModal(true);
+        setLoading(false);
       }
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
+      setError(err.response?.data?.message || "Failed to send OTP. Please try again.");
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setOtpLoading(true);
+    setOtpError("");
+
+    if (otp.length !== 6) {
+      setOtpError("Please enter a valid 6-digit OTP");
+      setOtpLoading(false);
+      return;
+    }
+
+    try {
+      // Step 2: Verify OTP
+      const verifyResponse = await axios.post(`${BASE_URL}/api/otp/verify-otp`, {
+        email: formData.email,
+        otp: otp,
+      });
+
+      if (verifyResponse.status === 200) {
+        // Step 3: Register user
+        const result = await register(
+          formData.name,
+          formData.email,
+          formData.password
+        );
+
+        if (result.success) {
+          // Redirect to upload page on successful registration
+          navigate("/upload");
+        } else {
+          setOtpError(result.message || "Registration failed. Please try again.");
+        }
+      }
+    } catch (err) {
+      setOtpError(err.response?.data?.message || "Invalid or expired OTP. Please try again.");
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -332,6 +374,123 @@ const SignupPage = () => {
           </div>
         </div>
       </div>
+
+      {/* OTP Modal */}
+      {showOtpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 max-w-md w-full relative">
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setShowOtpModal(false);
+                setOtp("");
+                setOtpError("");
+              }}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* Modal Header */}
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold text-zinc-100 mb-2 font-mono">
+                VERIFY_EMAIL
+              </h3>
+              <p className="text-zinc-400 text-sm">
+                Enter the 6-digit code sent to{" "}
+                <span className="text-blue-400">{formData.email}</span>
+              </p>
+            </div>
+
+            {/* OTP Error */}
+            {otpError && (
+              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/50 rounded-lg">
+                <p className="text-red-400 text-sm flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  {otpError}
+                </p>
+              </div>
+            )}
+
+            {/* OTP Input */}
+            <div className="mb-6">
+              <label
+                htmlFor="otp"
+                className="block text-sm font-mono text-zinc-400 mb-2"
+              >
+                ENTER_OTP
+              </label>
+              <input
+                type="text"
+                id="otp"
+                value={otp}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  if (value.length <= 6) {
+                    setOtp(value);
+                    setOtpError("");
+                  }
+                }}
+                maxLength={6}
+                placeholder="000000"
+                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 text-center text-2xl tracking-widest font-mono placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+
+            {/* Verify Button */}
+            <button
+              onClick={handleVerifyOtp}
+              disabled={otpLoading || otp.length !== 6}
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono"
+            >
+              {otpLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  VERIFYING...
+                </>
+              ) : (
+                <>
+                  <Shield className="w-5 h-5" />
+                  VERIFY_OTP
+                </>
+              )}
+            </button>
+
+            {/* Resend OTP */}
+            <div className="mt-4 text-center">
+              <button
+                onClick={async () => {
+                  try {
+                    await axios.post(`${BASE_URL}/api/otp/create-otp`, {
+                      email: formData.email,
+                    });
+                    setOtpError("");
+                    setOtp("");
+                  } catch (err) {
+                    setOtpError("Failed to resend OTP. Please try again.");
+                  }
+                }}
+                className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-mono"
+              >
+                RESEND_OTP
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

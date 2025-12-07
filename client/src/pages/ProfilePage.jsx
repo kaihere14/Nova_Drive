@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/useUser";
 import axios from "axios";
 import usePageMeta from "../utils/usePageMeta";
+import BASE_URL from "../config";
 import {
   User,
   Mail,
@@ -20,12 +21,16 @@ const ProfilePage = () => {
     "Your NovaDrive profile, storage usage and account details."
   );
   const navigate = useNavigate();
-  const { user, loading, logout } = useUser();
+  const { user, loading, logout, deleteAccount } = useUser();
   const [stats, setStats] = useState({
     totalFiles: 0,
     storageUsed: "0 GB",
     accountAge: "0 days",
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     if (!user && !loading) {
@@ -94,6 +99,29 @@ const ProfilePage = () => {
   const handleLogout = async () => {
     await logout();
     navigate("/login");
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteInput !== "delete") {
+      setDeleteError("Please type 'delete' to confirm");
+      return;
+    }
+
+    setDeleteLoading(true);
+    setDeleteError("");
+
+    try {
+      const result = await deleteAccount();
+      if (result.success) {
+        navigate("/");
+      } else {
+        setDeleteError(result.message || "Failed to delete account");
+      }
+    } catch (error) {
+      setDeleteError("An error occurred while deleting your account");
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -256,7 +284,10 @@ const ProfilePage = () => {
                 <span className="text-zinc-200 font-medium">Update Email</span>
                 <Edit2 className="w-4 h-4 text-zinc-400" />
               </button>
-              <button className="w-full flex items-center justify-between px-4 py-3 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors text-left border border-red-500/30">
+              <button 
+                onClick={() => setShowDeleteModal(true)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors text-left border border-red-500/30"
+              >
                 <span className="text-red-400 font-medium">Delete Account</span>
                 <Shield className="w-4 h-4 text-red-400" />
               </button>
@@ -264,6 +295,114 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 max-w-md w-full relative">
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setShowDeleteModal(false);
+                setDeleteInput("");
+                setDeleteError("");
+              }}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* Modal Header */}
+            <div className="mb-6">
+              <div className="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-red-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-zinc-100 mb-2 font-mono">
+                DELETE_ACCOUNT
+              </h3>
+              <p className="text-zinc-400 text-sm">
+                This action cannot be undone. All your files and data will be permanently deleted.
+              </p>
+            </div>
+
+            {/* Delete Error */}
+            {deleteError && (
+              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/50 rounded-lg">
+                <p className="text-red-400 text-sm flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  {deleteError}
+                </p>
+              </div>
+            )}
+
+            {/* Confirmation Input */}
+            <div className="mb-6">
+              <label
+                htmlFor="deleteConfirm"
+                className="block text-sm font-mono text-zinc-400 mb-2"
+              >
+                TYPE "delete" TO CONFIRM
+              </label>
+              <input
+                type="text"
+                id="deleteConfirm"
+                value={deleteInput}
+                onChange={(e) => {
+                  setDeleteInput(e.target.value);
+                  setDeleteError("");
+                }}
+                placeholder="delete"
+                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+              />
+            </div>
+
+            {/* Delete Button */}
+            <button
+              onClick={handleDeleteAccount}
+              disabled={deleteLoading || deleteInput !== "delete"}
+              className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(239,68,68,0.4)] hover:shadow-[0_0_30px_-5px_rgba(239,68,68,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono"
+            >
+              {deleteLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  DELETING...
+                </>
+              ) : (
+                <>
+                  <Shield className="w-5 h-5" />
+                  DELETE_ACCOUNT
+                </>
+              )}
+            </button>
+
+            {/* Cancel Button */}
+            <button
+              onClick={() => {
+                setShowDeleteModal(false);
+                setDeleteInput("");
+                setDeleteError("");
+              }}
+              disabled={deleteLoading}
+              className="w-full mt-3 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed font-mono"
+            >
+              CANCEL
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import connectDB from "./config/db.config.js";
 import chunkRoutes from "./routes/chunks.routes.js";
 import userRouted from "./routes/user.routes.js";
 import fileRoue from "./routes/file.routes.js";
+import otpRoute from "./routes/otpRoutes.js";
 import cors from "cors";
 import statusMonitor from "express-status-monitor";
 
@@ -31,6 +32,7 @@ app.use(cors({
 app.use("/api/chunks", chunkRoutes);
 app.use("/api/user", userRouted);
 app.use("/api/files", fileRoue);
+app.use("/api/otp", otpRoute);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {

@@ -30,6 +30,7 @@ export const createUser = async (req: Request, res: Response) => {
         .status(409)
         .json({ message: "Username or email already exists" });
     }
+   
     const newUser: IUser = new User({ username, email, password });
     await newUser.save();
     const { accessToken, refreshToken } = generateToken(newUser._id.toString());

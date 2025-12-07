@@ -313,7 +313,7 @@ export const UserProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.delete(
-        `${BASE_URL}/api/user/delete`,
+        `${BASE_URL}/api/user/delete/${user._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -321,10 +321,13 @@ export const UserProvider = ({ children }) => {
         }
       );
 
-      if (response.data.success) {
+      // Backend returns { message: "User deleted successfully" } with status 200
+      if (response.status === 200 || response.data.message === "User deleted successfully") {
         logout();
         return { success: true };
       }
+      
+      return { success: false, message: "Account deletion failed." };
     } catch (error) {
       console.error("Account deletion failed:", error);
       return {
