@@ -12,6 +12,8 @@ export const UserProvider = ({ children }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showRefreshIndicator, setShowRefreshIndicator] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState("");
+  const [directory, setDirectory] = useState(null); // New state for folder location
+
 
   // Setup axios interceptor for 401 errors with auto-retry
   useEffect(() => {
@@ -132,13 +134,9 @@ export const UserProvider = ({ children }) => {
         setIsRefreshing(true);
         const refreshed = await refreshAccessToken();
         setIsRefreshing(false);
-        console.log(refreshed)
         if (refreshed) {
-          // Retry auth check after refreshing token
-          console.log("Token refreshed successfully");
           return checkAuth();
         } else {
-          console.log("Token refresh failed");
           logout();
           return;
         }
@@ -379,6 +377,8 @@ export const UserProvider = ({ children }) => {
     user,
     loading,
     isAuthenticated,
+    directory,
+    setDirectory,
     login,
     register,
     logout,

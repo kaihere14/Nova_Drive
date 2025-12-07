@@ -156,7 +156,7 @@ export const completeUpload = async (
   res: Response
 ): Promise<unknown> => {
   try {
-    const { sessionId, uploadId, key, parts,fileName,mimeType, size } = req.body;
+    const { sessionId, uploadId, key, parts,fileName,mimeType, size ,location } = req.body;
     
 
     const session = await chunkModel.findById(sessionId);
@@ -193,7 +193,8 @@ export const completeUpload = async (
       size: size,                         
 
       bucket: result.Bucket,             
-      r2Key: key,                       
+      r2Key: key,          
+      location: location || null,             
 
       etag: result.ETag,                
       versionId: result.VersionId,        

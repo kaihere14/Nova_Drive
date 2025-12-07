@@ -2,9 +2,11 @@ import { useState } from "react";
 import axios from "axios";
 import { useUser } from "./useUser";
 import BASE_URL from '../config';
+import { useFolder } from "../context/FolderContext";
 
 export const useChunkUpload = () => {
   const { user } = useUser();
+  const { currentFolderId } = useFolder();
   const [file, setFile] = useState(null);
   const [totalChunks, setTotalChunks] = useState(0);
   const [form, setForm] = useState({
@@ -20,6 +22,7 @@ export const useChunkUpload = () => {
   const [progress, setProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
   const [processing, setProcessing] = useState(false);
+// New state for folder location
 
   const getChunk = (file, chunkIndex, chunkSize) => {
     const start = chunkIndex * chunkSize;
@@ -200,6 +203,7 @@ export const useChunkUpload = () => {
             size: form.fileSize,
             key: key,
             parts: partsArray,
+            location: currentFolderId || "", // Pass folder location
           }
         );
         // Cleanup hash session after successful upload

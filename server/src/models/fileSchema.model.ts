@@ -8,6 +8,7 @@ export interface IFile extends Document {
   size: number;
   bucket: string;
   owner: Schema.Types.ObjectId;
+  location?: Schema.Types.ObjectId | null | string;
 
   tags?: string[];
   summary?: string;
@@ -24,6 +25,7 @@ const FileSchema = new Schema<IFile>({
   mimeType: { type: String, required: true },
   size: { type: Number, required: true },
   bucket: { type: String, required: true },
+  location: { type: Schema.Types.ObjectId || String || null, ref: "Folder", default: null },
 
 
 

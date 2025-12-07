@@ -1,27 +1,28 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useFolder } from "../context/FolderContext";
+import { useUser } from "../hooks/useUser";
 import { useChunkUpload } from "../hooks/useChunkUpload";
 import FilesList from "../components/FilesList";
-import CreateFolderModal from "../components/CreateFolderModal";
-import DeleteFolderModal from "../components/DeleteFolderModal";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import UploadModal from "../components/UploadModal";
+import CreateFolderModal from "../components/CreateFolderModal";
+import DeleteFolderModal from "../components/DeleteFolderModal";
 import PageHeader from "../components/PageHeader";
-import StatsCard from "../components/StatsCard";
-import { useUser } from "../hooks/useUser";
-import { useFolder } from "../context/FolderContext";
 import usePageMeta from "../utils/usePageMeta";
-import { FolderOpen, Trash2 } from "lucide-react";
+import { FolderOpen, ChevronLeft, Upload, Trash2 } from "lucide-react";
 
-const UploadPage = () => {
+const FolderPage = () => {
   usePageMeta(
-    "NovaDrive — Upload Files",
-    "Upload and manage files with chunked multipart uploads to Cloudflare R2."
+    "NovaDrive — Folder",
+    "View and manage files in your folder."
   );
+
+  const { folderId } = useParams();
   const navigate = useNavigate();
   const { user, checkAuth, loading, logout } = useUser();
-  const { fetchFolders, currentFolderId, folders, loading: folderLoading, deleteFolder } = useFolder();
+  const { fetchFolders, currentFolderId, folders, loading: folderLoading, error: folderError, navigateToFolder, setCurrentFolderId, deleteFolder } = useFolder();
   const {
     file,
     totalChunks,
@@ -34,7 +35,6 @@ const UploadPage = () => {
     handleUpload,
   } = useChunkUpload();
 
-  const [activeView, setActiveView] = useState("files");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [showDeleteFolderModal, setShowDeleteFolderModal] = useState(false);
@@ -45,7 +45,7 @@ const UploadPage = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [storageInfo, setStorageInfo] = useState({
     usedBytes: 0,
-    totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
+    totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024,
   });
   const filesListRef = useRef();
 
@@ -68,12 +68,14 @@ const UploadPage = () => {
     verifyAuth();
   }, []);
 
+  // Fetch folders and files when folder ID changes
   useEffect(() => {
-    if (user?._id) {
-      fetchFolders(currentFolderId);
+    if (user?._id && folderId) {
+      fetchFolders(folderId);
     }
-  }, [user]);
+  }, [user, folderId]);
 
+  // Update storage quota when user data loads
   useEffect(() => {
     if (user?.storageQuota) {
       setStorageInfo((prev) => ({
@@ -83,6 +85,7 @@ const UploadPage = () => {
     }
   }, [user]);
 
+  // Watch for successful upload completion
   useEffect(() => {
     if (uploadStatus === "Upload complete!") {
       if (filesListRef.current?.refresh) {
@@ -92,6 +95,7 @@ const UploadPage = () => {
       if (filesListRef.current?.startPolling) {
         filesListRef.current.startPolling();
       }
+
       setTimeout(() => {
         setShowUploadModal(false);
       }, 1500);
@@ -134,13 +138,18 @@ const UploadPage = () => {
     setDeleteLoading(false);
   };
 
-  // Show loading state while verifying
-  if (loading) {
+  const handleGoBack = () => {
+    setCurrentFolderId(null); // Reset to root folder
+    navigate("/upload");
+  };
+
+  // Show loading until authentication is verified AND folder data is loaded
+  if (loading || (folderId && folderLoading)) {
     return (
       <div className="min-h-[100dvh] bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-zinc-400 font-mono">VERIFYING_ACCESS...</p>
+          <p className="text-zinc-400 font-mono">LOADING_FOLDER...</p>
         </div>
       </div>
     );
@@ -160,8 +169,8 @@ const UploadPage = () => {
 
       {/* Sidebar Component */}
       <Sidebar
-        activeView={activeView}
-        setActiveView={setActiveView}
+        activeView="files"
+        setActiveView={() => {}}
         showSidebar={showSidebar}
         setShowSidebar={setShowSidebar}
         storageInfo={storageInfo}
@@ -181,29 +190,30 @@ const UploadPage = () => {
         />
 
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 bg-zinc-950">
-          {/* Page Header Component */}
+          {/* Back Button */}
+          <button
+            onClick={handleGoBack}
+            className="mb-6 flex items-center gap-2 px-3 py-2 hover:bg-zinc-800/50 rounded transition-colors text-zinc-300 hover:text-white"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            <span className="text-sm">Back</span>
+          </button>
+
+          {/* Page Header */}
           <PageHeader
-            activeView={activeView}
+            title="Folder Contents"
+            description="View all files in this folder"
             showUploadButton={true}
             showCreateFolderButton={true}
-            setShowUploadModal={setShowUploadModal}
-            setShowCreateFolderModal={setShowCreateFolderModal}
+            onUploadClick={() => setShowUploadModal(true)}
+            onCreateFolderClick={() => setShowCreateFolderModal(true)}
           />
 
-          {/* Stats Cards - Above Folders */}
-          <StatsCard 
-            files={0}
-            storage={formatFileSize(storageInfo.usedBytes)}
-            folders={folders.length}
-            favorites={0}
-            formatFileSize={formatFileSize}
-          />
-
-          {/* Folders Grid */}
-          {activeView === "files" && folders.length > 0 && (
+          {/* Subfolders Grid */}
+          {folders.length > 0 && (
             <div className="mb-8">
               <h3 className="text-sm font-semibold text-zinc-300 mb-4 uppercase tracking-wider">
-                Folders
+                Subfolders
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {folders.map((folder) => (
@@ -250,9 +260,8 @@ const UploadPage = () => {
             ref={filesListRef}
             userId={user?._id || ""}
             username={user?.username || "User"}
-            activeView={activeView}
+            activeView="files"
             searchQuery={searchQuery}
-            maxFiles={3}
             onStorageUpdate={(info) =>
               setStorageInfo((prev) => ({ ...prev, ...info }))
             }
@@ -279,7 +288,7 @@ const UploadPage = () => {
       <CreateFolderModal
         isOpen={showCreateFolderModal}
         onClose={() => setShowCreateFolderModal(false)}
-        currentFolderId={currentFolderId}
+        currentFolderId={folderId}
       />
 
       {/* Delete Folder Modal Component */}
@@ -299,4 +308,4 @@ const UploadPage = () => {
   );
 };
 
-export default UploadPage;
+export default FolderPage;
