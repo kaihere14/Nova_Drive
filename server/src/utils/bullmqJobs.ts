@@ -13,7 +13,7 @@ const aiForImageTagGeneration = new GoogleGenAI({ apiKey: process.env.GEMINI_API
 const aiForOtherFileTagGeneration = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_4 });
 
 // Create a single shared Redis connection
-const connection = new IORedis({
+export const connection = new IORedis({
   host: 'redis-15783.crce179.ap-south-1-1.ec2.cloud.redislabs.com',
   port: 15783,
   password: process.env.REDIS_PASSWORD,

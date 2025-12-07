@@ -7,7 +7,7 @@ import {
   r2CompleteMultipart,
 } from "./cloudflare.controller.js";
 import FileModel from "../models/fileSchema.model.js";
-import { extractData } from "../utils/bullmqJobs.js";
+import { connection, extractData } from "../utils/bullmqJobs.js";
 
 interface UploadInitiateBody {
   userId: string;
@@ -208,7 +208,7 @@ export const completeUpload = async (
     
     // Queue AI processing job
     await extractData(file._id.toString(), fileName, mimeType, key, file.owner.toString());
-  
+    connection.incrby(`user:${session.userId}:dailyUpload`, size);
 
     res.json({
       success: true,

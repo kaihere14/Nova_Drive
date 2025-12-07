@@ -62,18 +62,33 @@ export const useChunkUpload = () => {
     if (!file) return;
     const fileHash = await computeHash(file);
     console.log("File hash:", fileHash);
-    const checkingHashResponse = await axios.post(
-      `${BASE_URL}/api/chunks/compute-hash-check`,
-      {
-        fileHash: fileHash,
-      }
-    );
-    console.log("Hash check response:", checkingHashResponse.data);
-
-    setUploading(true);
-    setProgress(0);
-    setUploadStatus("");
+    
     try {
+      const checkingHashResponse = await axios.post(
+        `${BASE_URL}/api/chunks/compute-hash-check`,
+        {
+          userId: form.userId,
+          fileSize: form.fileSize,
+          fileHash: fileHash,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      console.log("Hash check response:", checkingHashResponse.data);
+
+      // Check if daily upload limit exceeded
+      if (checkingHashResponse.data.message === "Daily upload limit exceeded") {
+        setUploadStatus("Daily upload limit exceeded. Please try again tomorrow.");
+        return;
+      }
+
+      setUploading(true);
+      setProgress(0);
+      setUploadStatus("");
+      
       // Step 1: Initiate upload session
       if (!checkingHashResponse.data.exists) {
         const initiateResponse = await axios.post(
@@ -216,7 +231,13 @@ export const useChunkUpload = () => {
       }
     } catch (err) {
       console.error("Upload failed:", err);
-      setUploadStatus("Upload failed. Please try again.");
+      
+      // Check if it's a daily limit error from the catch block
+      if (err.response?.data?.message === "Daily upload limit exceeded") {
+        setUploadStatus("Daily upload limit exceeded. Please try again tomorrow.");
+      } else {
+        setUploadStatus("Upload failed. Please try again.");
+      }
     } finally {
       setUploading(false);
     }

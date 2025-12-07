@@ -155,11 +155,11 @@ const UploadPage = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:relative z-50 lg:z-10 ${
+        className={`fixed left-0 top-0 lg:sticky z-50 lg:z-10 ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 transition-transform duration-300 w-64 min-h-[100dvh] bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col`}
+        } lg:translate-x-0 transition-transform duration-300 w-64 h-screen bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col overflow-hidden`}
       >
-        <div className="px-5 py-6 border-b border-zinc-800">
+        <div className="px-5 py-6 border-b border-zinc-800 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xl font-bold text-white">
               <img
@@ -177,7 +177,7 @@ const UploadPage = () => {
             </button>
           </div>
         </div>
-        <nav className="flex-1 px-3 py-5 space-y-1">
+        <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
           <button
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
               activeView === "files"
@@ -223,7 +223,7 @@ const UploadPage = () => {
             <span>Recycle Bin</span>
           </button>
         </nav>
-        <div className="px-5 py-5 border-t border-zinc-800">
+        <div className="px-5 py-5 border-t border-zinc-800 flex-shrink-0">
           <div className="text-xs">
             <div className="flex items-center gap-2 text-zinc-400 font-mono mb-3">
               <HardDrive className="w-4 h-4" />
@@ -403,7 +403,7 @@ const UploadPage = () => {
                     <span className="text-zinc-500"> or drag and drop</span>
                   </label>
                   <p className="text-sm text-zinc-500 mt-2 font-mono">
-                    Any file type // Max 10GB per file
+                    Any file type //  250MB daily limit
                   </p>
                   <input
                     type="file"
