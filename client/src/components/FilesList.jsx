@@ -307,10 +307,13 @@ const FilesList = forwardRef(
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     const availableTags = getAllTags();
 
+    // Only show the last 10 tags
+    const lastTenTags = availableTags.slice(-10);
+    const visibleTags = showAllTags ? lastTenTags : lastTenTags.slice(-3);
     return (
       <div className="w-full">
         {/* Tag Filter */}
-        {availableTags.length > 0 && (
+        {lastTenTags.length > 0 && (
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 sm:p-5 mb-5">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <span className="text-xs sm:text-sm font-semibold text-zinc-400 font-mono whitespace-nowrap">
@@ -327,29 +330,27 @@ const FilesList = forwardRef(
                 >
                   All Files
                 </button>
-                {(showAllTags ? availableTags : availableTags.slice(0, 3)).map(
-                  (tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => setSelectedTag(tag)}
-                      className={`px-3 py-1.5 text-sm rounded-lg font-mono transition-all ${
-                        selectedTag === tag
-                          ? "bg-cyan-500 text-white shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)]"
-                          : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                      }`}
-                    >
-                      {tag}
-                    </button>
-                  )
-                )}
-                {availableTags.length > 3 && (
+                {visibleTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    className={`px-3 py-1.5 text-sm rounded-lg font-mono transition-all ${
+                      selectedTag === tag
+                        ? "bg-cyan-500 text-white shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)]"
+                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {lastTenTags.length > 3 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
                     className="px-3 py-1.5 text-sm rounded-lg font-mono transition-all bg-zinc-800/50 text-cyan-400 hover:bg-zinc-700 border border-zinc-700"
                   >
                     {showAllTags
                       ? "Show Less"
-                      : `+${availableTags.length - 3} More`}
+                      : `+${lastTenTags.length - 3} More`}
                   </button>
                 )}
               </div>

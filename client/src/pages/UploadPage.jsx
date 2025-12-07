@@ -1,27 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChunkUpload } from "../hooks/useChunkUpload";
-import FileInfo from "../components/FileInfo";
-import ProgressBar from "../components/ProgressBar";
-import StatusMessage from "../components/StatusMessage";
-import UploadButton from "../components/UploadButton";
 import FilesList from "../components/FilesList";
-import {
-  Files,
-  Clock,
-  Star,
-  Trash2,
-  Search,
-  Bell,
-  Settings,
-  X,
-  Upload,
-  Package,
-  HardDrive,
-  Zap,
-  LogOut,
-  Menu,
-} from "lucide-react";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
+import UploadModal from "../components/UploadModal";
+import PageHeader from "../components/PageHeader";
 import { useUser } from "../hooks/useUser";
 import usePageMeta from "../utils/usePageMeta";
 
@@ -145,210 +129,36 @@ const UploadPage = () => {
         }}
       ></div>
 
-      {/* Mobile Sidebar Overlay */}
-      {showSidebar && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setShowSidebar(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed left-0 top-0 lg:sticky z-50 lg:z-10 ${
-          showSidebar ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 transition-transform duration-300 w-64 h-screen bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col overflow-hidden`}
-      >
-        <div className="px-5 py-6 border-b border-zinc-800 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xl font-bold text-white">
-              <img
-                src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
-                alt="NovaDrive logo"
-                className="w-8 h-8 object-contain"
-              />
-              <span className="text-xl font-bold text-white">NovaDrive</span>
-            </div>
-            <button
-              className="lg:hidden p-2 hover:bg-zinc-800 rounded-lg transition-colors"
-              onClick={() => setShowSidebar(false)}
-            >
-              <X className="w-5 h-5 text-zinc-400" />
-            </button>
-          </div>
-        </div>
-        <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
-          <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-              activeView === "files"
-                ? "bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/30"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-            }`}
-            onClick={() => setActiveView("files")}
-          >
-            <Files className="w-5 h-5" />
-            <span>My Files</span>
-          </button>
-          <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-              activeView === "recent"
-                ? "bg-white/10 text-white font-semibold border border-white/20"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-            }`}
-            onClick={() => setActiveView("recent")}
-          >
-            <Clock className="w-5 h-5" />
-            <span>Recent Files</span>
-          </button>
-          <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-              activeView === "favorites"
-                ? "bg-white/10 text-white font-semibold border border-white/20"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-            }`}
-            onClick={() => setActiveView("favorites")}
-          >
-            <Star className="w-5 h-5" />
-            <span>Favorites</span>
-          </button>
-          <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-              activeView === "trash"
-                ? "bg-white/10 text-white font-semibold border border-white/20"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-            }`}
-            onClick={() => setActiveView("trash")}
-          >
-            <Trash2 className="w-5 h-5" />
-            <span>Recycle Bin</span>
-          </button>
-        </nav>
-        <div className="px-5 py-5 border-t border-zinc-800 flex-shrink-0">
-          <div className="text-xs">
-            <div className="flex items-center gap-2 text-zinc-400 font-mono mb-3">
-              <HardDrive className="w-4 h-4" />
-              <span>STORAGE STATUS</span>
-            </div>
-            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
-              <div
-                className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all"
-                style={{ width: `${storagePercentage}%` }}
-              ></div>
-            </div>
-            <div className="text-zinc-500 font-mono">
-              {formatFileSize(storageInfo.usedBytes)} /{" "}
-              {formatFileSize(storageInfo.totalBytes)}
-            </div>
-            <div className="mt-3 flex items-center gap-2 text-green-500">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="font-mono text-xs">OPERATIONAL</span>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 mt-3 rounded-lg text-sm transition-all text-red-400 hover:bg-red-500/10 hover:text-red-300 border border-red-500/20 hover:border-red-500/40"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="font-mono">LOGOUT</span>
-          </button>
-        </div>
-      </aside>
+      {/* Sidebar Component */}
+      <Sidebar
+        activeView={activeView}
+        setActiveView={setActiveView}
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+        storageInfo={storageInfo}
+        formatFileSize={formatFileSize}
+        storagePercentage={storagePercentage}
+        handleLogout={handleLogout}
+      />
 
       {/* Main Content */}
       <main className="relative z-10 flex-1 flex flex-col overflow-hidden">
-        <header className="px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
-          {/* Mobile Layout - Single Row */}
-          <div className="flex lg:hidden items-center gap-3 w-full">
-            <button
-              className="p-2 hover:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
-              onClick={() => setShowSidebar(true)}
-            >
-              <Menu className="w-5 h-5 text-zinc-400" />
-            </button>
-            <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg flex-1 border border-zinc-700">
-              <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
-              />
-            </div>
-            <div
-              className="p-2 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
-              onClick={() => navigate("/profile")}
-            >
-              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-                {user?.username
-                  ? user.username.substring(0, 2).toUpperCase()
-                  : "U"}
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop Layout */}
-          <div className="hidden lg:flex justify-between items-center">
-            <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg w-96 border border-zinc-700">
-              <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search files..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
-                <Bell className="w-5 h-5 text-zinc-400" />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
-                <Settings className="w-5 h-5 text-zinc-400" />
-              </button>
-              <div
-                className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors"
-                onClick={() => navigate("/profile")}
-              >
-                <span className="text-sm font-medium text-zinc-200">
-                  {user?.username || "User"}
-                </span>
-                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-                  {user?.username
-                    ? user.username.substring(0, 2).toUpperCase()
-                    : "U"}
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
+        {/* Header Component */}
+        <Header
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          setShowSidebar={setShowSidebar}
+          user={user}
+        />
 
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 bg-zinc-950">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                {activeView === "files" && "My Files"}
-                {activeView === "recent" && "Recent Files"}
-                {activeView === "favorites" && "Favorites"}
-                {activeView === "trash" && "Recycle Bin"}
-              </h1>
-              <p className="mt-2 text-zinc-500 font-mono text-xs sm:text-sm">
-                {activeView === "files" && "All your uploaded files"}
-                {activeView === "recent" && "Recently accessed files"}
-                {activeView === "favorites" && "Starred files"}
-                {activeView === "trash" && "Deleted files"}
-              </p>
-            </div>
-            <button
-              className="w-full sm:w-auto px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2"
-              onClick={() => setShowUploadModal(true)}
-            >
-              <Upload className="w-5 h-5" />
-              <span className="hidden sm:inline">Upload New File</span>
-              <span className="sm:hidden">Upload File</span>
-            </button>
-          </div>
+          {/* Page Header Component */}
+          <PageHeader
+            activeView={activeView}
+            setShowUploadModal={setShowUploadModal}
+          />
 
+          {/* Files List */}
           <FilesList
             ref={filesListRef}
             userId={user?._id || ""}
@@ -362,90 +172,20 @@ const UploadPage = () => {
         </div>
       </main>
 
-      {/* Upload Modal */}
-      {showUploadModal && (
-        <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={() => setShowUploadModal(false)}
-        >
-          <div
-            className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center px-6 py-5 border-b border-zinc-800">
-              <div>
-                <h2 className="text-xl font-semibold text-white">
-                  Upload New File
-                </h2>
-                <p className="text-sm text-zinc-500 font-mono mt-1">
-                  Chunked upload with resume support
-                </p>
-              </div>
-              <button
-                className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors"
-                onClick={() => setShowUploadModal(false)}
-              >
-                <X className="w-5 h-5 text-zinc-400" />
-              </button>
-            </div>
-            <div className="px-6 py-6 space-y-5">
-              {/* File Input Area */}
-              <div className="border-2 border-dashed border-zinc-700 rounded-lg p-8 hover:border-cyan-500/40 transition-colors bg-zinc-800/30">
-                <div className="text-center">
-                  <Upload className="w-12 h-12 mx-auto mb-3 text-zinc-600" />
-                  <label
-                    htmlFor="file-input"
-                    className="cursor-pointer inline-block"
-                  >
-                    <span className="text-cyan-400 hover:text-cyan-300 font-semibold">
-                      Click to upload
-                    </span>
-                    <span className="text-zinc-500"> or drag and drop</span>
-                  </label>
-                  <p className="text-sm text-zinc-500 mt-2 font-mono">
-                    Any file type //  250MB daily limit
-                  </p>
-                  <input
-                    type="file"
-                    onChange={handleFileChange}
-                    id="file-input"
-                    className="hidden"
-                  />
-                </div>
-              </div>
-
-              {file && (
-                <>
-                  <FileInfo
-                    file={file}
-                    totalChunks={totalChunks}
-                    chunkSize={form.chunkSize}
-                  />
-
-                  <UploadButton
-                    onClick={handleUpload}
-                    disabled={!file || uploading || processing}
-                    uploading={uploading}
-                    processing={processing}
-                  />
-                </>
-              )}
-
-              <ProgressBar
-                uploading={uploading}
-                processing={processing}
-                progress={progress}
-              />
-
-              <StatusMessage
-                status={uploadStatus}
-                uploading={uploading}
-                processing={processing}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Upload Modal Component */}
+      <UploadModal
+        showUploadModal={showUploadModal}
+        setShowUploadModal={setShowUploadModal}
+        file={file}
+        totalChunks={totalChunks}
+        form={form}
+        uploading={uploading}
+        progress={progress}
+        uploadStatus={uploadStatus}
+        processing={processing}
+        handleFileChange={handleFileChange}
+        handleUpload={handleUpload}
+      />
     </div>
   );
 };
