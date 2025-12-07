@@ -107,7 +107,7 @@ export const sendOtpEmail = async ({ email, otp }: SendOtpEmailParams) => {
       return { success: false, error };
     }
 
-    console.log('OTP email sent successfully:', data);
+    
     return { success: true, data };
   } catch (error) {
     console.error('Error in sendOtpEmail:', error);

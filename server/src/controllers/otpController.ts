@@ -9,7 +9,7 @@ export const createOtp = async (req: Request, res: Response) => {
         const { email } = req.body;
         const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
         const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 minutes
-        console.log("Generated OTP:", generatedOtp ,"with expiry", otpExpiry);
+        
         
         // Save OTP to database
         const newOtp = new Otp({ email, otp: generatedOtp, otpExpiry });
@@ -27,8 +27,6 @@ export const createOtp = async (req: Request, res: Response) => {
         
         res.status(201).json({ 
             message: "OTP sent to your email successfully",
-            // Remove otp from response in production for security
-            ...(process.env.NODE_ENV === 'development' && { otp: generatedOtp })
         });
     } catch (error) {
         res.status(500).json({ message: "Error creating OTP", error });
