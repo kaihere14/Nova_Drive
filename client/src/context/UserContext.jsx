@@ -29,6 +29,9 @@ export const UserProvider = ({ children }) => {
           if (!refreshToken) {
             setRefreshMessage("Session expired. Please log in again.");
             setTimeout(() => {
+              setRefreshMessage("");
+            }, 3000);
+            setTimeout(() => {
               logout();
             }, 2000);
             return Promise.reject(error);
@@ -76,6 +79,9 @@ export const UserProvider = ({ children }) => {
             } else {
               setRefreshMessage("Session expired. Please log in again.");
               setTimeout(() => {
+                setRefreshMessage("");
+              }, 3000);
+              setTimeout(() => {
                 logout();
               }, 2000);
               return Promise.reject(error);
@@ -84,6 +90,9 @@ export const UserProvider = ({ children }) => {
             clearTimeout(indicatorTimeout);
             setShowRefreshIndicator(false);
             setRefreshMessage("Session expired. Please log in again.");
+            setTimeout(() => {
+              setRefreshMessage("");
+            }, 3000);
             setTimeout(() => {
               logout();
             }, 2000);
