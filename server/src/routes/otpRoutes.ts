@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOtp,verifyOtp } from "../controllers/otpController.js";
+import { createOtp,forgotOtp,verifyOtp } from "../controllers/otpController.js";
 
 const router = Router();
 
@@ -8,5 +8,8 @@ router.post("/create-otp", createOtp);
 
 // Route to verify OTP
 router.post("/verify-otp", verifyOtp);
+
+// Route to send forgot password OTP
+router.post("/forgot-otp",forgotOtp );
 
 export default router;

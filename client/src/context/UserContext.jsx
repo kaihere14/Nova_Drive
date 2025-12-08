@@ -373,6 +373,38 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+
+  const forgotPasswordOtp = async (email) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/otp/forgot-otp`,
+        { email },
+      );
+      console.log(response);
+      if (response.status === 201) {
+        return { success: true, message: "OTP sent to email." };
+      }
+    } catch (error) {
+      console.error("Failed to send OTP:", error);
+      return { success: false, message: "Failed to send OTP." };
+    }
+  };
+
+  const forgotPassword = async (email, otp, newPassword) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/user/forgot-password`,
+        { email, otp, newPassword }
+      );
+      if (response.status === 200) {
+        return { success: true, message: "Password reset successful." };
+      }
+    } catch (error) {
+      console.error("Password reset failed:", error);
+      return { success: false, message: "Password reset failed." };
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -381,6 +413,8 @@ export const UserProvider = ({ children }) => {
     setDirectory,
     login,
     register,
+    forgotPasswordOtp,
+    forgotPassword,
     logout,
     refreshAccessToken,
     updateProfile,

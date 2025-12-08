@@ -10,6 +10,7 @@ import SignupPage from "./pages/SignupPage";
 import ArchitecturePage from "./pages/ArchitecturePage";
 import PricingPage from "./pages/PricingPage";
 import ProfilePage from "./pages/ProfilePage";
+import ForgotPassword from "./pages/forgotPassword";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/folder/:folderId" element={<FolderPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword/>} />
           </Routes>
         </div>
       </FolderProvider>
