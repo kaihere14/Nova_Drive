@@ -7,8 +7,8 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-center relative">
-        {/* Center Logo */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        {/* Left Logo */}
         <div className="flex items-center gap-2">
           <img
             src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
@@ -20,8 +20,8 @@ const Navbar = () => {
           </span>
         </div>
 
-        {/* Desktop Menu - Positioned Left */}
-        <div className="hidden md:flex absolute left-6 items-center gap-8 text-sm font-medium">
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
           <Link
             to="/"
             className="text-zinc-400 hover:text-white transition-colors"
@@ -42,8 +42,8 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Desktop Auth Buttons - Positioned Right */}
-        <div className="hidden md:flex absolute right-6 items-center gap-4">
+        {/* Desktop Auth Buttons */}
+        <div className="hidden md:flex items-center gap-4">
           <Link
             to="/login"
             className="text-sm font-medium text-zinc-300 hover:text-white"
@@ -60,7 +60,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden absolute right-4 p-2 text-zinc-400 hover:text-white"
+          className="md:hidden p-2 text-zinc-400 hover:text-white"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
