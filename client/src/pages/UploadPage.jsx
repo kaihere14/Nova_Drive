@@ -70,7 +70,7 @@ const UploadPage = () => {
 
   useEffect(() => {
     if (user?._id) {
-      fetchFolders(currentFolderId);
+      fetchFolders(null);
     }
   }, [user]);
 
