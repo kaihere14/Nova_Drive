@@ -228,9 +228,9 @@ export const useChunkUpload = () => {
         );
 
         if (checkingCompletion.data.status === "completed") {
-          setUploadStatus("Upload already completed!");
+          setUploadStatus("Upload already completed! If you don't see it, refresh the page.");
         } else {
-          setUploadStatus("Upload incomplete. Please retry.");
+          setUploadStatus("Upload incomplete. Please retry after 5 minutes.");
         }
       }
     } catch (err) {

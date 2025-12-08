@@ -39,7 +39,7 @@ const Sidebar = ({
         {/* Header */}
         <div className="px-5 py-6 border-b border-zinc-800 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xl font-bold text-white">
+            <div className="flex items-center gap-2 text-xl font-bold text-white" onClick={() => setShowSidebar(false)}>
               <img
                 src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
                 alt="NovaDrive logo"
@@ -59,7 +59,7 @@ const Sidebar = ({
         {/* Navigation */}
         <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
           <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all cursor-pointer  ${
               activeView === "files"
                 ? "bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/30"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
@@ -70,7 +70,7 @@ const Sidebar = ({
             <span>My Files</span>
           </button>
           <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all cursor-pointer ${
               activeView === "recent"
                 ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
@@ -81,7 +81,7 @@ const Sidebar = ({
             <span>Recent Files</span>
           </button>
           <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all cursor-pointer ${
               activeView === "favorites"
                 ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
@@ -92,7 +92,7 @@ const Sidebar = ({
             <span>Favorites</span>
           </button>
           <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all cursor-pointer ${
               activeView === "trash"
                 ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
@@ -128,7 +128,7 @@ const Sidebar = ({
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 mt-3 rounded-lg text-sm transition-all text-red-400 hover:bg-red-500/10 hover:text-red-300 border border-red-500/20 hover:border-red-500/40"
+            className="w-full cursor-pointer flex items-center gap-3 px-4 py-3 mt-3 rounded-lg text-sm transition-all text-red-400 hover:bg-red-500/10 hover:text-red-300 border border-red-500/20 hover:border-red-500/40"
           >
             <LogOut className="w-5 h-5" />
             <span className="font-mono">LOGOUT</span>
