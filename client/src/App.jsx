@@ -10,7 +10,7 @@ import SignupPage from "./pages/SignupPage";
 import ArchitecturePage from "./pages/ArchitecturePage";
 import PricingPage from "./pages/PricingPage";
 import ProfilePage from "./pages/ProfilePage";
-import ForgotPassword from "./pages/forgotPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   return (
