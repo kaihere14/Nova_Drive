@@ -404,6 +404,31 @@ export const UserProvider = ({ children }) => {
       return { success: false, message: "Password reset failed." };
     }
   };
+  
+  const changePassword = async(oldPassword,newPassword)=>{
+    try {
+      if(!oldPassword || !newPassword) {
+        return { success: false, message: "Old password and new password are required." };
+      }
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.post(
+        `${BASE_URL}/api/user/change-password`,
+        { oldPassword, newPassword },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        return { success: true, message: "Password changed successfully." };
+      }
+      return { success: false, message: "Password change failed." };
+    } catch (error) {
+      console.error("Password change failed:", error);
+      return { success: false, message: "Password change failed." };
+    }
+  }
 
   const value = {
     user,
@@ -415,6 +440,7 @@ export const UserProvider = ({ children }) => {
     register,
     forgotPasswordOtp,
     forgotPassword,
+    changePassword,
     logout,
     refreshAccessToken,
     updateProfile,

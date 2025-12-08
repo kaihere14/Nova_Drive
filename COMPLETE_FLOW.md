@@ -2,14 +2,806 @@
 
 ## Table of Contents
 
-1. [Architecture Overview](#architecture-overview)
-2. [Authentication Flow](#authentication-flow)
-3. [File Upload Flow](#file-upload-flow)
-4. [File Management Flow](#file-management-flow)
-5. [AI Processing Flow](#ai-processing-flow)
-6. [Data Models](#data-models)
-7. [API Endpoints](#api-endpoints)
-8. [Security & Token Management](#security--token-management)
+1. [Project Overview](#project-overview)
+2. [Architecture Overview](#architecture-overview)
+3. [Technology Stack](#technology-stack)
+4. [Authentication Flow](#authentication-flow)
+5. [File Upload Flow](#file-upload-flow)
+6. [File Management Flow](#file-management-flow)
+7. [AI Processing Flow](#ai-processing-flow)
+8. [Folder Management System](#folder-management-system)
+9. [Data Models](#data-models)
+10. [API Endpoints](#api-endpoints)
+11. [Security & Token Management](#security--token-management)
+12. [Client Component Architecture](#client-component-architecture)
+13. [Performance Optimizations](#performance-optimizations)
+14. [Error Handling](#error-handling)
+15. [Environment Configuration](#environment-configuration)
+16. [Deployment Strategy](#deployment-strategy)
+
+---
+
+## Project Overview
+
+### What is NovaDrive?
+
+**NovaDrive** is a modern, AI-powered cloud storage platform designed for the AI era. It combines enterprise-grade file storage with intelligent content analysis, providing users with a sophisticated yet user-friendly cloud storage solution.
+
+### Key Features
+
+- **Intelligent File Storage**: Chunked multipart uploads to Cloudflare R2
+- **AI-Powered Analysis**: Automatic file tagging and summarization using Google Gemini AI
+- **Folder Management**: Hierarchical folder structure with CRUD operations
+- **Advanced Security**: JWT-based authentication with automatic token refresh
+- **Real-time Processing**: Background AI analysis with status tracking
+- **Deduplication**: Hash-based file deduplication to prevent redundant uploads
+- **Responsive UI**: Modern dark-themed interface with professional gradients
+- **Password Management**: Secure password reset with OTP verification
+
+### Target Audience
+
+- Individual users seeking advanced cloud storage
+- Developers needing API-first file storage
+- Organizations requiring intelligent document management
+- Users who want AI-assisted file organization
+
+### Unique Value Proposition
+
+NovaDrive differentiates itself through:
+- **AI-First Approach**: Every uploaded file gets automatically analyzed and tagged
+- **Enterprise Performance**: Chunked uploads supporting files up to unlimited size
+- **Developer-Friendly**: RESTful API with comprehensive endpoints
+- **Cost-Effective**: Leveraging Cloudflare R2 for affordable storage
+- **Intelligent Organization**: AI-generated tags and summaries for better file discovery
+
+---
+
+## Architecture Overview
+
+### System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                          NovaDrive System                        │
+└─────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────┐         ┌──────────────────────────┐
+│    Frontend (React)      │◄───────►│   Backend (Node.js)      │
+│  - Authentication Pages  │         │  - Auth Controllers      │
+│  - File Upload/Download  │         │  - Upload Controllers    │
+│  - Dashboard/Profile     │         │  - File Management       │
+│  - Folder Management     │         │  - AI Processing Jobs    │
+│  - Real-time UI Updates  │         │  - Background Workers    │
+└──────────────────────────┘         └──────────────────────────┘
+         │                                    │
+         │                            ┌───────┴────────┐
+         │                            │                │
+         │                    ┌───────▼──────┐   ┌────▼──────────┐
+         │                    │  MongoDB     │   │  Cloudflare R2│
+         │                    │  - Users     │   │  - File Data  │
+         │                    │  - Files     │   │  - Chunks     │
+         │                    │  - Folders   │   │  - Multipart  │
+         │                    │  - Sessions  │   │  - Presigned  │
+         │                    └──────────────┘   └───────────────┘
+         │
+    ┌────▼─────────────┐
+    │  Vercel (Client) │
+    └──────────────────┘
+```
+
+### Component Architecture
+
+**Frontend Architecture:**
+- **React 18** with modern hooks and context API
+- **React Router v6** for client-side routing
+- **Axios** with custom interceptors for authentication
+- **Tailwind CSS** for responsive, dark-themed UI
+- **Lucide React** for consistent iconography
+
+**Backend Architecture:**
+- **Express.js** with TypeScript for type safety
+- **MongoDB** with Mongoose ODM
+- **BullMQ** for background job processing
+- **Cloudflare R2** for object storage
+- **JWT** for stateless authentication
+- **bcrypt** for password hashing
+
+**Infrastructure:**
+- **Redis** for job queue management
+- **Google Gemini AI** for content analysis
+- **Resend** for email notifications
+- **Vercel** for frontend deployment
+- **Custom server** for backend deployment
+
+---
+
+## Technology Stack
+
+### Frontend Technologies
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React | 18.x | UI framework with hooks and context |
+| React Router | 6.x | Client-side routing |
+| Axios | Latest | HTTP client with interceptors |
+| Tailwind CSS | Latest | Utility-first CSS framework |
+| Lucide React | Latest | Icon library |
+| Vite | Latest | Build tool and dev server |
+
+### Backend Technologies
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Node.js | 18+ | Runtime environment |
+| Express | 4.x | Web framework |
+| TypeScript | 5.x | Type safety |
+| MongoDB | Latest | Document database |
+| Mongoose | Latest | ODM for MongoDB |
+| BullMQ | Latest | Job queue system |
+| Redis | Latest | In-memory data store |
+| JWT | Latest | Token-based auth |
+| bcrypt | Latest | Password hashing |
+
+### Cloud & AI Services
+
+| Service | Purpose |
+|---------|---------|
+| Cloudflare R2 | Object storage |
+| Google Gemini AI | Content analysis |
+| Resend | Email service |
+| Vercel | Frontend hosting |
+| MongoDB Atlas | Database hosting |
+
+### Development Tools
+
+| Tool | Purpose |
+|------|---------|
+| ESLint | Code linting |
+| Prettier | Code formatting |
+| Nodemon | Development server |
+| Concurrently | Running multiple processes |
+
+---
+
+## Authentication Flow
+
+### Complete Authentication Lifecycle
+
+```
+1. USER REGISTRATION
+   ↓
+2. EMAIL/PASSWORD VALIDATION
+   ↓
+3. PASSWORD HASHING (bcrypt)
+   ↓
+4. JWT TOKEN GENERATION
+   ├─ Access Token (15min)
+   └─ Refresh Token (7 days)
+   ↓
+5. TOKEN STORAGE (localStorage)
+   ↓
+6. USER CONTEXT UPDATE
+   ↓
+7. REDIRECT TO DASHBOARD
+```
+
+### Advanced Token Management
+
+**Automatic Token Refresh:**
+- Access tokens expire in 15 minutes
+- Refresh tokens valid for 7 days
+- Axios interceptors handle 401 responses
+- Seamless user experience without manual re-login
+- Concurrent request handling with promise queues
+
+**Session Persistence:**
+- Tokens survive browser refreshes
+- Automatic auth verification on app load
+- Graceful logout on token expiration
+- Loading states during token operations
+
+### Password Security
+
+- **Hashing**: bcrypt with salt rounds (10)
+- **Storage**: Hashed passwords only (never plain text)
+- **Comparison**: Secure bcrypt.compare() method
+- **Reset Flow**: OTP-based password reset
+- **Validation**: Client and server-side validation
+
+---
+
+## File Upload Flow
+
+### Chunked Upload Architecture
+
+**Why Chunked Uploads?**
+- Support for unlimited file sizes
+- Resumable uploads
+- Parallel processing for speed
+- Reduced memory usage
+- Better error recovery
+
+**Upload Process:**
+
+```
+FILE SELECTION → HASH COMPUTATION → DEDUPLICATION CHECK → MULTIPART INITIATION → PARALLEL CHUNK UPLOAD → COMPLETION → AI PROCESSING
+```
+
+### Detailed Upload Steps
+
+**Step 1: File Selection & Validation**
+```javascript
+// Compute SHA-256 hash of first 4MB
+const hash = await crypto.subtle.digest("SHA-256", first4MB);
+const hashHex = Array.from(new Uint8Array(hash))
+  .map(b => b.toString(16).padStart(2, "0"))
+  .join("");
+```
+
+**Step 2: Deduplication Check**
+- Server checks MongoDB for existing hash
+- If found within 5 minutes: skip upload
+- Prevents redundant storage and bandwidth usage
+
+**Step 3: Multipart Session Creation**
+- Server creates R2 multipart upload
+- Stores session metadata in MongoDB
+- Returns uploadId and presigned URLs
+
+**Step 4: Parallel Chunk Upload**
+- Uploads 4 chunks simultaneously
+- Direct to R2 using presigned URLs
+- Captures ETags for completion verification
+
+**Step 5: Upload Completion**
+- Server completes multipart upload
+- Creates File document in database
+- Queues AI processing job
+- Cleans up temporary session data
+
+### AI Processing Integration
+
+**Background Processing:**
+- BullMQ queues handle AI jobs asynchronously
+- Multiple worker types for different file types
+- Status tracking: pending → processing → completed/failed
+- Frontend polling for status updates
+
+**Content Analysis:**
+- **Images**: Gemini Vision API for captioning
+- **PDFs**: Text extraction + AI summarization
+- **Other Files**: Filename/MIME type analysis
+- **Output**: Tags array + summary text
+
+---
+
+## File Management Flow
+
+### CRUD Operations
+
+**File Operations:**
+- **List**: Paginated file listing with metadata
+- **Download**: Temporary presigned URLs (60s expiry)
+- **Share**: Public sharing with temporary links
+- **Delete**: Permanent deletion from R2 + database
+
+**Advanced Features:**
+- **Search**: Full-text search across filenames and AI tags
+- **Filtering**: By file type, date, size, tags
+- **Sorting**: By name, date, size, type
+- **Bulk Operations**: Select multiple files for batch actions
+
+### Storage Management
+
+**Quota System:**
+- Default 10GB per user
+- Real-time usage tracking
+- Storage limit enforcement
+- Usage visualization in dashboard
+
+**Optimization:**
+- Deduplication prevents duplicate files
+- Compression for certain file types
+- CDN delivery for fast downloads
+
+---
+
+## Folder Management System
+
+### Hierarchical Structure
+
+**Folder Model:**
+```typescript
+interface IFolder {
+  name: string;
+  ownerId: ObjectId;
+  parentFolderId?: ObjectId | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+**Features:**
+- **Nested Folders**: Unlimited depth hierarchy
+- **CRUD Operations**: Create, read, update, delete folders
+- **Navigation**: Breadcrumb navigation
+- **File Organization**: Files can be placed in folders
+- **Permission Inheritance**: Owner-based access control
+
+### Folder Operations
+
+**Creating Folders:**
+- Modal-based creation
+- Parent folder selection
+- Name validation and uniqueness
+- Real-time UI updates
+
+**Navigation:**
+- Click to enter folders
+- Back button navigation
+- Breadcrumb display
+- URL-based navigation (/folder/:folderId)
+
+---
+
+## AI Processing Flow
+
+### Multi-Queue Architecture
+
+**Queue Types:**
+- `metadata-extraction-queue`: Initial content extraction
+- `pdfAi-processing-queue`: PDF analysis
+- `imageAi-processing-queue`: Image analysis
+- `other-processing-queue`: Generic file analysis
+
+**Worker Configuration:**
+- Separate AI instances for different tasks
+- Multiple API keys for rate limiting
+- Error handling and retry logic
+- Status updates to database
+
+### Content Analysis Pipeline
+
+**For Images:**
+1. Download via presigned URL
+2. Convert to base64
+3. Gemini Vision API analysis
+4. Generate tags and summary
+5. Update database
+
+**For PDFs:**
+1. Download and parse text content
+2. Extract meaningful text (first 1000 chars)
+3. AI analysis for categorization
+4. Generate tags and summary
+
+**For Other Files:**
+1. Analyze filename and MIME type
+2. AI inference based on patterns
+3. Generate relevant tags
+4. Create descriptive summary
+
+---
+
+## Data Models
+
+### User Model
+
+```typescript
+interface IUser {
+  _id: ObjectId;
+  username: string;           // Unique username
+  email: string;             // Unique email
+  password: string;          // Bcrypt hashed
+  storageQuota: number;      // Default: 10GB
+  storageUsed: number;       // Calculated from files
+  createdAt: Date;
+  otp?: string;              // For password reset
+  otpExpiry?: Date;          // OTP expiration
+}
+```
+
+### File Model
+
+```typescript
+interface IFile {
+  _id: ObjectId;
+  owner: ObjectId;           // Reference to User
+  originalFileName: string;
+  mimeType: string;
+  size: number;
+  r2Key: string;            // Cloudflare R2 key
+  bucket: string;
+  location?: ObjectId;       // Folder reference
+  aiStatus: "pending" | "processing" | "completed" | "failed";
+  tags: string[];           // AI-generated tags
+  summary: string;          // AI-generated summary
+  createdAt: Date;
+}
+```
+
+### Folder Model
+
+```typescript
+interface IFolder {
+  _id: ObjectId;
+  name: string;
+  ownerId: ObjectId;         // Reference to User
+  parentFolderId?: ObjectId; // For nested folders
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Upload Session Model
+
+```typescript
+interface IChunk {
+  _id: ObjectId;
+  userId: string;
+  uploadId: string;          // R2 multipart upload ID
+  fileName: string;
+  fileSize: number;
+  totalChunks: number;
+  status: "initiated" | "uploading" | "completed";
+  expiresAt: Date;          // Auto-expiry
+}
+```
+
+### Hash Model (Deduplication)
+
+```typescript
+interface IHash {
+  _id: ObjectId;
+  fileHash: string;         // SHA-256 hash
+  sessionId: string;        // Upload session reference
+  createdAt: Date;         // TTL: 5 minutes
+}
+```
+
+---
+
+## API Endpoints
+
+### Authentication Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/user/register` | User registration |
+| POST | `/api/user/login` | User login |
+| GET | `/api/user/verify-auth` | Verify current session |
+| POST | `/api/user/refresh-token` | Refresh access token |
+| PUT | `/api/user/profile` | Update user profile |
+| DELETE | `/api/user/delete/:userId` | Delete user account |
+| POST | `/api/user/change-password` | Change password |
+| POST | `/api/otp/forgot-otp` | Send password reset OTP |
+| POST | `/api/user/forgot-password` | Reset password with OTP |
+
+### File Management Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/files/list-files` | List user's files |
+| POST | `/api/chunks/get-download-url` | Generate download URL |
+| DELETE | `/api/chunks/delete-file` | Delete a file |
+
+### Upload Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/chunks/compute-hash-check` | Check file duplication |
+| POST | `/api/chunks/upload-initiate` | Start multipart upload |
+| POST | `/api/chunks/get-presigned-url` | Get upload URL for chunk |
+| POST | `/api/chunks/upload-complete` | Complete multipart upload |
+| DELETE | `/api/chunks/delete-hash-session/:id` | Clean up session |
+
+### Folder Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/folders?userId=X&parentFolderId=Y` | List folders |
+| POST | `/api/folders/create` | Create new folder |
+| DELETE | `/api/folders/:folderId` | Delete folder |
+
+---
+
+## Security & Token Management
+
+### JWT Implementation
+
+**Token Specifications:**
+- **Algorithm**: HS256
+- **Access Token**: 15-minute expiry
+- **Refresh Token**: 7-day expiry
+- **Payload**: `{ userId, iat, exp }`
+- **Secret**: Environment variable
+
+**Security Features:**
+- HTTP-only cookies for production
+- Secure token rotation
+- Automatic logout on invalid tokens
+- Request rate limiting
+- CORS protection
+
+### Password Security
+
+**Hashing Strategy:**
+- bcrypt with 10 salt rounds
+- Pre-save middleware
+- Secure comparison methods
+- No plain text storage
+
+**Password Policies:**
+- Minimum 6 characters
+- Client-side validation
+- Server-side enforcement
+- Change password functionality
+
+### Request Security
+
+**Middleware Stack:**
+- `verifyJwt`: Token verification
+- `uploadLimit`: Daily upload limits
+- `cors`: Cross-origin protection
+- `express.json()`: JSON parsing
+- `express.urlencoded()`: Form data parsing
+
+---
+
+## Client Component Architecture
+
+### Page Components
+
+**Core Pages:**
+- `HomePage.jsx`: Landing page with features
+- `LoginPage.jsx`: Authentication form
+- `SignupPage.jsx`: Registration form
+- `UploadPage.jsx`: Main dashboard
+- `ProfilePage.jsx`: User account management
+- `ForgotPassword.jsx`: Password reset flow
+
+**Specialized Pages:**
+- `FolderPage.jsx`: Folder-specific view
+- `PricingPage.jsx`: Subscription plans
+- `ArchitecturePage.jsx`: Technical documentation
+
+### Component Library
+
+**UI Components:**
+- `Navbar.jsx`: Navigation header
+- `Sidebar.jsx`: File management sidebar
+- `FilesList.jsx`: File grid/list display
+- `UploadModal.jsx`: File upload interface
+- `CreateFolderModal.jsx`: Folder creation
+- `ProgressBar.jsx`: Upload progress
+- `StatusMessage.jsx`: Status notifications
+
+**Utility Components:**
+- `LoadingScreen.jsx`: Full-screen loader
+- `StatsCard.jsx`: Statistics display
+- `PageHeader.jsx`: Page titles and actions
+
+### State Management
+
+**Context Providers:**
+- `UserProvider`: Authentication state
+- `FolderProvider`: Folder navigation state
+
+**Custom Hooks:**
+- `useUser`: User context access
+- `useChunkUpload`: Upload functionality
+- `useFolderData`: Folder operations
+- `usePageMeta`: SEO metadata
+
+---
+
+## Performance Optimizations
+
+### Upload Optimizations
+
+**Parallel Processing:**
+- 4 simultaneous chunk uploads
+- Presigned URLs for direct R2 access
+- No server proxying of file data
+
+**Memory Efficiency:**
+- 5MB chunk size limit
+- Streaming file processing
+- Garbage collection friendly
+
+### Caching Strategies
+
+**Client-Side:**
+- localStorage for tokens
+- React context for user data
+- Component memoization
+
+**Server-Side:**
+- Database indexing
+- Redis for job queues
+- CDN for static assets
+
+### Network Optimizations
+
+**API Efficiency:**
+- Batch operations where possible
+- Selective data fetching
+- Pagination for large datasets
+
+**Real-time Updates:**
+- Polling for AI status (3 attempts)
+- WebSocket consideration for future
+- Optimistic UI updates
+
+---
+
+## Error Handling
+
+### Client-Side Error Handling
+
+**Axios Interceptors:**
+- Automatic 401 handling
+- Token refresh on auth errors
+- User-friendly error messages
+
+**Form Validation:**
+- Real-time input validation
+- Server error display
+- Loading states during operations
+
+### Server-Side Error Handling
+
+**Middleware Approach:**
+- Try-catch blocks in controllers
+- Consistent error response format
+- Logging for debugging
+
+**Graceful Degradation:**
+- Fallback UI states
+- Error boundaries in React
+- Offline capability considerations
+
+---
+
+## Environment Configuration
+
+### Frontend Environment
+
+```bash
+# .env
+VITE_API_BASE_URL=https://nova-drive-backend.vercel.app
+```
+
+### Backend Environment
+
+```bash
+# .env
+PORT=3000
+MONGO_URI=mongodb+srv://...
+JWT_SECRET=your_jwt_secret
+CLOUDFLARE_ACCOUNT_ID=...
+CLOUDFLARE_API_TOKEN=...
+CLOUDFLARE_BUCKET_NAME=novadrive-bucket
+REDIS_URL=redis://...
+GOOGLE_API_KEY=your_gemini_key
+RESEND_API_KEY=your_resend_key
+```
+
+### Development vs Production
+
+**Development:**
+- Local MongoDB
+- Local Redis
+- Hot reloading
+- Debug logging
+
+**Production:**
+- MongoDB Atlas
+- Redis Cloud
+- Optimized builds
+- Error monitoring
+
+---
+
+## Deployment Strategy
+
+### Frontend Deployment (Vercel)
+
+**Build Configuration:**
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install"
+}
+```
+
+**Environment Variables:**
+- API base URL
+- Analytics keys (if any)
+
+### Backend Deployment
+
+**Server Configuration:**
+- Node.js 18+ runtime
+- PM2 process manager
+- Nginx reverse proxy
+- SSL certificates
+
+**Scaling Considerations:**
+- Horizontal scaling with load balancer
+- Database connection pooling
+- Redis cluster for queues
+
+### Monitoring & Maintenance
+
+**Health Checks:**
+- `/status` endpoint with express-status-monitor
+- Database connectivity checks
+- Queue health monitoring
+
+**Backup Strategy:**
+- MongoDB automated backups
+- File versioning in R2
+- Regular security updates
+
+---
+
+## Future Enhancements
+
+### Planned Features
+
+**Advanced AI Features:**
+- Semantic search across file content
+- Auto-categorization of documents
+- Content-based recommendations
+- Multi-language support
+
+**Collaboration Features:**
+- File sharing with permissions
+- Team workspaces
+- Real-time collaboration
+- Comment system
+
+**Enterprise Features:**
+- SSO integration
+- Audit logs
+- Advanced permissions
+- API rate limiting
+
+**Performance Improvements:**
+- WebSocket real-time updates
+- Progressive Web App (PWA)
+- Offline file access
+- Advanced caching strategies
+
+### Technical Debt & Improvements
+
+**Code Quality:**
+- Comprehensive test suite
+- API documentation (Swagger)
+- TypeScript migration completion
+- Code splitting optimization
+
+**Security Enhancements:**
+- Multi-factor authentication
+- API key management
+- Advanced encryption
+- Security audit and penetration testing
+
+---
+
+## Conclusion
+
+NovaDrive represents a modern approach to cloud storage, combining traditional file management with cutting-edge AI capabilities. The architecture is designed for scalability, security, and developer experience, making it suitable for both individual users and enterprise deployments.
+
+The system's chunked upload architecture ensures reliable file transfers of any size, while the AI processing pipeline provides intelligent organization and discovery of content. The JWT-based authentication system with automatic token refresh provides a seamless user experience.
+
+With its modular architecture and comprehensive API, NovaDrive serves as a solid foundation for future enhancements and integrations, positioning it as a competitive player in the AI-powered cloud storage market.
+
+---
+
+*This documentation provides a comprehensive overview of the NovaDrive application architecture, from surface-level features to deep technical implementation details.*
 
 ---
 

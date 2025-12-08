@@ -1,4 +1,4 @@
-import { createUser, deleteUser,  forgotPassword,  getUserProfile, loginUser, refreshAccessToken, verifyUser } from "../controllers/user.controller.js";
+import { changePassword, createUser, deleteUser,  forgotPassword,  getUserProfile, loginUser, refreshAccessToken, verifyUser } from "../controllers/user.controller.js";
 import { Router } from "express";
 import { verifyJwt } from "../middleware/verifyJwt.js";
 
@@ -11,6 +11,7 @@ router.delete("/delete/:userId",verifyJwt, deleteUser);
 router.get("/verify-auth", verifyJwt, verifyUser);
 router.post("/refresh-token", refreshAccessToken);
 router.post("/forgot-password",forgotPassword);
+router.post("/change-password",verifyJwt,changePassword)
 router.get("/health", (req, res) => {
     res.status(200).json({ message: "User route is healthy" });
 });

@@ -224,17 +224,19 @@ const FolderPage = () => {
       {/* Subtle gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/5 transition-all duration-300 pointer-events-none" />
       
-      {/* Delete Button */}
+      {/* Delete Button - Always visible on mobile, hover on desktop */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           setFolderToDelete(folder);
           setShowDeleteFolderModal(true);
         }}
-        className="absolute top-3 right-3 p-2 bg-zinc-900/80 backdrop-blur-sm hover:bg-red-500/20 text-zinc-400 hover:text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 hover:scale-110"
+        className="absolute top-3 right-3 p-2 bg-zinc-900/80 backdrop-blur-sm hover:bg-red-500/20 text-zinc-400 hover:text-red-400 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 z-10 hover:scale-110"
         title="Delete folder"
       >
-        <Trash2 className="w-4 h-4" />
+        {/* Show three dots on mobile, trash icon on desktop */}
+        <MoreVertical className="w-4 h-4 md:hidden" />
+        <Trash2 className="w-4 h-4 hidden md:block" />
       </button>
 
       {/* Folder Content */}
