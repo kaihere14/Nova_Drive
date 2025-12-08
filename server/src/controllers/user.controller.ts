@@ -3,6 +3,8 @@ import { User } from "../models/user.model.js";
 import { IUser } from "../models/user.model.js";
 import { Request, Response } from "express";
 import jwt, { Secret } from "jsonwebtoken";
+import Folder from "../models/folderModel.js";
+import FileModel from "../models/fileSchema.model.js";
 
 const JWT_SECRET = process.env.JWT_SECRET as Secret;
 
@@ -201,3 +203,20 @@ export const changePassword = async(req:Request,res:Response):Promise<unknown>=>
     return res.status(500).json({ message: "Error changing password", error });
   }
 }
+
+export const allFoldersAndFiles = async (req: Request, res: Response) => {
+    try {
+        const  userId  = (req as any).userId;
+        
+        const foldersCount = await Folder.countDocuments({ ownerId: userId });
+        const filesCount = await FileModel.countDocuments({ owner: userId });
+          const all_files = await FileModel.find({ owner: userId });
+          const totalStorageUsed = all_files.reduce((accumulator, file) => {
+            return accumulator + (file.size || 0);
+          }, 0);
+       
+        res.status(200).json({ totalFolders: foldersCount, totalFiles: filesCount, totalStorageUsed: totalStorageUsed });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};

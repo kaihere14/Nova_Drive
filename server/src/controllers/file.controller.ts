@@ -23,3 +23,14 @@ export const listFiles = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const totalFilesOfUser = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).userId;
+    const fileCount = await FileModel.countDocuments({ owner: userId });
+    res.status(200).json({ totalFiles: fileCount });
+  } catch (error) {
+    console.error("Error counting files:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

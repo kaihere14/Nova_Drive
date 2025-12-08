@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useChunkUpload } from "../hooks/useChunkUpload";
 import FilesList from "../components/FilesList";
 import CreateFolderModal from "../components/CreateFolderModal";
@@ -13,6 +14,7 @@ import { useUser } from "../hooks/useUser";
 import { useFolder } from "../context/FolderContext";
 import usePageMeta from "../utils/usePageMeta";
 import { FolderOpen, Trash2, MoreVertical } from "lucide-react";
+import BASE_URL from "../config";
 
 const UploadPage = () => {
   usePageMeta(
@@ -20,7 +22,7 @@ const UploadPage = () => {
     "Upload and manage files with chunked multipart uploads to Cloudflare R2."
   );
   const navigate = useNavigate();
-  const { user, checkAuth, loading, logout } = useUser();
+  const { user, checkAuth, loading, logout, totalCounts, fetchTotalCounts,storageInfo,setStorageInfo } = useUser();
   const { fetchFolders, currentFolderId, folders, loading: folderLoading, deleteFolder } = useFolder();
   const {
     file,
@@ -43,10 +45,8 @@ const UploadPage = () => {
   const [deleteError, setDeleteError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
-  const [storageInfo, setStorageInfo] = useState({
-    usedBytes: 0,
-    totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
-  });
+  
+ 
   const filesListRef = useRef();
 
   // Verify authentication on page load
@@ -71,8 +71,11 @@ const UploadPage = () => {
   useEffect(() => {
     if (user?._id) {
       fetchFolders(null);
+      fetchTotalCounts();
     }
   }, [user]);
+
+  
 
   useEffect(() => {
     if (user?.storageQuota) {
@@ -92,6 +95,10 @@ const UploadPage = () => {
       if (filesListRef.current?.startPolling) {
         filesListRef.current.startPolling();
       }
+      
+      // Refresh total counts after upload
+      fetchTotalCounts();
+      
       setTimeout(() => {
         setShowUploadModal(false);
       }, 1500);
@@ -127,6 +134,9 @@ const UploadPage = () => {
       setShowDeleteFolderModal(false);
       setFolderToDelete(null);
       setDeleteError(null);
+      
+      // Refresh total counts after folder deletion
+      fetchTotalCounts();
     } else {
       setDeleteError(result.message);
     }
@@ -192,9 +202,9 @@ const UploadPage = () => {
 
           {/* Stats Cards - Above Folders */}
           <StatsCard
-            files={0}
+            files={totalCounts.totalFiles}
             storage={formatFileSize(storageInfo.usedBytes)}
-            folders={folders.length}
+            folders={totalCounts.totalFolders}
             favorites={0}
             formatFileSize={formatFileSize}
           />
@@ -309,7 +319,11 @@ const UploadPage = () => {
       {/* Create Folder Modal Component */}
       <CreateFolderModal
         isOpen={showCreateFolderModal}
-        onClose={() => setShowCreateFolderModal(false)}
+        onClose={() => {
+          setShowCreateFolderModal(false);
+          // Refresh total counts after folder creation
+          fetchTotalCounts();
+        }}
         currentFolderId={currentFolderId}
       />
 

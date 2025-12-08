@@ -13,6 +13,14 @@ export const UserProvider = ({ children }) => {
   const [showRefreshIndicator, setShowRefreshIndicator] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState("");
   const [directory, setDirectory] = useState(null); // New state for folder location
+  const [totalCounts, setTotalCounts] = useState({
+      totalFiles: 0,
+      totalFolders: 0,
+    });
+    const [storageInfo, setStorageInfo] = useState({
+        usedBytes: 0,
+        totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
+      });
 
 
   // Setup axios interceptor for 401 errors with auto-retry
@@ -430,11 +438,38 @@ export const UserProvider = ({ children }) => {
     }
   }
 
+  const fetchTotalCounts = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.get(`${BASE_URL}/api/user/total`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.data) {
+          setTotalCounts({
+            totalFiles: response.data.totalFiles || 0,
+            totalFolders: response.data.totalFolders || 0,
+          });
+          setStorageInfo((prev) => ({
+            ...prev,
+            usedBytes: response.data.totalStorageUsed || 0,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching total counts:", error);
+      }
+    };
+
   const value = {
     user,
     loading,
     isAuthenticated,
     directory,
+    totalCounts,
+    fetchTotalCounts,
+    storageInfo,
+    setStorageInfo,
     setDirectory,
     login,
     register,

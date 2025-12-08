@@ -5,7 +5,7 @@ import BASE_URL from '../config';
 import { useFolder } from "../context/FolderContext";
 
 export const useChunkUpload = () => {
-  const { user } = useUser();
+  const { user,fetchTotalCounts } = useUser();
   const { currentFolderId } = useFolder();
   const [file, setFile] = useState(null);
   const [totalChunks, setTotalChunks] = useState(0);
@@ -206,6 +206,8 @@ export const useChunkUpload = () => {
             location: currentFolderId || "", // Pass folder location
           }
         );
+      
+        fetchTotalCounts();
         // Cleanup hash session after successful upload
         try {
           await axios.delete(

@@ -21,7 +21,7 @@ const FolderPage = () => {
 
   const { folderId } = useParams();
   const navigate = useNavigate();
-  const { user, checkAuth, loading, logout } = useUser();
+  const { user, checkAuth, loading, logout, fetchTotalCounts, storageInfo, setStorageInfo } = useUser();
   const { fetchFolders, currentFolderId, folders, loading: folderLoading, error: folderError, navigateToFolder, setCurrentFolderId, deleteFolder } = useFolder();
   const {
     file,
@@ -43,10 +43,7 @@ const FolderPage = () => {
   const [deleteError, setDeleteError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
-  const [storageInfo, setStorageInfo] = useState({
-    usedBytes: 0,
-    totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024,
-  });
+  
   const filesListRef = useRef();
 
   // Verify authentication on page load
@@ -72,6 +69,7 @@ const FolderPage = () => {
   useEffect(() => {
     if (user?._id && folderId) {
       fetchFolders(folderId);
+      fetchTotalCounts();
     }
   }, [user, folderId]);
 

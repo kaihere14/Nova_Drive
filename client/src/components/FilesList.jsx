@@ -68,9 +68,11 @@ const FilesList = forwardRef(
         pollTimers.current = [];
 
         const timer1 = setTimeout(() => fetchFiles(true), 3000);
-        const timer2 = setTimeout(() => fetchFiles(true), 5000);
-        const timer3 = setTimeout(() => fetchFiles(true), 7000);
-        const timer4 = setTimeout(() => fetchFiles(true), 10000);
+        const timer2 = setTimeout(() => fetchFiles(true), 7000);
+        const timer3 = setTimeout(() => fetchFiles(true), 10000);
+        const timer4 = setTimeout(() => fetchFiles(true), 20000);
+        
+
 
         pollTimers.current = [timer1, timer2, timer3, timer4];
       },
@@ -92,18 +94,7 @@ const FilesList = forwardRef(
         setFiles(response.data.files);
         setError(null);
 
-        // Calculate total storage used
-        const totalUsed = response.data.files.reduce(
-          (acc, file) => acc + (file.size || 0),
-          0
-        );
-
-        // Update storage info in parent component
-        if (onStorageUpdate) {
-          onStorageUpdate({
-            usedBytes: totalUsed,
-          });
-        }
+        // ...existing code...
       } catch (err) {
         setError("Failed to load files");
       } finally {

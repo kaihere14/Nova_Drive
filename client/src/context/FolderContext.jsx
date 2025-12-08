@@ -31,6 +31,7 @@ export const FolderProvider = ({ children }) => {
       );
       setFolders(response.data || []);
       setCurrentFolderId(folderId);
+      
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load folders");
       setFolders([]);
