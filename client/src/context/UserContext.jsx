@@ -12,6 +12,16 @@ export const UserProvider = ({ children }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showRefreshIndicator, setShowRefreshIndicator] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState("");
+  const [directory, setDirectory] = useState(null); // New state for folder location
+  const [totalCounts, setTotalCounts] = useState({
+      totalFiles: 0,
+      totalFolders: 0,
+    });
+    const [storageInfo, setStorageInfo] = useState({
+        usedBytes: 0,
+        totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
+      });
+
 
   // Setup axios interceptor for 401 errors with auto-retry
   useEffect(() => {
@@ -28,6 +38,9 @@ export const UserProvider = ({ children }) => {
           
           if (!refreshToken) {
             setRefreshMessage("Session expired. Please log in again.");
+            setTimeout(() => {
+              setRefreshMessage("");
+            }, 3000);
             setTimeout(() => {
               logout();
             }, 2000);
@@ -76,6 +89,9 @@ export const UserProvider = ({ children }) => {
             } else {
               setRefreshMessage("Session expired. Please log in again.");
               setTimeout(() => {
+                setRefreshMessage("");
+              }, 3000);
+              setTimeout(() => {
                 logout();
               }, 2000);
               return Promise.reject(error);
@@ -84,6 +100,9 @@ export const UserProvider = ({ children }) => {
             clearTimeout(indicatorTimeout);
             setShowRefreshIndicator(false);
             setRefreshMessage("Session expired. Please log in again.");
+            setTimeout(() => {
+              setRefreshMessage("");
+            }, 3000);
             setTimeout(() => {
               logout();
             }, 2000);
@@ -123,13 +142,9 @@ export const UserProvider = ({ children }) => {
         setIsRefreshing(true);
         const refreshed = await refreshAccessToken();
         setIsRefreshing(false);
-        console.log(refreshed)
         if (refreshed) {
-          // Retry auth check after refreshing token
-          console.log("Token refreshed successfully");
           return checkAuth();
         } else {
-          console.log("Token refresh failed");
           logout();
           return;
         }
@@ -313,7 +328,7 @@ export const UserProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.delete(
-        `${BASE_URL}/api/user/delete`,
+        `${BASE_URL}/api/user/delete/${user._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -321,10 +336,13 @@ export const UserProvider = ({ children }) => {
         }
       );
 
-      if (response.data.success) {
+      // Backend returns { message: "User deleted successfully" } with status 200
+      if (response.status === 200 || response.data.message === "User deleted successfully") {
         logout();
         return { success: true };
       }
+      
+      return { success: false, message: "Account deletion failed." };
     } catch (error) {
       console.error("Account deletion failed:", error);
       return {
@@ -363,12 +381,101 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+
+  const forgotPasswordOtp = async (email) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/otp/forgot-otp`,
+        { email },
+      );
+      console.log(response);
+      if (response.status === 201) {
+        return { success: true, message: "OTP sent to email." };
+      }
+    } catch (error) {
+      console.error("Failed to send OTP:", error);
+      return { success: false, message: "Failed to send OTP." };
+    }
+  };
+
+  const forgotPassword = async (email, otp, newPassword) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/user/forgot-password`,
+        { email, otp, newPassword }
+      );
+      if (response.status === 200) {
+        return { success: true, message: "Password reset successful." };
+      }
+    } catch (error) {
+      console.error("Password reset failed:", error);
+      return { success: false, message: "Password reset failed." };
+    }
+  };
+  
+  const changePassword = async(oldPassword,newPassword)=>{
+    try {
+      if(!oldPassword || !newPassword) {
+        return { success: false, message: "Old password and new password are required." };
+      }
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.post(
+        `${BASE_URL}/api/user/change-password`,
+        { oldPassword, newPassword },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        return { success: true, message: "Password changed successfully." };
+      }
+      return { success: false, message: "Password change failed." };
+    } catch (error) {
+      console.error("Password change failed:", error);
+      return { success: false, message: "Password change failed." };
+    }
+  }
+
+  const fetchTotalCounts = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.get(`${BASE_URL}/api/user/total`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.data) {
+          setTotalCounts({
+            totalFiles: response.data.totalFiles || 0,
+            totalFolders: response.data.totalFolders || 0,
+          });
+          setStorageInfo((prev) => ({
+            ...prev,
+            usedBytes: response.data.totalStorageUsed || 0,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching total counts:", error);
+      }
+    };
+
   const value = {
     user,
     loading,
     isAuthenticated,
+    directory,
+    totalCounts,
+    fetchTotalCounts,
+    storageInfo,
+    setStorageInfo,
+    setDirectory,
     login,
     register,
+    forgotPasswordOtp,
+    forgotPassword,
+    changePassword,
     logout,
     refreshAccessToken,
     updateProfile,

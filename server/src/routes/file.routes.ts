@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { listFiles } from "../controllers/file.controller.js";
-import { verifyJwt } from "../utils/verifyJwt.js";
+import { verifyJwt } from "../middleware/verifyJwt.js";
 
 const router = Router();
 

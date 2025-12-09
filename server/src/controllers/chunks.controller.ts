@@ -7,7 +7,7 @@ import {
   r2CompleteMultipart,
 } from "./cloudflare.controller.js";
 import FileModel from "../models/fileSchema.model.js";
-import { extractData } from "../utils/bullmqJobs.js";
+import { connection, extractData } from "../utils/bullmqJobs.js";
 
 interface UploadInitiateBody {
   userId: string;
@@ -156,7 +156,7 @@ export const completeUpload = async (
   res: Response
 ): Promise<unknown> => {
   try {
-    const { sessionId, uploadId, key, parts,fileName,mimeType, size } = req.body;
+    const { sessionId, uploadId, key, parts,fileName,mimeType, size ,location } = req.body;
     
 
     const session = await chunkModel.findById(sessionId);
@@ -193,7 +193,8 @@ export const completeUpload = async (
       size: size,                         
 
       bucket: result.Bucket,             
-      r2Key: key,                       
+      r2Key: key,          
+      location: location || null,             
 
       etag: result.ETag,                
       versionId: result.VersionId,        
@@ -208,7 +209,7 @@ export const completeUpload = async (
     
     // Queue AI processing job
     await extractData(file._id.toString(), fileName, mimeType, key, file.owner.toString());
-  
+    connection.incrby(`user:${session.userId}:dailyUpload`, size);
 
     res.json({
       success: true,

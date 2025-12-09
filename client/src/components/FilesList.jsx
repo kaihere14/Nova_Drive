@@ -21,6 +21,8 @@ import {
   Check,
 } from "lucide-react";
 import BASE_URL from "../config";
+import { useUser } from "../hooks/useUser";
+import { useFolder } from "../context/FolderContext";
 
 const FilesList = forwardRef(
   (
@@ -30,9 +32,11 @@ const FilesList = forwardRef(
       searchQuery = "",
       onStorageUpdate,
       username = "User",
+      maxFiles = null,
     },
     ref
   ) => {
+    const {currentFolderId} = useFolder();
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,34 +54,29 @@ const FilesList = forwardRef(
     useEffect(() => {
       fetchFiles();
       return () => {
-        // Clear all poll timers on unmount
         pollTimers.current.forEach((timer) => clearTimeout(timer));
         pollTimers.current = [];
       };
-    }, [userId]);
+    }, [userId, currentFolderId]);
 
-    // Expose methods to parent component
     useImperativeHandle(ref, () => ({
       refresh: () => {
         fetchFiles(false);
       },
       startPolling: () => {
-        // Clear any existing timers
         pollTimers.current.forEach((timer) => clearTimeout(timer));
         pollTimers.current = [];
 
-        // Schedule 3 polls: at 3s, 5s, and 7s
         const timer1 = setTimeout(() => fetchFiles(true), 3000);
-        const timer2 = setTimeout(() => fetchFiles(true), 5000);
-        const timer3 = setTimeout(() => fetchFiles(true), 7000);
-        const timer4 = setTimeout(() => fetchFiles(true), 10000);
-        const timer5 = setTimeout(() => fetchFiles(true), 10000);
-        const timer6 = setTimeout(() => fetchFiles(true), 10000);
+        const timer2 = setTimeout(() => fetchFiles(true), 7000);
+        const timer3 = setTimeout(() => fetchFiles(true), 10000);
+        const timer4 = setTimeout(() => fetchFiles(true), 20000);
+        
 
-        pollTimers.current = [timer1, timer2, timer3, timer4, timer5, timer6];
+
+        pollTimers.current = [timer1, timer2, timer3, timer4];
       },
     }));
-
     const fetchFiles = async (silent = false) => {
       try {
         if (!silent) {
@@ -85,7 +84,7 @@ const FilesList = forwardRef(
         }
         setIsRefreshing(true);
         const response = await axios.get(
-          `${BASE_URL}/api/files/list-files`,
+          `${BASE_URL}/api/files/list-files?directory=${currentFolderId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -95,21 +94,9 @@ const FilesList = forwardRef(
         setFiles(response.data.files);
         setError(null);
 
-        // Calculate total storage used
-        const totalUsed = response.data.files.reduce(
-          (acc, file) => acc + (file.size || 0),
-          0
-        );
-
-        // Update storage info in parent component
-        if (onStorageUpdate) {
-          onStorageUpdate({
-            usedBytes: totalUsed,
-          });
-        }
+        // ...existing code...
       } catch (err) {
         setError("Failed to load files");
-        console.error("Error fetching files:", err);
       } finally {
         if (!silent) {
           setLoading(false);
@@ -153,7 +140,6 @@ const FilesList = forwardRef(
           window.location.href = response.data.url;
         }
       } catch (err) {
-        console.error("Error downloading file:", err);
         alert("Failed to download file");
       }
     };
@@ -184,7 +170,6 @@ const FilesList = forwardRef(
           fetchFiles();
         }
       } catch (err) {
-        console.error("Error deleting file:", err);
         alert("Failed to delete file");
       }
     };
@@ -300,6 +285,11 @@ const FilesList = forwardRef(
         });
       }
 
+      // Apply max files limit
+      if (maxFiles && maxFiles > 0) {
+        filtered = filtered.slice(0, maxFiles);
+      }
+
       return filtered;
     };
 
@@ -307,10 +297,13 @@ const FilesList = forwardRef(
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     const availableTags = getAllTags();
 
+    // Only show the last 10 tags
+    const lastTenTags = availableTags.slice(-10);
+    const visibleTags = showAllTags ? lastTenTags : lastTenTags.slice(-3);
     return (
       <div className="w-full">
         {/* Tag Filter */}
-        {availableTags.length > 0 && (
+        {lastTenTags.length > 0 && (
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 sm:p-5 mb-5">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <span className="text-xs sm:text-sm font-semibold text-zinc-400 font-mono whitespace-nowrap">
@@ -327,91 +320,33 @@ const FilesList = forwardRef(
                 >
                   All Files
                 </button>
-                {(showAllTags ? availableTags : availableTags.slice(0, 3)).map(
-                  (tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => setSelectedTag(tag)}
-                      className={`px-3 py-1.5 text-sm rounded-lg font-mono transition-all ${
-                        selectedTag === tag
-                          ? "bg-cyan-500 text-white shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)]"
-                          : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
-                      }`}
-                    >
-                      {tag}
-                    </button>
-                  )
-                )}
-                {availableTags.length > 3 && (
+                {visibleTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    className={`px-3 py-1.5 text-sm rounded-lg font-mono transition-all ${
+                      selectedTag === tag
+                        ? "bg-cyan-500 text-white shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)]"
+                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {lastTenTags.length > 3 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
                     className="px-3 py-1.5 text-sm rounded-lg font-mono transition-all bg-zinc-800/50 text-cyan-400 hover:bg-zinc-700 border border-zinc-700"
                   >
                     {showAllTags
                       ? "Show Less"
-                      : `+${availableTags.length - 3} More`}
+                      : `+${lastTenTags.length - 3} More`}
                   </button>
                 )}
               </div>
             </div>
           </div>
         )}
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-8">
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 hover:border-cyan-500/30 transition-all hover:-translate-y-0.5">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white to-zinc-300 flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-            </div>
-            <div className="flex-1">
-              <div className="text-xs sm:text-sm text-zinc-400 mb-1 font-mono">
-                FILES
-              </div>
-              <div className="text-xl sm:text-2xl font-bold text-zinc-100">
-                {filteredFiles.length}
-              </div>
-            </div>
-          </div>
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 hover:border-white/20 transition-all hover:-translate-y-0.5">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white to-zinc-300 flex items-center justify-center">
-              <HardDrive className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-            </div>
-            <div className="flex-1">
-              <div className="text-xs sm:text-sm text-zinc-400 mb-1 font-mono">
-                STORAGE
-              </div>
-              <div className="text-xl sm:text-2xl font-bold text-zinc-100">
-                {formatFileSize(totalSize)}
-              </div>
-            </div>
-          </div>
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 hover:border-white/20 transition-all hover:-translate-y-0.5">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white to-zinc-300 flex items-center justify-center">
-              <Folder className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-            </div>
-            <div className="flex-1">
-              <div className="text-xs sm:text-sm text-zinc-400 mb-1 font-mono">
-                FOLDERS
-              </div>
-              <div className="text-xl sm:text-2xl font-bold text-zinc-100">
-                1
-              </div>
-            </div>
-          </div>
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 hover:border-white/20 transition-all hover:-translate-y-0.5">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white to-zinc-300 flex items-center justify-center">
-              <Star className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-            </div>
-            <div className="flex-1">
-              <div className="text-xs sm:text-sm text-zinc-400 mb-1 font-mono">
-                FAVORITES
-              </div>
-              <div className="text-xl sm:text-2xl font-bold text-zinc-100">
-                0
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Files Table */}
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden">

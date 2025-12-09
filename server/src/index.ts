@@ -4,37 +4,37 @@ import connectDB from "./config/db.config.js";
 import chunkRoutes from "./routes/chunks.routes.js";
 import userRouted from "./routes/user.routes.js";
 import fileRoue from "./routes/file.routes.js";
+import otpRoute from "./routes/otpRoutes.js";
+import folderRoute from "./routes/folder.routes.js";
 import cors from "cors";
 import statusMonitor from "express-status-monitor";
-
-// Load environment variable
 
 const app = express();
 app.use(statusMonitor());
 const PORT = process.env.PORT || 3000;
-
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: "*", // Allow all origins for simplicity; adjust as needed for security
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors({
+  origin: [
+    "https://www.novadrive.space",
+    "https://novadrive.space",
+    "http://localhost:5173"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
-// Routes
 app.use("/api/chunks", chunkRoutes);
 app.use("/api/user", userRouted);
 app.use("/api/files", fileRoue);
+app.use("/api/otp", otpRoute);
+app.use("/api/folders", folderRoute);
 
-// Basic route
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Server is running!" });
 });
 
-// Start server
 connectDB()
   .then(() => {
     app.listen(PORT, () => {

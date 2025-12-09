@@ -1,7 +1,10 @@
+import { tryCatch } from "bullmq";
 import { User } from "../models/user.model.js";
 import { IUser } from "../models/user.model.js";
 import { Request, Response } from "express";
 import jwt, { Secret } from "jsonwebtoken";
+import Folder from "../models/folderModel.js";
+import FileModel from "../models/fileSchema.model.js";
 
 const JWT_SECRET = process.env.JWT_SECRET as Secret;
 
@@ -30,6 +33,7 @@ export const createUser = async (req: Request, res: Response) => {
         .status(409)
         .json({ message: "Username or email already exists" });
     }
+   
     const newUser: IUser = new User({ username, email, password });
     await newUser.save();
     const { accessToken, refreshToken } = generateToken(newUser._id.toString());
@@ -151,4 +155,68 @@ export const refreshAccessToken = (req: Request, res: Response) => {
       .status(500)
       .json({ message: "Error refreshing access token", error });
   }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.otp !== otp || (user.otpExpiry && user.otpExpiry < new Date())) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error resetting password", error });
+  }
+};
+
+
+export const changePassword = async(req:Request,res:Response):Promise<unknown>=>{
+  const {oldPassword,newPassword}= req.body;
+  const userId = (req as any).userId;
+  try {
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const isMatch = await user.comparePassword(oldPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Incorrect old password" });
+    }
+    user.password = newPassword;
+    await user.save();
+    return res.status(200).json({message:"Password changed successfully"});
+  } catch (error) {
+    return res.status(500).json({ message: "Error changing password", error });
+  }
+}
+
+export const allFoldersAndFiles = async (req: Request, res: Response) => {
+    try {
+        const  userId  = (req as any).userId;
+        
+        const foldersCount = await Folder.countDocuments({ ownerId: userId });
+        const filesCount = await FileModel.countDocuments({ owner: userId });
+          const all_files = await FileModel.find({ owner: userId });
+          const totalStorageUsed = all_files.reduce((accumulator, file) => {
+            return accumulator + (file.size || 0);
+          }, 0);
+       
+        res.status(200).json({ totalFolders: foldersCount, totalFiles: filesCount, totalStorageUsed: totalStorageUsed });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
 };

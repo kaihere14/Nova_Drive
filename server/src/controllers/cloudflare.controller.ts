@@ -205,7 +205,6 @@ export async function getPresignedDownloadUrl(
   if(userId && !key.startsWith(`uploads/${userId}/`)) {
     throw new Error('Forbidden: Invalid user for this file key');
   }
-  console.log('Generating presigned URL for key:', key);
   const command = new GetObjectCommand({
     Bucket: process.env.R2_BUCKET_NAME!,
     Key: key,

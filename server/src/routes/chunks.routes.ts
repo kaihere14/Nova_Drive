@@ -13,12 +13,13 @@ import {
   getDownloadUrl,
   deleteUserFile,
 } from "../controllers/cloudflare.controller.js";
-import { verifyJwt } from "../utils/verifyJwt.js";
+import { verifyJwt } from "../middleware/verifyJwt.js";
+import checkLimit from "../middleware/uploadLimit.js";
 
 const router = Router();
 
 // Multipart upload routes
-router.post("/compute-hash-check", computeHashCheck);
+router.post("/compute-hash-check",verifyJwt,checkLimit, computeHashCheck);
 router.post("/logging-hash", loggingHash);
 router.post("/upload-initiate", verifyJwt, uploadInitiate);
 router.post("/get-presigned-url", preAssignUrls);

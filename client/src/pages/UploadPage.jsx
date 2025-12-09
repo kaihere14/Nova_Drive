@@ -1,29 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useChunkUpload } from "../hooks/useChunkUpload";
-import FileInfo from "../components/FileInfo";
-import ProgressBar from "../components/ProgressBar";
-import StatusMessage from "../components/StatusMessage";
-import UploadButton from "../components/UploadButton";
 import FilesList from "../components/FilesList";
-import {
-  Files,
-  Clock,
-  Star,
-  Trash2,
-  Search,
-  Bell,
-  Settings,
-  X,
-  Upload,
-  Package,
-  HardDrive,
-  Zap,
-  LogOut,
-  Menu,
-} from "lucide-react";
+import CreateFolderModal from "../components/CreateFolderModal";
+import DeleteFolderModal from "../components/DeleteFolderModal";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
+import UploadModal from "../components/UploadModal";
+import PageHeader from "../components/PageHeader";
+import StatsCard from "../components/StatsCard";
 import { useUser } from "../hooks/useUser";
+import { useFolder } from "../context/FolderContext";
 import usePageMeta from "../utils/usePageMeta";
+import { FolderOpen, Trash2, MoreVertical } from "lucide-react";
+import BASE_URL from "../config";
 
 const UploadPage = () => {
   usePageMeta(
@@ -31,7 +22,8 @@ const UploadPage = () => {
     "Upload and manage files with chunked multipart uploads to Cloudflare R2."
   );
   const navigate = useNavigate();
-  const { user, checkAuth, loading, logout } = useUser();
+  const { user, checkAuth, loading, logout, totalCounts, fetchTotalCounts,storageInfo,setStorageInfo } = useUser();
+  const { fetchFolders, currentFolderId, folders, loading: folderLoading, deleteFolder } = useFolder();
   const {
     file,
     totalChunks,
@@ -46,13 +38,15 @@ const UploadPage = () => {
 
   const [activeView, setActiveView] = useState("files");
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
+  const [showDeleteFolderModal, setShowDeleteFolderModal] = useState(false);
+  const [folderToDelete, setFolderToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0);
   const [showSidebar, setShowSidebar] = useState(false);
-  const [storageInfo, setStorageInfo] = useState({
-    usedBytes: 0,
-    totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
-  });
+  
+ 
   const filesListRef = useRef();
 
   // Verify authentication on page load
@@ -66,7 +60,6 @@ const UploadPage = () => {
 
       await checkAuth();
 
-      // If still no user after auth check, redirect to login
       if (!user) {
         navigate("/login");
       }
@@ -75,7 +68,15 @@ const UploadPage = () => {
     verifyAuth();
   }, []);
 
-  // Update storage quota when user data loads
+  useEffect(() => {
+    if (user?._id) {
+      fetchFolders(null);
+      fetchTotalCounts();
+    }
+  }, [user]);
+
+  
+
   useEffect(() => {
     if (user?.storageQuota) {
       setStorageInfo((prev) => ({
@@ -85,10 +86,8 @@ const UploadPage = () => {
     }
   }, [user]);
 
-  // Watch for successful upload completion and refresh file list
   useEffect(() => {
     if (uploadStatus === "Upload complete!") {
-      // Manually refresh the file list and start polling
       if (filesListRef.current?.refresh) {
         filesListRef.current.refresh();
       }
@@ -96,8 +95,10 @@ const UploadPage = () => {
       if (filesListRef.current?.startPolling) {
         filesListRef.current.startPolling();
       }
-
-      // Close modal after a brief delay
+      
+      // Refresh total counts after upload
+      fetchTotalCounts();
+      
       setTimeout(() => {
         setShowUploadModal(false);
       }, 1500);
@@ -119,6 +120,28 @@ const UploadPage = () => {
   const handleLogout = async () => {
     await logout();
     navigate("/login");
+  };
+
+  const handleDeleteFolder = async () => {
+    if (!folderToDelete) return;
+
+    setDeleteLoading(true);
+    setDeleteError(null);
+
+    const result = await deleteFolder(folderToDelete._id);
+
+    if (result.success) {
+      setShowDeleteFolderModal(false);
+      setFolderToDelete(null);
+      setDeleteError(null);
+      
+      // Refresh total counts after folder deletion
+      fetchTotalCounts();
+    } else {
+      setDeleteError(result.message);
+    }
+
+    setDeleteLoading(false);
   };
 
   // Show loading state while verifying
@@ -145,216 +168,132 @@ const UploadPage = () => {
         }}
       ></div>
 
-      {/* Mobile Sidebar Overlay */}
-      {showSidebar && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setShowSidebar(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed lg:relative z-50 lg:z-10 ${
-          showSidebar ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 transition-transform duration-300 w-64 min-h-[100dvh] bg-zinc-900/50 backdrop-blur-md border-r border-zinc-800 flex flex-col`}
-      >
-        <div className="px-5 py-6 border-b border-zinc-800">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xl font-bold text-white">
-              <img
-                src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
-                alt="NovaDrive logo"
-                className="w-8 h-8 object-contain"
-              />
-              <span className="text-xl font-bold text-white">NovaDrive</span>
-            </div>
-            <button
-              className="lg:hidden p-2 hover:bg-zinc-800 rounded-lg transition-colors"
-              onClick={() => setShowSidebar(false)}
-            >
-              <X className="w-5 h-5 text-zinc-400" />
-            </button>
-          </div>
-        </div>
-        <nav className="flex-1 px-3 py-5 space-y-1">
-          <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-              activeView === "files"
-                ? "bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/30"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-            }`}
-            onClick={() => setActiveView("files")}
-          >
-            <Files className="w-5 h-5" />
-            <span>My Files</span>
-          </button>
-          <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-              activeView === "recent"
-                ? "bg-white/10 text-white font-semibold border border-white/20"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-            }`}
-            onClick={() => setActiveView("recent")}
-          >
-            <Clock className="w-5 h-5" />
-            <span>Recent Files</span>
-          </button>
-          <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-              activeView === "favorites"
-                ? "bg-white/10 text-white font-semibold border border-white/20"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-            }`}
-            onClick={() => setActiveView("favorites")}
-          >
-            <Star className="w-5 h-5" />
-            <span>Favorites</span>
-          </button>
-          <button
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-              activeView === "trash"
-                ? "bg-white/10 text-white font-semibold border border-white/20"
-                : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-            }`}
-            onClick={() => setActiveView("trash")}
-          >
-            <Trash2 className="w-5 h-5" />
-            <span>Recycle Bin</span>
-          </button>
-        </nav>
-        <div className="px-5 py-5 border-t border-zinc-800">
-          <div className="text-xs">
-            <div className="flex items-center gap-2 text-zinc-400 font-mono mb-3">
-              <HardDrive className="w-4 h-4" />
-              <span>STORAGE STATUS</span>
-            </div>
-            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
-              <div
-                className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all"
-                style={{ width: `${storagePercentage}%` }}
-              ></div>
-            </div>
-            <div className="text-zinc-500 font-mono">
-              {formatFileSize(storageInfo.usedBytes)} /{" "}
-              {formatFileSize(storageInfo.totalBytes)}
-            </div>
-            <div className="mt-3 flex items-center gap-2 text-green-500">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="font-mono text-xs">OPERATIONAL</span>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 mt-3 rounded-lg text-sm transition-all text-red-400 hover:bg-red-500/10 hover:text-red-300 border border-red-500/20 hover:border-red-500/40"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="font-mono">LOGOUT</span>
-          </button>
-        </div>
-      </aside>
+      {/* Sidebar Component */}
+      <Sidebar
+        activeView={activeView}
+        setActiveView={setActiveView}
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+        storageInfo={storageInfo}
+        formatFileSize={formatFileSize}
+        storagePercentage={storagePercentage}
+        handleLogout={handleLogout}
+      />
 
       {/* Main Content */}
       <main className="relative z-10 flex-1 flex flex-col overflow-hidden">
-        <header className="px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
-          {/* Mobile Layout - Single Row */}
-          <div className="flex lg:hidden items-center gap-3 w-full">
-            <button
-              className="p-2 hover:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
-              onClick={() => setShowSidebar(true)}
-            >
-              <Menu className="w-5 h-5 text-zinc-400" />
-            </button>
-            <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg flex-1 border border-zinc-700">
-              <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
-              />
-            </div>
-            <div
-              className="p-2 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
-              onClick={() => navigate("/profile")}
-            >
-              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-                {user?.username
-                  ? user.username.substring(0, 2).toUpperCase()
-                  : "U"}
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop Layout */}
-          <div className="hidden lg:flex justify-between items-center">
-            <div className="flex items-center gap-3 bg-zinc-800/50 px-4 py-2.5 rounded-lg w-96 border border-zinc-700">
-              <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search files..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
-                <Bell className="w-5 h-5 text-zinc-400" />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
-                <Settings className="w-5 h-5 text-zinc-400" />
-              </button>
-              <div
-                className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors"
-                onClick={() => navigate("/profile")}
-              >
-                <span className="text-sm font-medium text-zinc-200">
-                  {user?.username || "User"}
-                </span>
-                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-                  {user?.username
-                    ? user.username.substring(0, 2).toUpperCase()
-                    : "U"}
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
+        {/* Header Component */}
+        <Header
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          setShowSidebar={setShowSidebar}
+          user={user}
+        />
 
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 bg-zinc-950">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                {activeView === "files" && "My Files"}
-                {activeView === "recent" && "Recent Files"}
-                {activeView === "favorites" && "Favorites"}
-                {activeView === "trash" && "Recycle Bin"}
-              </h1>
-              <p className="mt-2 text-zinc-500 font-mono text-xs sm:text-sm">
-                {activeView === "files" && "All your uploaded files"}
-                {activeView === "recent" && "Recently accessed files"}
-                {activeView === "favorites" && "Starred files"}
-                {activeView === "trash" && "Deleted files"}
-              </p>
-            </div>
-            <button
-              className="w-full sm:w-auto px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2"
-              onClick={() => setShowUploadModal(true)}
-            >
-              <Upload className="w-5 h-5" />
-              <span className="hidden sm:inline">Upload New File</span>
-              <span className="sm:hidden">Upload File</span>
-            </button>
-          </div>
+          {/* Page Header Component */}
+          <PageHeader
+            activeView={activeView}
+            showUploadButton={true}
+            showCreateFolderButton={true}
+            setShowUploadModal={setShowUploadModal}
+            setShowCreateFolderModal={setShowCreateFolderModal}
+          />
 
+          {/* Stats Cards - Above Folders */}
+          <StatsCard
+            files={totalCounts.totalFiles}
+            storage={formatFileSize(storageInfo.usedBytes)}
+            folders={totalCounts.totalFolders}
+            favorites={0}
+            formatFileSize={formatFileSize}
+          />
+
+          {/* Folders Grid */}
+          {activeView === "files" && folders.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-sm font-semibold text-zinc-300 mb-4 uppercase tracking-wider">
+                Folders
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {folders.map((folder) => (
+                  <div
+                    key={folder._id}
+                    className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-700/30 hover:border-blue-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1"
+                  >
+                    {/* Subtle gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/5 transition-all duration-300 pointer-events-none" />
+
+                    {/* Delete Button - Always visible on mobile, hover on desktop */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFolderToDelete(folder);
+                        setShowDeleteFolderModal(true);
+                      }}
+                      className="absolute top-3 right-3 p-2 bg-zinc-900/80 backdrop-blur-sm hover:bg-red-500/20 text-zinc-400 hover:text-red-400 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 z-10 hover:scale-110"
+                      title="Delete folder"
+                    >
+                      {/* Show three dots on mobile, trash icon on desktop */}
+                      <MoreVertical className="w-4 h-4 md:hidden" />
+                      <Trash2 className="w-4 h-4 hidden md:block" />
+                    </button>
+
+                    {/* Folder Content */}
+                    <div
+                      onClick={() => navigate(`/folder/${folder._id}`)}
+                      className="cursor-pointer p-5 relative"
+                    >
+                      {/* Folder Icon Container */}
+                      <div className="relative mb-4 h-20 flex items-center justify-center">
+                        {/* Background glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-blue-600/10 to-transparent rounded-xl blur-xl group-hover:from-blue-500/30 group-hover:via-blue-600/20 transition-all duration-300" />
+
+                        {/* Icon container */}
+                        <div className="relative bg-gradient-to-br from-blue-500/10 to-blue-600/5 p-4 rounded-xl border border-blue-500/20 group-hover:border-blue-500/40 group-hover:scale-110 transition-all duration-300">
+                          <FolderOpen
+                            className="w-9 h-9 text-blue-400 group-hover:text-blue-300 transition-colors duration-300"
+                            strokeWidth={1.5}
+                          />
+
+                          {/* Subtle shine effect */}
+                          <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+                        </div>
+                      </div>
+
+                      {/* Folder Info */}
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-semibold text-white truncate group-hover:text-blue-300 transition-colors duration-200">
+                          {folder.name}
+                        </h4>
+
+                        <div className="flex items-center gap-2 text-xs text-zinc-500">
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span className="group-hover:text-zinc-400 transition-colors">
+                            {new Date(folder.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Bottom accent line */}
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500/0 to-transparent group-hover:via-blue-500/50 transition-all duration-300" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Files List */}
           <FilesList
             ref={filesListRef}
             userId={user?._id || ""}
             username={user?.username || "User"}
             activeView={activeView}
             searchQuery={searchQuery}
+            maxFiles={3}
             onStorageUpdate={(info) =>
               setStorageInfo((prev) => ({ ...prev, ...info }))
             }
@@ -362,90 +301,45 @@ const UploadPage = () => {
         </div>
       </main>
 
-      {/* Upload Modal */}
-      {showUploadModal && (
-        <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={() => setShowUploadModal(false)}
-        >
-          <div
-            className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center px-6 py-5 border-b border-zinc-800">
-              <div>
-                <h2 className="text-xl font-semibold text-white">
-                  Upload New File
-                </h2>
-                <p className="text-sm text-zinc-500 font-mono mt-1">
-                  Chunked upload with resume support
-                </p>
-              </div>
-              <button
-                className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors"
-                onClick={() => setShowUploadModal(false)}
-              >
-                <X className="w-5 h-5 text-zinc-400" />
-              </button>
-            </div>
-            <div className="px-6 py-6 space-y-5">
-              {/* File Input Area */}
-              <div className="border-2 border-dashed border-zinc-700 rounded-lg p-8 hover:border-cyan-500/40 transition-colors bg-zinc-800/30">
-                <div className="text-center">
-                  <Upload className="w-12 h-12 mx-auto mb-3 text-zinc-600" />
-                  <label
-                    htmlFor="file-input"
-                    className="cursor-pointer inline-block"
-                  >
-                    <span className="text-cyan-400 hover:text-cyan-300 font-semibold">
-                      Click to upload
-                    </span>
-                    <span className="text-zinc-500"> or drag and drop</span>
-                  </label>
-                  <p className="text-sm text-zinc-500 mt-2 font-mono">
-                    Any file type // Max 10GB per file
-                  </p>
-                  <input
-                    type="file"
-                    onChange={handleFileChange}
-                    id="file-input"
-                    className="hidden"
-                  />
-                </div>
-              </div>
+      {/* Upload Modal Component */}
+      <UploadModal
+        showUploadModal={showUploadModal}
+        setShowUploadModal={setShowUploadModal}
+        file={file}
+        totalChunks={totalChunks}
+        form={form}
+        uploading={uploading}
+        progress={progress}
+        uploadStatus={uploadStatus}
+        processing={processing}
+        handleFileChange={handleFileChange}
+        handleUpload={handleUpload}
+      />
 
-              {file && (
-                <>
-                  <FileInfo
-                    file={file}
-                    totalChunks={totalChunks}
-                    chunkSize={form.chunkSize}
-                  />
+      {/* Create Folder Modal Component */}
+      <CreateFolderModal
+        isOpen={showCreateFolderModal}
+        onClose={() => {
+          setShowCreateFolderModal(false);
+          // Refresh total counts after folder creation
+          fetchTotalCounts();
+        }}
+        currentFolderId={currentFolderId}
+      />
 
-                  <UploadButton
-                    onClick={handleUpload}
-                    disabled={!file || uploading || processing}
-                    uploading={uploading}
-                    processing={processing}
-                  />
-                </>
-              )}
-
-              <ProgressBar
-                uploading={uploading}
-                processing={processing}
-                progress={progress}
-              />
-
-              <StatusMessage
-                status={uploadStatus}
-                uploading={uploading}
-                processing={processing}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Folder Modal Component */}
+      <DeleteFolderModal
+        isOpen={showDeleteFolderModal}
+        onClose={() => {
+          setShowDeleteFolderModal(false);
+          setFolderToDelete(null);
+          setDeleteError(null);
+        }}
+        onConfirm={handleDeleteFolder}
+        folderName={folderToDelete?.name || ""}
+        loading={deleteLoading}
+        error={deleteError}
+      />
     </div>
   );
 };

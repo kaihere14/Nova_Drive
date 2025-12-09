@@ -1,28 +1,35 @@
 import React from "react";
 import UploadPage from "./pages/UploadPage";
+import FolderPage from "./pages/FolderPage";
 import { Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import { UserProvider } from "./context/UserContext";
+import { FolderProvider } from "./context/FolderContext";
 import SignupPage from "./pages/SignupPage";
 import ArchitecturePage from "./pages/ArchitecturePage";
 import PricingPage from "./pages/PricingPage";
 import ProfilePage from "./pages/ProfilePage";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   return (
     <UserProvider>
-      <div className="App">
-        <Routes>
-          <Route path="/architecture" element={<ArchitecturePage />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="/register" element={<SignupPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        </Routes>
-      </div>
+      <FolderProvider>
+        <div className="App">
+          <Routes>
+            <Route path="/architecture" element={<ArchitecturePage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/register" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/upload" element={<UploadPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/folder/:folderId" element={<FolderPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword/>} />
+          </Routes>
+        </div>
+      </FolderProvider>
     </UserProvider>
   );
 }

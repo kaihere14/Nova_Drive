@@ -7,22 +7,22 @@ const ProgressBar = ({ uploading, processing, progress }) => {
     <div className="space-y-3">
       {uploading && (
         <>
-          <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="relative h-2 bg-gradient-to-r from-zinc-800 to-zinc-900 rounded-full overflow-hidden border border-cyan-500/20">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 transition-all duration-300 shadow-lg shadow-cyan-500/30 rounded-full"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
           <div className="flex justify-between items-center text-sm font-mono">
             <span className="text-zinc-400">UPLOADING_CHUNKS</span>
-            <span className="text-blue-400">{progress}%</span>
+            <span className="text-cyan-400 font-semibold">{progress}%</span>
           </div>
         </>
       )}
       {processing && (
-        <div className="flex items-center gap-3 text-sm font-mono">
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-          <span className="text-zinc-400">PROCESSING_FILE...</span>
+        <div className="flex items-center gap-3 text-sm font-mono p-3 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 border border-blue-500/20 rounded-lg">
+          <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full animate-pulse shadow-lg shadow-blue-500/30"></div>
+          <span className="text-zinc-300">PROCESSING_FILE...</span>
         </div>
       )}
     </div>

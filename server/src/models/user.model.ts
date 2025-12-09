@@ -7,6 +7,8 @@ export interface IUser extends Document {
   password: string;
   storageQuota: number; // Storage quota in bytes
   createdAt: Date;
+  otp ?: string;
+  otpExpiry?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -16,6 +18,8 @@ const UserSchema = new Schema<IUser>({
   password: { type: String, required: true },
   storageQuota: { type: Number, default: 10 * 1024 * 1024 * 1024 }, // Default 10 GB
   createdAt: { type: Date, default: Date.now },
+  otp: { type: String },
+  otpExpiry: { type: Date },
 });
 
 UserSchema.pre<IUser>('save', async function (next) {
