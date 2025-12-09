@@ -11,7 +11,7 @@ import ArchitecturePage from "./pages/ArchitecturePage";
 import PricingPage from "./pages/PricingPage";
 import ProfilePage from "./pages/ProfilePage";
 import ForgotPassword from "./pages/ForgotPassword";
-import OAuthPage from "./pages/oAuthPage";
+import OAuthPage from "./pages/OAuthPage";
 
 function App() {
   return (
