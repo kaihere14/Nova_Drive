@@ -101,7 +101,7 @@ const Navbar = () => {
                 Log in
               </Link>
               <Link
-                to="/signup"
+                to="/register"
                 className="block text-center bg-white text-black px-4 py-2 rounded hover:bg-zinc-200 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >

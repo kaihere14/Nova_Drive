@@ -40,7 +40,7 @@ export const googleAuthCallback = async(req: Request, res: Response) => {
 
     const userInfo = userInfoRes.data;
     const { user, accessToken, refreshToken,message } = await createOAuthUser(userInfo);
-    const redirectUrl = `http://localhost:5173/oauth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&message=${encodeURIComponent(message)}`;
+    const redirectUrl = `https://novadrive.space/oauth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&message=${encodeURIComponent(message)}`;
     res.redirect(redirectUrl);
     } catch (error) {
         res.status(500).json({ message: "Error during Google OAuth callback", error });
