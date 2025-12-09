@@ -60,6 +60,9 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
+    if(user.authProvider === "google") {
+      return res.status(401).json({ message: "Please login using Google OAuth" });
+    }
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });

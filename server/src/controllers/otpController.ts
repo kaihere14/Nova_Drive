@@ -61,6 +61,9 @@ export const forgotOtp = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ message: "User with this email does not exist" });
         }
+        if(user.authProvider=="google"){
+            return res.status(400).json({ message: "Cannot reset password for Google OAuth users" });
+        }
         user.otp = generatedOtp;
         user.otpExpiry = otpExpiry;
         await user.save();

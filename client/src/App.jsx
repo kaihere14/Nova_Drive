@@ -11,6 +11,7 @@ import ArchitecturePage from "./pages/ArchitecturePage";
 import PricingPage from "./pages/PricingPage";
 import ProfilePage from "./pages/ProfilePage";
 import ForgotPassword from "./pages/ForgotPassword";
+import OAuthPage from "./pages/oAuthPage";
 
 function App() {
   return (
@@ -22,11 +23,12 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/oauth/callback" element={<OAuthPage />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/folder/:folderId" element={<FolderPage />} />
-            <Route path="/forgot-password" element={<ForgotPassword/>} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Routes>
         </div>
       </FolderProvider>

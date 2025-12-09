@@ -24,7 +24,8 @@ const ProfilePage = () => {
     "Your NovaDrive profile, storage usage and account details."
   );
   const navigate = useNavigate();
-  const { user, loading, logout, deleteAccount, changePassword } = useUser();
+  const { user, loading, logout, deleteAccount, changePassword, oAuthUser } =
+    useUser();
   const [stats, setStats] = useState({
     totalFiles: 0,
     storageUsed: "0 GB",
@@ -34,7 +35,7 @@ const ProfilePage = () => {
   const [deleteInput, setDeleteInput] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
-  
+
   // Change Password Modal States
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
@@ -64,14 +65,11 @@ const ProfilePage = () => {
 
         try {
           // Fetch user's files to calculate actual storage
-          const response = await axios.get(
-            `${BASE_URL}/api/files/list-files`,
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-              },
-            }
-          );
+          const response = await axios.get(`${BASE_URL}/api/files/list-files`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          });
 
           const files = response.data.files || [];
           const totalFiles = files.length;
@@ -141,7 +139,7 @@ const ProfilePage = () => {
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    
+
     if (!oldPassword.trim()) {
       setPasswordError("Old password is required");
       return;
@@ -338,23 +336,40 @@ const ProfilePage = () => {
               ACCOUNT_SETTINGS
             </h2>
             <div className="relative space-y-3">
-              <button 
-                onClick={() => setShowPasswordModal(true)}
-                className="group w-full flex items-center justify-between px-4 py-3 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 hover:from-zinc-800 hover:to-zinc-900 border border-blue-500/10 hover:border-blue-500/30 rounded-lg transition-all duration-200 text-left hover:shadow-lg hover:shadow-blue-500/5">
-                <span className="text-zinc-200 font-medium group-hover:text-blue-300 transition-colors">
-                  Change Password
-                </span>
-                <Edit2 className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
-              </button>
-              <button className="group w-full flex items-center justify-between px-4 py-3 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 hover:from-zinc-800 hover:to-zinc-900 border border-cyan-500/10 hover:border-cyan-500/30 rounded-lg transition-all duration-200 text-left hover:shadow-lg hover:shadow-cyan-500/5">
-                <span className="text-zinc-200 font-medium group-hover:text-cyan-300 transition-colors">Update Email</span>
-                <Edit2 className="w-4 h-4 text-zinc-400 group-hover:text-cyan-400 transition-colors" />
-              </button>
-              <button 
+              {!oAuthUser && (
+                <>
+                  <button
+                    onClick={() => setShowPasswordModal(true)}
+                    className="group w-full flex items-center justify-between px-4 py-3 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 hover:from-zinc-800 hover:to-zinc-900 border border-blue-500/10 hover:border-blue-500/30 rounded-lg transition-all duration-200 text-left hover:shadow-lg hover:shadow-blue-500/5"
+                  >
+                    <span className="text-zinc-200 font-medium group-hover:text-blue-300 transition-colors">
+                      Change Password
+                    </span>
+                    <Edit2 className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+                  </button>
+                  <button className="group w-full flex items-center justify-between px-4 py-3 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 hover:from-zinc-800 hover:to-zinc-900 border border-cyan-500/10 hover:border-cyan-500/30 rounded-lg transition-all duration-200 text-left hover:shadow-lg hover:shadow-cyan-500/5">
+                    <span className="text-zinc-200 font-medium group-hover:text-cyan-300 transition-colors">
+                      Update Email
+                    </span>
+                    <Edit2 className="w-4 h-4 text-zinc-400 group-hover:text-cyan-400 transition-colors" />
+                  </button>
+                </>
+              )}
+              {oAuthUser && (
+                <div className="px-4 py-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                  <p className="text-blue-300 text-sm font-mono flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    Signed in with Google OAuth
+                  </p>
+                </div>
+              )}
+              <button
                 onClick={() => setShowDeleteModal(true)}
                 className="group w-full flex items-center justify-between px-4 py-3 bg-gradient-to-br from-red-900/20 to-red-950/20 hover:from-red-900/30 hover:to-red-950/30 border border-red-500/20 hover:border-red-500/40 rounded-lg transition-all duration-200 text-left hover:shadow-lg hover:shadow-red-500/5"
               >
-                <span className="text-red-300 font-medium group-hover:text-red-200 transition-colors">Delete Account</span>
+                <span className="text-red-300 font-medium group-hover:text-red-200 transition-colors">
+                  Delete Account
+                </span>
                 <Shield className="w-4 h-4 text-red-400 group-hover:text-red-300 transition-colors" />
               </button>
             </div>
@@ -368,7 +383,7 @@ const ProfilePage = () => {
           <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-blue-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/3 transition-all duration-300 pointer-events-none" />
-            
+
             {/* Close Button */}
             <button
               onClick={() => {
@@ -413,19 +428,26 @@ const ProfilePage = () => {
             {/* Error Message */}
             {passwordError && (
               <div className="relative mb-4 p-4 bg-gradient-to-br from-red-900/30 to-red-950/30 border border-red-500/30 rounded-lg">
-                <p className="text-red-300 text-sm font-medium">{passwordError}</p>
+                <p className="text-red-300 text-sm font-medium">
+                  {passwordError}
+                </p>
               </div>
             )}
 
             {/* Success Message */}
             {passwordSuccess && (
               <div className="relative mb-4 p-4 bg-gradient-to-br from-green-900/30 to-green-950/30 border border-green-500/30 rounded-lg">
-                <p className="text-green-300 text-sm font-medium">{passwordSuccess}</p>
+                <p className="text-green-300 text-sm font-medium">
+                  {passwordSuccess}
+                </p>
               </div>
             )}
 
             {/* Password Form */}
-            <form onSubmit={handleChangePassword} className="relative space-y-4">
+            <form
+              onSubmit={handleChangePassword}
+              className="relative space-y-4"
+            >
               {/* Old Password */}
               <div>
                 <label
@@ -567,7 +589,7 @@ const ProfilePage = () => {
           <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-red-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-transparent group-hover:from-red-500/3 transition-all duration-300 pointer-events-none" />
-            
+
             {/* Close Button */}
             <button
               onClick={() => {
@@ -602,7 +624,8 @@ const ProfilePage = () => {
                 DELETE_ACCOUNT
               </h3>
               <p className="text-zinc-400 text-sm">
-                This action cannot be undone. All your files and data will be permanently deleted.
+                This action cannot be undone. All your files and data will be
+                permanently deleted.
               </p>
             </div>
 

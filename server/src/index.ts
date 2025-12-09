@@ -6,6 +6,7 @@ import userRouted from "./routes/user.routes.js";
 import fileRoue from "./routes/file.routes.js";
 import otpRoute from "./routes/otpRoutes.js";
 import folderRoute from "./routes/folder.routes.js";
+import oAuthRoute from "./routes/oAuth.route.js";
 import cors from "cors";
 import statusMonitor from "express-status-monitor";
 
@@ -30,6 +31,7 @@ app.use("/api/user", userRouted);
 app.use("/api/files", fileRoue);
 app.use("/api/otp", otpRoute);
 app.use("/api/folders", folderRoute);
+app.use("/api/auth/google", oAuthRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Server is running!" });

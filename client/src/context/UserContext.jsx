@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import LoadingScreen from "../components/LoadingScreen";
-import BASE_URL from '../config';
+import BASE_URL from "../config";
 
 export const UserContext = createContext();
 
@@ -12,16 +12,16 @@ export const UserProvider = ({ children }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showRefreshIndicator, setShowRefreshIndicator] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState("");
+  const[oAuthUser,setOAuthUser]=useState(null);
   const [directory, setDirectory] = useState(null); // New state for folder location
   const [totalCounts, setTotalCounts] = useState({
-      totalFiles: 0,
-      totalFolders: 0,
-    });
-    const [storageInfo, setStorageInfo] = useState({
-        usedBytes: 0,
-        totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
-      });
-
+    totalFiles: 0,
+    totalFolders: 0,
+  });
+  const [storageInfo, setStorageInfo] = useState({
+    usedBytes: 0,
+    totalBytes: user?.storageQuota || 10 * 1024 * 1024 * 1024, // Default 10 GB
+  });
 
   // Setup axios interceptor for 401 errors with auto-retry
   useEffect(() => {
@@ -32,10 +32,10 @@ export const UserProvider = ({ children }) => {
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
-        
+
         if (error.response?.status === 401 && !originalRequest._retry) {
           const refreshToken = localStorage.getItem("refreshToken");
-          
+
           if (!refreshToken) {
             setRefreshMessage("Session expired. Please log in again.");
             setTimeout(() => {
@@ -48,7 +48,7 @@ export const UserProvider = ({ children }) => {
           }
 
           originalRequest._retry = true;
-          
+
           // If already refreshing, wait for that promise
           if (isCurrentlyRefreshing && refreshPromise) {
             try {
@@ -66,7 +66,7 @@ export const UserProvider = ({ children }) => {
           // Start refresh with delayed indicator
           isCurrentlyRefreshing = true;
           const startTime = Date.now();
-          
+
           // Show indicator only if refresh takes > 400ms
           const indicatorTimeout = setTimeout(() => {
             setShowRefreshIndicator(true);
@@ -75,12 +75,12 @@ export const UserProvider = ({ children }) => {
           try {
             refreshPromise = refreshAccessToken();
             const refreshed = await refreshPromise;
-            
+
             clearTimeout(indicatorTimeout);
             setShowRefreshIndicator(false);
-            
+
             const duration = Date.now() - startTime;
-            
+
             if (refreshed) {
               // Retry the original request with new token
               const newToken = localStorage.getItem("accessToken");
@@ -112,7 +112,7 @@ export const UserProvider = ({ children }) => {
             refreshPromise = null;
           }
         }
-        
+
         return Promise.reject(error);
       }
     );
@@ -151,14 +151,11 @@ export const UserProvider = ({ children }) => {
       }
 
       // Verify token and get user data
-      const response = await axios.get(
-        `${BASE_URL}/api/user/verify-auth`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/api/user/verify-auth`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.status === 200 && response.data) {
         // Store full user object from response
@@ -186,13 +183,10 @@ export const UserProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/user/login`,
-        {
-          email,
-          password,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/api/user/login`, {
+        email,
+        password,
+      });
 
       if (response.data) {
         const { accessToken, refreshToken, user } = response.data;
@@ -217,16 +211,28 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const googleRegisterOrLogin = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/auth/google`);
+        return { success: true };
+      } catch (error) {
+      console.error("Google Registration failed:", error);
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          "Registration failed. Please try again.",
+      };
+    }
+  };
+
   const register = async (name, email, password) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/user/register`,
-        {
-          username: name,
-          email,
-          password,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/api/user/register`, {
+        username: name,
+        email,
+        password,
+      });
       if (response.data) {
         const { accessToken, refreshToken, newUser } = response.data;
 
@@ -277,19 +283,14 @@ export const UserProvider = ({ children }) => {
         return false;
       }
 
-      const response = await axios.post(
-        `${BASE_URL}/api/user/refresh-token`,
-        {
-          refreshToken,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/api/user/refresh-token`, {
+        refreshToken,
+      });
 
-      
-        const { accessToken,refreshToken:refreshToken2 } = response.data;
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken2);
-        return true;
-      
+      const { accessToken, refreshToken: refreshToken2 } = response.data;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken2);
+      return true;
 
       return false;
     } catch (error) {
@@ -337,11 +338,14 @@ export const UserProvider = ({ children }) => {
       );
 
       // Backend returns { message: "User deleted successfully" } with status 200
-      if (response.status === 200 || response.data.message === "User deleted successfully") {
+      if (
+        response.status === 200 ||
+        response.data.message === "User deleted successfully"
+      ) {
         logout();
         return { success: true };
       }
-      
+
       return { success: false, message: "Account deletion failed." };
     } catch (error) {
       console.error("Account deletion failed:", error);
@@ -363,12 +367,9 @@ export const UserProvider = ({ children }) => {
       if (!refreshToken) {
         isAuthenticated(false);
       }
-      const response = await axios.post(
-        `${BASE_URL}/api/user/refresh-token`,
-        {
-          refreshToken,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/api/user/refresh-token`, {
+        refreshToken,
+      });
       if (response.data.statusCode === 200) {
         const { accessToken } = response.data;
         localStorage.setItem("accessToken", accessToken);
@@ -381,20 +382,21 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-
   const forgotPasswordOtp = async (email) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/otp/forgot-otp`,
-        { email },
-      );
+      const response = await axios.post(`${BASE_URL}/api/otp/forgot-otp`, {
+        email,
+      });
       console.log(response);
       if (response.status === 201) {
         return { success: true, message: "OTP sent to email." };
       }
     } catch (error) {
       console.error("Failed to send OTP:", error);
-      return { success: false, message: "Failed to send OTP." };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to send OTP.",
+      };
     }
   };
 
@@ -412,11 +414,14 @@ export const UserProvider = ({ children }) => {
       return { success: false, message: "Password reset failed." };
     }
   };
-  
-  const changePassword = async(oldPassword,newPassword)=>{
+
+  const changePassword = async (oldPassword, newPassword) => {
     try {
-      if(!oldPassword || !newPassword) {
-        return { success: false, message: "Old password and new password are required." };
+      if (!oldPassword || !newPassword) {
+        return {
+          success: false,
+          message: "Old password and new password are required.",
+        };
       }
       const token = localStorage.getItem("accessToken");
       const response = await axios.post(
@@ -436,30 +441,30 @@ export const UserProvider = ({ children }) => {
       console.error("Password change failed:", error);
       return { success: false, message: "Password change failed." };
     }
-  }
+  };
 
   const fetchTotalCounts = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        const response = await axios.get(`${BASE_URL}/api/user/total`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(`${BASE_URL}/api/user/total`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data) {
+        setTotalCounts({
+          totalFiles: response.data.totalFiles || 0,
+          totalFolders: response.data.totalFolders || 0,
         });
-        if (response.data) {
-          setTotalCounts({
-            totalFiles: response.data.totalFiles || 0,
-            totalFolders: response.data.totalFolders || 0,
-          });
-          setStorageInfo((prev) => ({
-            ...prev,
-            usedBytes: response.data.totalStorageUsed || 0,
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching total counts:", error);
+        setStorageInfo((prev) => ({
+          ...prev,
+          usedBytes: response.data.totalStorageUsed || 0,
+        }));
       }
-    };
+    } catch (error) {
+      console.error("Error fetching total counts:", error);
+    }
+  };
 
   const value = {
     user,
@@ -467,7 +472,10 @@ export const UserProvider = ({ children }) => {
     isAuthenticated,
     directory,
     totalCounts,
+    oAuthUser,
+    setOAuthUser,
     fetchTotalCounts,
+    googleRegisterOrLogin,
     storageInfo,
     setStorageInfo,
     setDirectory,
@@ -486,8 +494,16 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider value={value}>
-      {(loading || isRefreshing) && <LoadingScreen message={isRefreshing ? "Refreshing your session..." : "Verifying your session..."} />}
-      
+      {(loading || isRefreshing) && (
+        <LoadingScreen
+          message={
+            isRefreshing
+              ? "Refreshing your session..."
+              : "Verifying your session..."
+          }
+        />
+      )}
+
       {/* Non-blocking refresh indicator - appears at top during token refresh */}
       {showRefreshIndicator && (
         <div className="fixed top-0 left-0 right-0 z-[100] bg-zinc-900/95 backdrop-blur-sm border-b border-zinc-700 px-4 py-3 flex items-center justify-center gap-3 shadow-lg animate-in slide-in-from-top duration-300">
@@ -506,7 +522,7 @@ export const UserProvider = ({ children }) => {
           </span>
         </div>
       )}
-      
+
       {!loading && !isRefreshing && children}
     </UserContext.Provider>
   );
