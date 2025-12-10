@@ -106,12 +106,16 @@ const HomePage = () => {
               with auto-tagging, chunked uploads, and API-first retrieval.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <button className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-md font-medium transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)]">
-                Deploy Personal Cloud
-              </button>
-              <button className="px-6 py-3 rounded-md font-medium text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-all">
-                Read Documentation
-              </button>
+              <Link to="/login">
+                <button className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-md font-medium transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)]">
+                  Start Now
+                </button>
+              </Link>
+              <Link to="/architecture">
+                <button className="px-6 py-3 rounded-md font-medium text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-all">
+                  Know More
+                </button>
+              </Link>
             </div>
 
             <div className="mt-8 sm:mt-12 flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono text-zinc-500">
