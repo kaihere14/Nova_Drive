@@ -28,6 +28,9 @@ export const createUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if(existingUser && existingUser.authProvider === "google") {
+      return res.status(409).json({ message: "Email already registered via Google OAuth. Please login using Google." });
+    }
     if (existingUser) {
       return res
         .status(409)

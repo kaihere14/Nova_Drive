@@ -1,189 +1,471 @@
 # NovaDrive - Complete Application Flow Documentation
 
-## Updates Based on Latest Codebase
+## Overview
 
-### Client Updates
+NovaDrive is a modern cloud storage application built with React (frontend) and Node.js/Express (backend) that provides secure file storage with AI-powered organization features. The application supports chunked file uploads, Google OAuth authentication, hierarchical folder management, and automatic AI-generated tags and summaries for uploaded files.
 
-1. **Dependencies**:
+## Architecture
 
-   - Added `multer` for file handling.
-   - Updated React and React-DOM to version 19.2.0.
-   - TailwindCSS and Vite dependencies updated to the latest versions.
+### Technology Stack
 
-2. **App Structure**:
+**Frontend:**
 
-   - `App.jsx` defines routes for pages like `UploadPage`, `LoginPage`, `SignupPage`, `ProfilePage`, etc.
-   - `UserProvider` wraps the app to manage authentication and user state globally.
+- React 19.2.0 with Vite build system
+- TailwindCSS for styling
+- Axios for HTTP requests
+- React Router for navigation
+- Lucide React for icons
 
-3. **Hooks**:
+**Backend:**
 
-   - `useChunkUpload.js` handles file uploads, including chunking, hashing, and progress tracking.
-   - `useUser.js` provides user-related utilities.
+- Node.js with Express framework
+- TypeScript for type safety
+- MongoDB with Mongoose ODM
+- JWT for authentication
+- BullMQ with Redis for job queues
 
-4. **Context**:
-   - `UserContext.jsx` manages authentication, token refresh, and user session state.
-   - Axios interceptors handle 401 errors and auto-refresh tokens.
+**External Services:**
 
-### Server Updates
+- Cloudflare R2 for object storage
+- Google OAuth 2.0 for authentication
+- Google Gemini AI for file analysis
+- Resend for email services
+- Redis for background job processing
 
-1. **Dependencies**:
+## Database Models
 
-   - Added `@aws-sdk` for S3 operations.
-   - Added `bullmq` for job queue management.
-   - Updated `mongoose` to version 8.20.0.
+### User Model (`user.model.ts`)
 
-2. **Routes**:
+```typescript
+{
+  username: String,
+  email: String,
+  password: String, // Optional for OAuth users
+  authProvider: String, // 'local' or 'google'
+  googleId: String, // For OAuth users
+  avatar: String, // Profile picture URL
+  storageQuota: Number, // User's storage limit in bytes
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-   - `chunks.routes.ts` handles multipart uploads, hash logging, and file management.
-   - `user.routes.ts` manages user authentication and profile operations.
+### File Model (`fileSchema.model.ts`)
 
-3. **Controllers**:
+```typescript
+{
+  filename: String,
+  originalName: String,
+  mimeType: String,
+  size: Number,
+  hash: String, // SHA-256 hash for deduplication
+  r2Key: String, // Cloudflare R2 object key
+  location: ObjectId, // Reference to folder (null for root)
+  userId: ObjectId, // Owner reference
+  tags: [String], // AI-generated tags
+  summary: String, // AI-generated summary
+  aiStatus: String, // 'pending', 'processing', 'completed', 'failed'
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-   - `chunks.controller.ts` handles file uploads, including deduplication and multipart uploads.
-   - `user.controller.ts` manages user registration, login, and token refresh.
+### Folder Model (`folderModel.ts`)
 
-4. **Database Models**:
+```typescript
+{
+  name: String,
+  ownerId: ObjectId,
+  parentFolderId: ObjectId, // null for root folders
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-   - `chunk.model.ts` tracks upload sessions.
-   - `hashModel.ts` manages file hash deduplication.
-   - `fileSchema.model.ts` stores file metadata.
+### Chunk Model (`chunk.model.ts`)
 
-5. **Environment Variables**:
-   - `.env` includes keys for MongoDB, JWT, Cloudflare, and Redis.
+```typescript
+{
+  sessionId: String,
+  userId: ObjectId,
+  filename: String,
+  totalChunks: Number,
+  uploadedChunks: Number,
+  chunkSize: Number,
+  status: String, // 'active', 'completed', 'failed'
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-## Detailed Application Flow
+### Hash Model (`hashModel.ts`)
 
-### Client-Side Flow
+```typescript
+{
+  hash: String,
+  r2Key: String,
+  size: Number,
+  mimeType: String,
+  createdAt: Date
+}
+```
 
-#### 1. **Application Initialization**
+### OTP Model (`otpModel.ts`)
 
-- **Entry Point**: `main.jsx`
-  - Renders the `App` component inside the `#root` element.
-  - Wraps the application with `UserProvider` to manage global user state.
+```typescript
+{
+  email: String,
+  otp: String,
+  expiresAt: Date,
+  createdAt: Date
+}
+```
 
-#### 2. **Routing**
+## Client-Side Flow
 
-- **File**: `App.jsx`
-  - Uses `react-router-dom` to define routes for the following pages:
-    - `/`: `HomePage`
-    - `/login`: `LoginPage`
-    - `/signup`: `SignupPage`
-    - `/upload`: `UploadPage`
-    - `/profile`: `ProfilePage`
-  - Each route is associated with a specific page component.
+### Application Initialization
 
-#### 3. **Authentication Management**
+**Entry Point:** `main.jsx`
 
-- **File**: `UserContext.jsx`
-  - Manages user authentication state and tokens.
-  - Implements the following key functions:
-    - `login`: Authenticates the user and stores tokens in `localStorage`.
-    - `logout`: Clears user data and tokens.
-    - `refreshToken`: Automatically refreshes the access token when expired.
-  - Axios interceptors are configured to:
-    - Attach the access token to outgoing requests.
-    - Handle 401 errors by attempting token refresh.
+- Renders the React application with BrowserRouter
+- Wraps the app with UserProvider and FolderProvider for global state management
 
-#### 4. **File Upload Process**
+**App Structure:** `App.jsx`
 
-- **File**: `useChunkUpload.js`
-  - Handles large file uploads by splitting files into chunks.
-  - Key steps:
-    1. Compute the file hash to check for duplicates.
-    2. Request presigned URLs for each chunk from the server.
-    3. Upload chunks to Cloudflare R2 using the presigned URLs.
-    4. Notify the server to finalize the upload.
-  - Tracks upload progress and handles retries for failed chunks.
+- Defines routing structure with protected routes
+- Includes UserProvider and FolderProvider context wrappers
+- Routes include: Home, Login, Signup, Upload, Profile, OAuth callback, etc.
 
-#### 5. **UI Components**
+### Authentication Flow
 
-- **Folder**: `src/components`
-  - `Navbar.jsx`: Displays navigation links based on authentication state.
-  - `UploadButton.jsx`: Triggers the file upload process.
-  - `ProgressBar.jsx`: Visualizes upload progress.
-  - `StatusMessage.jsx`: Displays success or error messages.
+**UserContext.jsx** manages authentication state:
 
-### Server-Side Flow
+- JWT token storage in localStorage
+- Automatic token refresh on 401 errors
+- Axios interceptors for token attachment
+- Support for both local and OAuth authentication
 
-#### 1. **Server Initialization**
+**Login Process:**
 
-- **File**: `index.ts`
-  - Sets up the Express server.
-  - Configures middleware for CORS, JSON parsing, and logging.
-  - Connects to MongoDB using `mongoose`.
-  - Registers routes for user, file, and chunk operations.
+1. User submits credentials on LoginPage
+2. API call to `/api/user/login`
+3. JWT tokens stored in localStorage
+4. User redirected to upload page
 
-#### 2. **Authentication**
+**Google OAuth Flow:**
 
-- **File**: `user.controller.ts`
-  - Handles user-related operations:
-    - `register`: Creates a new user in the database.
-    - `login`: Verifies credentials and generates JWT tokens.
-    - `refreshToken`: Issues a new access token using the refresh token.
-  - Uses `bcrypt` for password hashing and `jsonwebtoken` for token generation.
+1. User clicks "Sign in with Google" on LoginPage
+2. Redirected to Google OAuth endpoint
+3. Google callback handled by OAuthPage component
+4. Tokens extracted from URL parameters
+5. User authenticated and redirected to upload page
 
-#### 3. **File Upload Process**
+### File Upload Flow
 
-- **Files**: `chunks.controller.ts`, `chunks.routes.ts`
-  - **Step 1**: Compute File Hash
-    - Endpoint: `/api/chunks/compute-hash-check`
-    - Checks if the file already exists in the database using its hash.
-  - **Step 2**: Initiate Upload
-    - Endpoint: `/api/chunks/upload-initiate`
-    - Creates an upload session and returns metadata.
-  - **Step 3**: Generate Presigned URLs
-    - Endpoint: `/api/chunks/get-presigned-url`
-    - Generates presigned URLs for uploading chunks to Cloudflare R2.
-  - **Step 4**: Finalize Upload
-    - Endpoint: `/api/chunks/upload-complete`
-    - Verifies all chunks are uploaded and merges them into a complete file.
+**Chunked Upload Process** (`useChunkUpload.js`):
 
-#### 4. **Job Queue Management**
+1. **File Selection:**
 
-- **File**: `bullmqJobs.ts`
-  - Uses `BullMQ` to manage background jobs for:
-    - File processing.
-    - Cleanup of incomplete uploads.
-  - Jobs are processed asynchronously to improve performance.
+   - User selects file in UploadModal
+   - File hash computed using SHA-256
 
-#### 5. **Database Models**
+2. **Deduplication Check:**
 
-- **Files**: `chunk.model.ts`, `fileSchema.model.ts`, `user.model.ts`
-  - `chunk.model.ts`: Tracks the status of uploaded chunks.
-  - `fileSchema.model.ts`: Stores metadata for uploaded files.
-  - `user.model.ts`: Manages user data, including hashed passwords.
+   - API call to `/api/chunks/compute-hash-check`
+   - Server checks if file already exists
+   - If duplicate found, upload skipped
 
-#### 6. **Environment Configuration**
+3. **Upload Initiation:**
 
-- **File**: `.env`
-  - Stores sensitive keys and configuration values:
-    - MongoDB connection string.
-    - JWT secret keys.
-    - Cloudflare R2 credentials.
-    - Redis connection details.
+   - API call to `/api/chunks/upload-initiate`
+   - Server creates upload session
+   - Returns session metadata
 
-### API Endpoints
+4. **Chunk Upload:**
 
-#### Authentication
+   - File split into 5MB chunks
+   - Presigned URLs requested for each chunk
+   - Chunks uploaded to Cloudflare R2 in parallel
+   - Progress tracked and displayed
 
-- **POST** `/api/user/register`: Register a new user.
-- **POST** `/api/user/login`: Authenticate and return tokens.
-- **POST** `/api/user/refresh-token`: Refresh access tokens.
-- **GET** `/api/user/verify-auth`: Verify user session.
+5. **Upload Completion:**
+   - API call to `/api/chunks/upload-complete`
+   - Server verifies all chunks uploaded
+   - File metadata saved to database
+   - AI processing job queued
 
-#### File Upload
+### Folder Management
 
-- **POST** `/api/chunks/compute-hash-check`: Check for duplicate files.
-- **POST** `/api/chunks/upload-initiate`: Start a multipart upload.
-- **POST** `/api/chunks/get-presigned-url`: Get presigned URLs for chunk uploads.
-- **POST** `/api/chunks/upload-complete`: Complete the upload process.
+**FolderContext.jsx** manages folder navigation:
 
-#### File Management
+- Hierarchical folder structure support
+- Current folder state management
+- Folder creation, deletion, and navigation
 
-- **GET** `/api/files/list-files`: List all user files.
-- **POST** `/api/chunks/get-download-url`: Generate a download URL.
-- **DELETE** `/api/chunks/delete-file`: Delete a file.
+**Folder Operations:**
 
----
+- Create folders with parent-child relationships
+- Navigate through folder hierarchy
+- Files organized within folders
+- Folder deletion (only empty folders)
 
-This document has been updated to provide a detailed explanation of the NovaDrive application flow as of December 8, 2025.
+### File Management
+
+**FilesList.jsx** displays and manages files:
+
+- Lists files with metadata, tags, and summaries
+- Search and filter functionality
+- File download via presigned URLs
+- File deletion with confirmation
+- Real-time AI processing status updates
+
+## Server-Side Flow
+
+### Server Initialization
+
+**Entry Point:** `index.ts`
+
+- Express server setup with TypeScript
+- CORS configuration for cross-origin requests
+- MongoDB connection with Mongoose
+- Route mounting for all API endpoints
+- Middleware setup (JWT verification, upload limits)
+
+### Authentication Endpoints
+
+**User Controller** (`user.controller.ts`):
+
+- `POST /api/user/register` - User registration with password hashing
+- `POST /api/user/login` - Credential verification and JWT generation
+- `POST /api/user/refresh-token` - Access token refresh
+- `GET /api/user/verify-auth` - Token validation
+- `POST /api/user/forgot-password` - OTP email sending
+- `POST /api/user/change-password` - Password update
+
+**OAuth Controller** (`oAuth.Controller.ts`):
+
+- `GET /api/oauth/` - Google OAuth redirect
+- `GET /api/oauth/callback` - OAuth callback handling
+- User creation/lookup for OAuth users
+- JWT token generation for OAuth flow
+
+### File Upload Endpoints
+
+**Chunks Controller** (`chunks.controller.ts`):
+
+1. **Hash Check** (`POST /api/chunks/compute-hash-check`):
+
+   - Receives file hash from client
+   - Checks hashModel for existing files
+   - Returns existing file data or allows upload
+
+2. **Upload Initiation** (`POST /api/chunks/upload-initiate`):
+
+   - Creates new chunk session
+   - Returns session ID and upload parameters
+
+3. **Presigned URLs** (`POST /api/chunks/get-presigned-url`):
+
+   - Generates Cloudflare R2 presigned URLs
+   - Returns URLs for chunk uploads
+
+4. **Upload Completion** (`POST /api/chunks/upload-complete`):
+   - Verifies all chunks uploaded
+   - Creates file metadata record
+   - Queues AI processing job
+   - Updates user storage usage
+
+### Folder Management Endpoints
+
+**Folder Controller** (`folderConrtoller.ts`):
+
+- `POST /api/folders/create` - Create new folder
+- `GET /api/folders/` - Get folders by parent
+- `DELETE /api/folders/:folderId` - Delete empty folder
+
+### AI Processing Pipeline
+
+**BullMQ Jobs** (`bullmqJobs.ts`):
+
+The application uses multiple AI processing queues:
+
+1. **Metadata Extraction Queue:**
+
+   - Downloads file from R2 using presigned URL
+   - Extracts content based on file type:
+     - Images: Base64 encoding for AI analysis
+     - PDFs: Text extraction using pdf-parse
+     - Other files: Filename/MIME type analysis
+
+2. **PDF Processing Queue:**
+
+   - Uses Google Gemini AI to analyze PDF content
+   - Generates tags and summaries based on extracted text
+
+3. **Image Processing Queue:**
+
+   - Uses Google Gemini AI for image captioning
+   - Generates tags and summaries from visual content
+
+4. **Other Files Queue:**
+   - Uses filename and MIME type for basic categorization
+   - Generates generic tags and summaries
+
+**AI Processing Flow:**
+
+1. File uploaded successfully
+2. Metadata extraction job queued
+3. Content extracted and analyzed
+4. Appropriate AI processing job queued
+5. File metadata updated with tags and summary
+6. UI updated with AI-generated information
+
+### Cloudflare R2 Integration
+
+**R2 Utilities** (`utils/r2.ts`):
+
+- Presigned URL generation for uploads
+- Presigned URL generation for downloads
+- Object deletion from R2 storage
+
+### Email Services
+
+**Resend Integration** (`utils/resendController.ts`):
+
+- OTP email sending for password reset
+- Email template formatting
+- Error handling for email delivery
+
+## API Endpoints Reference
+
+### Authentication
+
+- `POST /api/user/register` - Register new user
+- `POST /api/user/login` - User login
+- `GET /api/user/profile/:userId` - Get user profile
+- `POST /api/user/refresh-token` - Refresh access token
+- `POST /api/user/forgot-password` - Send password reset OTP
+- `POST /api/user/change-password` - Update password
+- `GET /api/user/verify-auth` - Verify authentication
+- `GET /api/user/total` - Get user statistics
+
+### OAuth
+
+- `GET /api/oauth/` - Google OAuth redirect
+- `GET /api/oauth/callback` - OAuth callback
+
+### File Operations
+
+- `POST /api/chunks/compute-hash-check` - Check file hash
+- `POST /api/chunks/logging-hash` - Log hash (internal)
+- `POST /api/chunks/upload-initiate` - Start upload session
+- `POST /api/chunks/get-presigned-url` - Get upload URLs
+- `POST /api/chunks/upload-complete` - Complete upload
+- `GET /api/chunks/upload-status/:sessionId` - Check upload status
+- `DELETE /api/chunks/delete-hash-session/:sessionId` - Clean up session
+
+### File Management
+
+- `GET /api/files/list-files` - List user files
+- `POST /api/chunks/get-download-url` - Generate download URL
+- `DELETE /api/chunks/delete-file` - Delete file
+
+### Folder Management
+
+- `POST /api/folders/create` - Create folder
+- `GET /api/folders/` - List folders
+- `DELETE /api/folders/:folderId` - Delete folder
+
+### OTP
+
+- `POST /api/otp/send` - Send OTP
+- `POST /api/otp/verify` - Verify OTP
+
+## Environment Variables
+
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/novadrive
+
+# JWT
+ACCESS_TOKEN_SECRET=your_access_token_secret
+REFRESH_TOKEN_SECRET=your_refresh_token_secret
+ACCESS_TOKEN_EXPIRY=15m
+REFRESH_TOKEN_EXPIRY=7d
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=https://yourdomain.com/api/oauth/callback
+
+# Cloudflare R2
+R2_ACCESS_KEY_ID=your_r2_access_key
+R2_SECRET_ACCESS_KEY=your_r2_secret_key
+R2_ACCOUNT_ID=your_r2_account_id
+R2_BUCKET_NAME=your_bucket_name
+
+# AI (Google Gemini)
+GEMINI_API_KEY_1=your_gemini_api_key_1
+GEMINI_API_KEY_2=your_gemini_api_key_2
+GEMINI_API_KEY_3=your_gemini_api_key_3
+GEMINI_API_KEY_4=your_gemini_api_key_4
+
+# Redis (BullMQ)
+REDIS_PASSWORD=your_redis_password
+
+# Email (Resend)
+RESEND_API_KEY=your_resend_api_key
+```
+
+## Key Features
+
+1. **Chunked Uploads:** Files split into 5MB chunks for reliable uploads
+2. **Deduplication:** SHA-256 hashing prevents duplicate file storage
+3. **AI-Powered Organization:** Automatic tagging and summarization
+4. **Hierarchical Folders:** Nested folder structure support
+5. **OAuth Integration:** Google sign-in support
+6. **Storage Quotas:** User-specific storage limits
+7. **Background Processing:** Asynchronous AI analysis
+8. **Real-time Updates:** Live upload progress and AI status
+9. **Secure Storage:** Cloudflare R2 with presigned URLs
+10. **Responsive UI:** Modern design with TailwindCSS
+
+## Data Flow Diagrams
+
+### File Upload Sequence
+
+```
+1. User selects file → Client computes hash
+2. Client → Server: Check hash existence
+3. Server → Client: Hash check result
+4. If new: Client → Server: Initiate upload
+5. Server creates session → Returns metadata
+6. Client requests presigned URLs
+7. Server → R2: Generate URLs
+8. Client uploads chunks to R2
+9. Client → Server: Complete upload
+10. Server verifies → Saves metadata → Queues AI job
+11. AI processes file → Updates metadata
+```
+
+### Authentication Flow
+
+```
+Traditional Auth:
+1. User → Client: Credentials
+2. Client → Server: Login request
+3. Server validates → Generates JWT
+4. Server → Client: Tokens
+5. Client stores tokens → Redirects
+
+OAuth Flow:
+1. User → Google: Authorization request
+2. Google → User: Authorization code
+3. Client → Server: Code exchange
+4. Server → Google: Token exchange
+5. Server → Google: User info request
+6. Server creates/finds user → Generates JWT
+7. Server → Client: Tokens via redirect
+```
+
+This documentation reflects the complete NovaDrive application architecture and flow as implemented in the codebase.
