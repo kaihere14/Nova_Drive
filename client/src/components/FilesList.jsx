@@ -89,20 +89,18 @@ const FilesList = forwardRef(
           setLoading(true);
         }
         setIsRefreshing(true);
-        
+
         // Use different endpoint for favorites view
-        const endpoint = activeView === "favorites" 
-          ? `${BASE_URL}/api/files/list-favourite-files`
-          : `${BASE_URL}/api/files/list-files?directory=${currentFolderId}`;
-        
-        const response = await axios.get(
-          endpoint,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        );
+        const endpoint =
+          activeView === "favorites"
+            ? `${BASE_URL}/api/files/list-favourite-files`
+            : `${BASE_URL}/api/files/list-files?directory=${currentFolderId}`;
+
+        const response = await axios.get(endpoint, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
         setFiles(response.data.files);
         console.log("Fetched files:", response.data.files);
         setError(null);
@@ -314,7 +312,6 @@ const FilesList = forwardRef(
       const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
       let filtered = [];
-      
 
       switch (activeView) {
         case "recent":
@@ -480,7 +477,8 @@ const FilesList = forwardRef(
                     {filteredFiles.map((file, index) => (
                       <tr
                         key={index}
-                        className="hover:bg-zinc-800/50 transition-colors"
+                        className="hover:bg-zinc-800/50 transition-colors cursor-pointer"
+                        onClick={() => handleView(file)}
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -542,25 +540,28 @@ const FilesList = forwardRef(
                         <td className="px-6 py-4 text-sm text-zinc-300">
                           {formatFileSize(file.size)}
                         </td>
-                        <td className="px-6 py-4">
+                        <td
+                          className="px-6 py-4"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <div className="flex gap-2 justify-end">
                             <button
                               className="w-8 h-8 flex items-center justify-center hover:bg-yellow-500/10 rounded-md transition-colors"
-                              title={file.favourite ? "Remove from favourites" : "Add to favourites"}
+                              title={
+                                file.favourite
+                                  ? "Remove from favourites"
+                                  : "Add to favourites"
+                              }
                               onClick={() => handleSetFavourite(file._id)}
                             >
                               {file.favourite ? (
-                                <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
+                                <Star
+                                  className="w-4 h-4 text-yellow-400"
+                                  fill="currentColor"
+                                />
                               ) : (
                                 <Star className="w-4 h-4 text-yellow-400" />
                               )}
-                            </button>
-                            <button
-                              className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
-                              title="View"
-                              onClick={() => handleView(file)}
-                            >
-                              <Eye className="w-4 h-4 text-zinc-400" />
                             </button>
                             <button
                               className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
@@ -596,7 +597,8 @@ const FilesList = forwardRef(
                 {filteredFiles.map((file, index) => (
                   <div
                     key={index}
-                    className="p-4 hover:bg-zinc-800/30 transition-colors"
+                    className="p-4 hover:bg-zinc-800/30 transition-colors cursor-pointer"
+                    onClick={() => handleView(file)}
                   >
                     <div className="flex items-start gap-3 mb-3">
                       <FileText className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-1" />
@@ -642,14 +644,24 @@ const FilesList = forwardRef(
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2 justify-end border-t border-zinc-800 pt-3">
+                    <div
+                      className="flex gap-2 justify-end border-t border-zinc-800 pt-3"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         className="px-3 py-2 bg-zinc-800 hover:bg-yellow-500/10 rounded-md transition-colors"
-                        title={file.isFavourite ? "Remove from favourites" : "Add to favourites"}
+                        title={
+                          file.favourite
+                            ? "Remove from favourites"
+                            : "Add to favourites"
+                        }
                         onClick={() => handleSetFavourite(file._id)}
                       >
-                        {file.isFavourite ? (
-                          <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
+                        {file.favourite ? (
+                          <Star
+                            className="w-4 h-4 text-yellow-400"
+                            fill="currentColor"
+                          />
                         ) : (
                           <Star className="w-4 h-4 text-yellow-400" />
                         )}
