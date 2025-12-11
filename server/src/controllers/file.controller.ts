@@ -34,3 +34,29 @@ export const totalFilesOfUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const setFavourite = async (req: Request, res: Response) => {
+    try {
+        const { fileId } = req.params;
+        const file = await FileModel.findById(fileId);
+        if (!file) {
+            return res.status(404).json({ message: "File not found" });
+        }
+        file.favourite = !file.favourite;
+        await file.save();
+        res.status(200).json({ message: "File favourite status updated", favourite: file.favourite });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
+
+export const listFavouriteFiles = async (req: Request, res: Response) => {
+    try {
+        const userId = (req as any).userId;
+        const favouriteFiles = await FileModel.find({ owner: userId, favourite: true }).sort({ createdAt: -1 });
+        res.status(200).json({ files: favouriteFiles });
+    } catch (error) {
+        console.error("Error listing favourite files:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}

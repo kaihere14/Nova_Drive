@@ -57,7 +57,7 @@ const FilesList = forwardRef(
         pollTimers.current.forEach((timer) => clearTimeout(timer));
         pollTimers.current = [];
       };
-    }, [userId, currentFolderId]);
+    }, [userId, currentFolderId, activeView]);
 
     useImperativeHandle(ref, () => ({
       refresh: () => {
@@ -83,8 +83,14 @@ const FilesList = forwardRef(
           setLoading(true);
         }
         setIsRefreshing(true);
+        
+        // Use different endpoint for favorites view
+        const endpoint = activeView === "favorites" 
+          ? `${BASE_URL}/api/files/list-favourite-files`
+          : `${BASE_URL}/api/files/list-files?directory=${currentFolderId}`;
+        
         const response = await axios.get(
-          `${BASE_URL}/api/files/list-files?directory=${currentFolderId}`,
+          endpoint,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -92,6 +98,7 @@ const FilesList = forwardRef(
           }
         );
         setFiles(response.data.files);
+        console.log("Fetched files:", response.data.files);
         setError(null);
 
         // ...existing code...
@@ -195,6 +202,20 @@ const FilesList = forwardRef(
       }
     };
 
+    const handleSetFavourite = async (fileId) => {
+      try {
+        await axios.get(`${BASE_URL}/api/files/set-favourite/${fileId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+        fetchFiles();
+      } catch (err) {
+        console.error("Error setting favourite:", err);
+        alert("Failed to set favourite");
+      }
+    };
+
     const handleCopyLink = async () => {
       try {
         await navigator.clipboard.writeText(shareModal.url);
@@ -246,6 +267,7 @@ const FilesList = forwardRef(
       const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
       let filtered = [];
+      
 
       switch (activeView) {
         case "recent":
@@ -255,8 +277,8 @@ const FilesList = forwardRef(
           );
           break;
         case "favorites":
-          // TODO: Implement favorites tracking (for now return empty)
-          filtered = [];
+          // API already returns only favourite files
+          filtered = files;
           break;
         case "trash":
           // TODO: Implement trash/deleted files tracking (for now return empty)
@@ -472,6 +494,17 @@ const FilesList = forwardRef(
                         <td className="px-6 py-4">
                           <div className="flex gap-2 justify-end">
                             <button
+                              className="w-8 h-8 flex items-center justify-center hover:bg-yellow-500/10 rounded-md transition-colors"
+                              title={file.favourite ? "Remove from favourites" : "Add to favourites"}
+                              onClick={() => handleSetFavourite(file._id)}
+                            >
+                              {file.favourite ? (
+                                <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
+                              ) : (
+                                <Star className="w-4 h-4 text-yellow-400" />
+                              )}
+                            </button>
+                            <button
                               className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
                               title="Download"
                               onClick={() => handleDownload(file)}
@@ -552,6 +585,17 @@ const FilesList = forwardRef(
                       </div>
                     </div>
                     <div className="flex gap-2 justify-end border-t border-zinc-800 pt-3">
+                      <button
+                        className="px-3 py-2 bg-zinc-800 hover:bg-yellow-500/10 rounded-md transition-colors"
+                        title={file.isFavourite ? "Remove from favourites" : "Add to favourites"}
+                        onClick={() => handleSetFavourite(file._id)}
+                      >
+                        {file.isFavourite ? (
+                          <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
+                        ) : (
+                          <Star className="w-4 h-4 text-yellow-400" />
+                        )}
+                      </button>
                       <button
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors text-sm"
                         onClick={() => handleDownload(file)}

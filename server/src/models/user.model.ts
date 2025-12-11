@@ -22,7 +22,7 @@ const UserSchema = new Schema<IUser>({
   username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
 
-  // ✅ Password OPTIONAL for Google users
+  
   password: { type: String, required: false },
 
   storageQuota: { type: Number, default: 10 * 1024 * 1024 * 1024 },
@@ -31,7 +31,7 @@ const UserSchema = new Schema<IUser>({
   otp: { type: String },
   otpExpiry: { type: Date },
 
-  // ✅ Google OAuth Fields
+ 
   googleId: { type: String },
   avatar: { type: String },
   authProvider: {
@@ -42,14 +42,14 @@ const UserSchema = new Schema<IUser>({
 });
 
 
-// ✅ Only hash password IF it exists
+
 UserSchema.pre<IUser>("save", async function (next) {
   if (!this.password || !this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// ✅ Prevent Google users from using password login
+
 UserSchema.methods.comparePassword = function (
   inputPassword: string
 ): Promise<boolean> {
