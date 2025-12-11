@@ -22,8 +22,23 @@ const UploadPage = () => {
     "Upload and manage files with chunked multipart uploads to Cloudflare R2."
   );
   const navigate = useNavigate();
-  const { user, checkAuth, loading, logout, totalCounts, fetchTotalCounts,storageInfo,setStorageInfo } = useUser();
-  const { fetchFolders, currentFolderId, folders, loading: folderLoading, deleteFolder } = useFolder();
+  const {
+    user,
+    checkAuth,
+    loading,
+    logout,
+    totalCounts,
+    fetchTotalCounts,
+    storageInfo,
+    setStorageInfo,
+  } = useUser();
+  const {
+    fetchFolders,
+    currentFolderId,
+    folders,
+    loading: folderLoading,
+    deleteFolder,
+  } = useFolder();
   const {
     file,
     totalChunks,
@@ -45,8 +60,7 @@ const UploadPage = () => {
   const [deleteError, setDeleteError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
-  
- 
+
   const filesListRef = useRef();
 
   // Verify authentication on page load
@@ -75,8 +89,6 @@ const UploadPage = () => {
     }
   }, [user]);
 
-  
-
   useEffect(() => {
     if (user?.storageQuota) {
       setStorageInfo((prev) => ({
@@ -95,10 +107,10 @@ const UploadPage = () => {
       if (filesListRef.current?.startPolling) {
         filesListRef.current.startPolling();
       }
-      
+
       // Refresh total counts after upload
       fetchTotalCounts();
-      
+
       setTimeout(() => {
         setShowUploadModal(false);
       }, 1500);
@@ -134,7 +146,7 @@ const UploadPage = () => {
       setShowDeleteFolderModal(false);
       setFolderToDelete(null);
       setDeleteError(null);
-      
+
       // Refresh total counts after folder deletion
       fetchTotalCounts();
     } else {
@@ -205,7 +217,7 @@ const UploadPage = () => {
             files={totalCounts.totalFiles}
             storage={formatFileSize(storageInfo.usedBytes)}
             folders={totalCounts.totalFolders}
-            favorites={0}
+            favorites={storageInfo.favorites || 0}
             formatFileSize={formatFileSize}
           />
 
@@ -268,8 +280,18 @@ const UploadPage = () => {
                         </h4>
 
                         <div className="flex items-center gap-2 text-xs text-zinc-500">
-                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <svg
+                            className="w-3.5 h-3.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
                           </svg>
                           <span className="group-hover:text-zinc-400 transition-colors">
                             {new Date(folder.createdAt).toLocaleDateString()}

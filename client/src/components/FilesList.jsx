@@ -105,7 +105,17 @@ const FilesList = forwardRef(
         console.log("Fetched files:", response.data.files);
         setError(null);
 
-        // ...existing code...
+        // Calculate favorites count
+        const favoritesCount = response.data.files.filter(
+          (file) => file.favourite === true
+        ).length;
+
+        // Update storage info with favorites
+        if (onStorageUpdate) {
+          onStorageUpdate({
+            favorites: favoritesCount,
+          });
+        }
       } catch (err) {
         setError("Failed to load files");
       } finally {
@@ -361,6 +371,9 @@ const FilesList = forwardRef(
 
     const filteredFiles = getFilteredFiles();
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    const favoritesCount = files.filter(
+      (file) => file.favourite === true
+    ).length;
     const availableTags = getAllTags();
 
     // Only show the last 10 tags
