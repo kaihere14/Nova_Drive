@@ -319,6 +319,7 @@ const UploadPage = () => {
             onStorageUpdate={(info) =>
               setStorageInfo((prev) => ({ ...prev, ...info }))
             }
+            onFavouriteToggle={fetchTotalCounts}
           />
         </div>
       </main>
