@@ -217,7 +217,7 @@ const UploadPage = () => {
             files={totalCounts.totalFiles}
             storage={formatFileSize(storageInfo.usedBytes)}
             folders={totalCounts.totalFolders}
-            favorites={storageInfo.favorites || 0}
+            favorites={totalCounts.totalFavoriteFiles || 0}
             formatFileSize={formatFileSize}
           />
 

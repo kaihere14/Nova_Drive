@@ -220,8 +220,9 @@ export const allFoldersAndFiles = async (req: Request, res: Response) => {
           const totalStorageUsed = all_files.reduce((accumulator, file) => {
             return accumulator + (file.size || 0);
           }, 0);
+          const totalFavoriteFiles =all_files.filter(file => file.favourite).length;
        
-        res.status(200).json({ totalFolders: foldersCount, totalFiles: filesCount, totalStorageUsed: totalStorageUsed });
+        res.status(200).json({ totalFolders: foldersCount, totalFiles: filesCount, totalStorageUsed: totalStorageUsed ,totalFavoriteFiles:totalFavoriteFiles});
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }

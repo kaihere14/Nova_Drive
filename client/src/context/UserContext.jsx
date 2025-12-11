@@ -17,6 +17,7 @@ export const UserProvider = ({ children }) => {
   const [totalCounts, setTotalCounts] = useState({
     totalFiles: 0,
     totalFolders: 0,
+    totalFavoriteFiles: 0,
   });
   const [storageInfo, setStorageInfo] = useState({
     usedBytes: 0,
@@ -455,6 +456,7 @@ export const UserProvider = ({ children }) => {
         setTotalCounts({
           totalFiles: response.data.totalFiles || 0,
           totalFolders: response.data.totalFolders || 0,
+          totalFavoriteFiles: response.data.totalFavoriteFiles || 0,
         });
         setStorageInfo((prev) => ({
           ...prev,
