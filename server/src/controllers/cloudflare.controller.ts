@@ -161,7 +161,7 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
       )}"`,
     });
 
-    const url = await getSignedUrl(r2, cmd, { expiresIn: 60 });
+    const url = await getSignedUrl(r2, cmd, { expiresIn: 3600 });
 
     res.json({ url });
   } catch (err) {
@@ -191,7 +191,7 @@ export const getPreviewUrl = async (req: Request, res: Response) => {
       Key: key,
     });
 
-    const url = await getSignedUrl(r2, cmd, { expiresIn: 60 });
+    const url = await getSignedUrl(r2, cmd, { expiresIn: 3600 }); // 1 hour for preview
     
 
     res.json({ url ,fileType});
