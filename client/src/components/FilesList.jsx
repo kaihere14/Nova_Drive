@@ -611,7 +611,7 @@ const FilesList = forwardRef(
                           <h4 className="font-medium text-zinc-200 break-words flex-1">
                             {file.originalFileName || getFileName(file.r2Key)}
                           </h4>
-                          <span className="text-xs text-cyan-400 font-mono whitespace-nowrap">
+                          <span className="text-xs text-zinc-500 font-mono whitespace-nowrap">
                             Tap to preview
                           </span>
                         </div>
@@ -632,7 +632,7 @@ const FilesList = forwardRef(
                           file.tags &&
                           file.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mb-2">
-                              {file.tags.map((tag, idx) => (
+                              {file.tags.slice(0, 2).map((tag, idx) => (
                                 <span
                                   key={idx}
                                   className="text-xs px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono"
@@ -640,6 +640,11 @@ const FilesList = forwardRef(
                                   {tag}
                                 </span>
                               ))}
+                              {file.tags.length > 2 && (
+                                <span className="text-xs px-2 py-0.5 text-zinc-500 font-mono">
+                                  +{file.tags.length - 2} more
+                                </span>
+                              )}
                             </div>
                           )}
                         {file.aiStatus === "completed" && file.summary && (
