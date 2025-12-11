@@ -138,7 +138,6 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
       return res.status(403).json({ error: "Forbidden or invalid request" });
     }
 
-    // If no filename provided, try to get it from metadata
     let originalName = filename;
     if (!originalName) {
       try {
@@ -168,6 +167,37 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to generate download url" });
+  }
+};
+
+export const getPreviewUrl = async (req: Request, res: Response) => {
+  try {
+    const { key, userId } = req.body;
+
+     const headCmd = new HeadObjectCommand({
+      Bucket,
+      Key: key,
+    });
+    const head = await r2.send(headCmd);
+
+    const fileType = head.ContentType || "application/octet-stream";
+
+    if (!userId || !key || !key.startsWith(`uploads/${userId}/`)) {
+      return res.status(403).json({ error: "Forbidden or invalid request" });
+    }
+  
+    const cmd = new GetObjectCommand({
+      Bucket,
+      Key: key,
+    });
+
+    const url = await getSignedUrl(r2, cmd, { expiresIn: 60 });
+    
+
+    res.json({ url ,fileType});
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate preview url" });
   }
 };
 

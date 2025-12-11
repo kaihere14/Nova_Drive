@@ -19,6 +19,7 @@ import {
   X,
   Copy,
   Check,
+  Eye,
 } from "lucide-react";
 import BASE_URL from "../config";
 import { useUser } from "../hooks/useUser";
@@ -36,7 +37,7 @@ const FilesList = forwardRef(
     },
     ref
   ) => {
-    const {currentFolderId} = useFolder();
+    const { currentFolderId } = useFolder();
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -44,6 +45,13 @@ const FilesList = forwardRef(
       open: false,
       file: null,
       url: "",
+    });
+    const [previewModal, setPreviewModal] = useState({
+      open: false,
+      file: null,
+      fileType: "",
+      url: "",
+      loading: false,
     });
     const [copied, setCopied] = useState(false);
     const [selectedTag, setSelectedTag] = useState("");
@@ -71,8 +79,6 @@ const FilesList = forwardRef(
         const timer2 = setTimeout(() => fetchFiles(true), 7000);
         const timer3 = setTimeout(() => fetchFiles(true), 10000);
         const timer4 = setTimeout(() => fetchFiles(true), 20000);
-        
-
 
         pollTimers.current = [timer1, timer2, timer3, timer4];
       },
@@ -209,6 +215,47 @@ const FilesList = forwardRef(
     const closeShareModal = () => {
       setShareModal({ open: false, file: null, url: "" });
       setCopied(false);
+    };
+
+    const handleView = async (file) => {
+      try {
+        const response = await axios.post(
+          `${BASE_URL}/api/chunks/get-preview-url`,
+          {
+            key: file.r2Key,
+            userId: userId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+
+        if (response.data.url) {
+          // For other files, show in modal
+          setPreviewModal({
+            open: true,
+            file: file,
+            fileType: response.data.fileType,
+            url: response.data.url,
+            loading: false,
+          });
+        }
+      } catch (err) {
+        console.error("Error generating preview URL:", err);
+        alert("Failed to open file");
+      }
+    };
+
+    const closePreviewModal = () => {
+      setPreviewModal({
+        open: false,
+        file: null,
+        fileType: "",
+        url: "",
+        loading: false,
+      });
     };
 
     if (loading) {
@@ -358,7 +405,11 @@ const FilesList = forwardRef(
               className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
               onClick={fetchFiles}
             >
-              <RefreshCw className={`w-4 h-4 text-zinc-400 transition-transform duration-500 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 text-zinc-400 transition-transform duration-500 ${
+                  isRefreshing ? "animate-spin" : ""
+                }`}
+              />
             </button>
           </div>
 
@@ -473,6 +524,13 @@ const FilesList = forwardRef(
                           <div className="flex gap-2 justify-end">
                             <button
                               className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
+                              title="View"
+                              onClick={() => handleView(file)}
+                            >
+                              <Eye className="w-4 h-4 text-zinc-400" />
+                            </button>
+                            <button
+                              className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
                               title="Download"
                               onClick={() => handleDownload(file)}
                             >
@@ -552,6 +610,13 @@ const FilesList = forwardRef(
                       </div>
                     </div>
                     <div className="flex gap-2 justify-end border-t border-zinc-800 pt-3">
+                      <button
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors text-sm"
+                        onClick={() => handleView(file)}
+                      >
+                        <Eye className="w-4 h-4 text-zinc-400" />
+                        <span className="text-zinc-300">View</span>
+                      </button>
                       <button
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors text-sm"
                         onClick={() => handleDownload(file)}
@@ -638,6 +703,91 @@ const FilesList = forwardRef(
                     )}
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Preview Modal */}
+        {previewModal.open && (
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={closePreviewModal}
+          >
+            <div
+              className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-5xl h-[95vh] min-h-[400px] overflow-hidden flex flex-col shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center px-5 py-4 border-b border-zinc-800 bg-zinc-900/95">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <Eye className="w-5 h-5 text-cyan-400 shrink-0" />
+                  <span className="font-medium text-zinc-200 truncate text-sm">
+                    {previewModal.file?.originalFileName}
+                  </span>
+                </div>
+                <button
+                  className="w-8 h-8 shrink-0 ml-2 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                  onClick={closePreviewModal}
+                >
+                  <X className="w-5 h-5 text-zinc-400" />
+                </button>
+              </div>
+
+              {/* Preview Content */}
+              <div className="flex-1 bg-zinc-950 overflow-hidden flex items-center justify-center">
+                {previewModal.loading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-3"></div>
+                      <p className="text-zinc-400 text-sm font-mono">
+                        Loading preview...
+                      </p>
+                    </div>
+                  </div>
+                ) : previewModal.url ? (
+                  <>
+                    {previewModal.fileType?.startsWith("image/") ? (
+                      /* Image Preview */
+                      <img
+                        src={previewModal.url}
+                        alt={previewModal.file?.originalFileName}
+                        className="min-w-full min-h-full object-contain"
+                      />
+                    ) : previewModal.fileType?.startsWith("video/") ? (
+                      /* Video Preview */
+                      <video
+                        controls
+                        className="w-full h-full object-contain"
+                        style={{ maxHeight: "100%" }}
+                      >
+                        <source
+                          src={previewModal.url}
+                          type={previewModal.fileType}
+                        />
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : previewModal.fileType === "application/pdf" ? (
+                      /* PDF Preview */
+                      <embed
+                        src={previewModal.url}
+                        type="application/pdf"
+                        className="w-full h-full"
+                      />
+                    ) : (
+                      /* Other file types - iframe */
+                      <iframe
+                        src={previewModal.url}
+                        className="w-full h-full bg-white"
+                        title="File Preview"
+                      />
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center h-full min-h-[400px]">
+                    <p className="text-zinc-400">Failed to load preview</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ import {
   
   getDownloadUrl,
   deleteUserFile,
+  getPreviewUrl,
 } from "../controllers/cloudflare.controller.js";
 import { verifyJwt } from "../middleware/verifyJwt.js";
 import checkLimit from "../middleware/uploadLimit.js";
@@ -31,6 +32,7 @@ router.delete("/delete-hash-session/:sessionId", verifyJwt, deleteHashSession);
 
 // Download route
 router.post("/get-download-url", getDownloadUrl);
+router.post("/get-preview-url", getPreviewUrl);
 
 // Delete route
 router.delete("/delete-file", deleteUserFile);
