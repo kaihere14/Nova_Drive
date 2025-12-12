@@ -129,8 +129,8 @@ const Header = ({
                 onClick={() => setAiSearch(!aiSearch)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                   aiSearch
-                    ? "bg-zinc-800 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 border border-zinc-700/30"
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                    ? "bg-zinc-800 text-transparent  bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 border border-zinc-700/30"
+                    : "text-zinc-400 hover:text-zinc-200 border border-zinc-700/40 hover:bg-zinc-800"
                 }`}
               >
                 <Sparkles className={`w-3.5 h-3.5 ${aiSearch ? "text-pink-400" : "text-zinc-400"}`} />
@@ -188,7 +188,7 @@ const Header = ({
               />
               <button
                 onClick={() => setAiSearch(!aiSearch)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 border border-zinc-700 text-zinc-400 bg-transparent hover:border-zinc-600 hover:text-zinc-300"
+                className="flex items-center  gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 border border-zinc-700 text-zinc-400 bg-transparent hover:border-zinc-600 hover:text-zinc-300"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>AI Mode</span>
