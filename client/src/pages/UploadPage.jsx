@@ -60,6 +60,7 @@ const UploadPage = () => {
   const [deleteError, setDeleteError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
+  const [aiSearch, setAiSearch] = useState(false);
 
   const filesListRef = useRef();
 
@@ -200,6 +201,8 @@ const UploadPage = () => {
           setSearchQuery={setSearchQuery}
           setShowSidebar={setShowSidebar}
           user={user}
+          aiSearch={aiSearch}
+          setAiSearch={setAiSearch}
         />
 
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 bg-zinc-950">
@@ -315,6 +318,7 @@ const UploadPage = () => {
             username={user?.username || "User"}
             activeView={activeView}
             searchQuery={searchQuery}
+            aiSearch={aiSearch}
             maxFiles={3}
             onStorageUpdate={(info) =>
               setStorageInfo((prev) => ({ ...prev, ...info }))

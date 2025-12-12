@@ -30,6 +30,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.20.0",
     "multer": "^2.0.2",
+    "openai": "^6.10.0",
     "pdf-parse": "^1.1.4",
     "resend": "^6.5.2",
     "uuid": "^13.0.0"

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listFavouriteFiles, listFiles, setFavourite } from "../controllers/file.controller.js";
+import { aiFileSearch, listFavouriteFiles, listFiles, setFavourite } from "../controllers/file.controller.js";
 import { verifyJwt } from "../middleware/verifyJwt.js";
 
 const router = Router();
@@ -8,6 +8,7 @@ const router = Router();
 router.get("/list-files", verifyJwt, listFiles);
 router.get("/set-favourite/:fileId",  setFavourite);
 router.get("/list-favourite-files", verifyJwt, listFavouriteFiles);
+router.post("/ai-search", verifyJwt, aiFileSearch);
 
 
 export default router;

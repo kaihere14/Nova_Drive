@@ -31,6 +31,7 @@ const FilesList = forwardRef(
       userId,
       activeView = "files",
       searchQuery = "",
+      aiSearch = false,
       onStorageUpdate,
       username = "User",
       maxFiles = null,
@@ -113,6 +114,68 @@ const FilesList = forwardRef(
         setTimeout(() => setIsRefreshing(false), 500);
       }
     };
+
+    // Listen for global preview requests (dispatched from Header AI results)
+    useEffect(() => {
+      const handler = async (e) => {
+        try {
+          const detail = e?.detail || {};
+          const { path, name } = detail;
+
+          // Try to find the file in the current list
+          const matched = files.find((f) => {
+            if (!f) return false;
+            if (path && f.r2Key && f.r2Key === path) return true;
+            if (path && f.r2Key && f.r2Key.endsWith(path)) return true;
+            if (name && f.originalFileName && f.originalFileName === name) return true;
+            return false;
+          });
+
+          if (matched) {
+            handleView(matched);
+            return;
+          }
+
+          // If not found locally, try requesting preview URL using `path` as key
+          if (path) {
+            setPreviewModal((p) => ({ ...p, open: true, loading: true }));
+            try {
+              const response = await axios.post(
+                `${BASE_URL}/api/chunks/get-preview-url`,
+                { key: path, userId: userId },
+                {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                  },
+                }
+              );
+
+              if (response.data.url) {
+                setPreviewModal({
+                  open: true,
+                  // store r2Key so download/share can use the file location when
+                  // the original file object isn't in our list
+                  file: { originalFileName: name || path, r2Key: path },
+                  fileType: response.data.fileType,
+                  url: response.data.url,
+                  loading: false,
+                });
+              } else {
+                setPreviewModal({ open: true, file: null, fileType: "", url: "", loading: false });
+              }
+            } catch (err) {
+              console.error("Error opening preview from event:", err);
+              setPreviewModal({ open: true, file: null, fileType: "", url: "", loading: false });
+            }
+          }
+        } catch (err) {
+          console.error("nova_open_preview handler error:", err);
+        }
+      };
+
+      window.addEventListener("nova_open_preview", handler);
+      return () => window.removeEventListener("nova_open_preview", handler);
+    }, [files, userId]);
 
     const formatFileSize = (bytes) => {
       if (bytes === 0) return "0 Bytes";
@@ -338,8 +401,8 @@ const FilesList = forwardRef(
         });
       }
 
-      // Apply search filter
-      if (searchQuery && searchQuery.trim() !== "") {
+      // Apply search filter (only if AI search is disabled)
+      if (!aiSearch && searchQuery && searchQuery.trim() !== "") {
         const query = searchQuery.toLowerCase();
         filtered = filtered.filter((file) => {
           const fileName = (
@@ -773,19 +836,35 @@ const FilesList = forwardRef(
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex justify-between items-center px-5 py-4 border-b border-zinc-800 bg-zinc-900/95">
+                <div className="flex justify-between items-center px-5 py-4 border-b border-zinc-800 bg-zinc-900/95">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <Eye className="w-5 h-5 text-cyan-400 shrink-0" />
                   <span className="font-medium text-zinc-200 truncate text-sm">
                     {previewModal.file?.originalFileName}
                   </span>
                 </div>
-                <button
-                  className="w-8 h-8 shrink-0 ml-2 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-                  onClick={closePreviewModal}
-                >
-                  <X className="w-5 h-5 text-zinc-400" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                    title="Download"
+                    onClick={() => handleDownload(previewModal.file)}
+                  >
+                    <Download className="w-4 h-4 text-zinc-400" />
+                  </button>
+                  <button
+                    className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                    title="Share"
+                    onClick={() => handleShare(previewModal.file)}
+                  >
+                    <Share2 className="w-4 h-4 text-zinc-400" />
+                  </button>
+                  <button
+                    className="w-8 h-8 shrink-0 ml-2 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                    onClick={closePreviewModal}
+                  >
+                    <X className="w-5 h-5 text-zinc-400" />
+                  </button>
+                </div>
               </div>
 
               {/* Preview Content */}

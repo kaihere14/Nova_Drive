@@ -1,6 +1,8 @@
 import { Schema } from "inspector/promises";
 import FileModel from "../models/fileSchema.model.js";
 import { Request, Response } from "express";
+import { fileSearch } from "./gemini.controller.js";
+
 
 export const listFiles = async (req: Request, res: Response) => {
   try {
@@ -60,3 +62,37 @@ export const listFavouriteFiles = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Server error" });
     }
 }
+
+export const aiFileSearch = async(req:Request,res:Response)=>{
+  try {
+    const userId = (req as any).userId;
+    const { query } = req.body;
+    if (!query || query.trim() === "") {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+    const allFiles = await FileModel.find({ owner: userId }).select("originalFileName summary tags r2Key mimeType");
+    
+    const aiResponse = await fileSearch(allFiles, query);
+    
+    // Parse the AI response (it's a string containing JSON)
+    let parsedResults;
+    try {
+      // Extract JSON from the response string (in case there's extra text)
+      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+      parsedResults = jsonMatch ? JSON.parse(jsonMatch[0]) : { matches: [] };
+    } catch (parseError) {
+      console.error("Error parsing AI response:", parseError);
+      parsedResults = { matches: [] };
+    }
+
+    return res.status(200).json({ 
+      message: "AI search completed",
+      query: query,
+      matches: parsedResults.matches || [],
+      totalMatches: (parsedResults.matches || []).length
+    });
+  } catch (error) {
+    console.error("Error performing AI file search:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

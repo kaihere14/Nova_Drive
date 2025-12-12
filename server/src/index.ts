@@ -19,7 +19,8 @@ app.use(cors({
   origin: [
     "https://www.novadrive.space",
     "https://novadrive.space",
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://nova-drive-one.vercel.app"
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
