@@ -35,6 +35,7 @@ const FilesList = forwardRef(
       onStorageUpdate,
       username = "User",
       maxFiles = null,
+      onFavouriteToggle,
     },
     ref
   ) => {
@@ -275,6 +276,11 @@ const FilesList = forwardRef(
           },
         });
         fetchFiles();
+
+        // Call onFavouriteToggle to update stats
+        if (onFavouriteToggle) {
+          onFavouriteToggle();
+        }
       } catch (err) {
         console.error("Error setting favourite:", err);
         alert("Failed to set favourite");
@@ -664,9 +670,14 @@ const FilesList = forwardRef(
                     <div className="flex items-start gap-3 mb-3">
                       <FileText className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-1" />
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-zinc-200 mb-1 break-words">
-                          {file.originalFileName || getFileName(file.r2Key)}
-                        </h4>
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <h4 className="font-medium text-zinc-200 break-words flex-1">
+                            {file.originalFileName || getFileName(file.r2Key)}
+                          </h4>
+                          <span className="text-xs text-zinc-500 font-mono whitespace-nowrap">
+                            Tap to preview
+                          </span>
+                        </div>
                         {file.aiStatus && file.aiStatus !== "completed" && (
                           <span
                             className={`inline-block text-xs px-2 py-0.5 rounded-full font-mono mb-2 ${
@@ -684,7 +695,7 @@ const FilesList = forwardRef(
                           file.tags &&
                           file.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mb-2">
-                              {file.tags.map((tag, idx) => (
+                              {file.tags.slice(0, 2).map((tag, idx) => (
                                 <span
                                   key={idx}
                                   className="text-xs px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono"
@@ -692,6 +703,11 @@ const FilesList = forwardRef(
                                   {tag}
                                 </span>
                               ))}
+                              {file.tags.length > 2 && (
+                                <span className="text-xs px-2 py-0.5 text-zinc-500 font-mono">
+                                  +{file.tags.length - 2} more
+                                </span>
+                              )}
                             </div>
                           )}
                         {file.aiStatus === "completed" && file.summary && (
@@ -726,13 +742,6 @@ const FilesList = forwardRef(
                         ) : (
                           <Star className="w-4 h-4 text-yellow-400" />
                         )}
-                      </button>
-                      <button
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors text-sm"
-                        onClick={() => handleView(file)}
-                      >
-                        <Eye className="w-4 h-4 text-zinc-400" />
-                        <span className="text-zinc-300">View</span>
                       </button>
                       <button
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors text-sm"

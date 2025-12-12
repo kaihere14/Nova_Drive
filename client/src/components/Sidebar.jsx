@@ -1,14 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Files,
-  Clock,
-  Star,
-  Trash2,
-  X,
-  HardDrive,
-  LogOut,
-} from "lucide-react";
+import { Files, Clock, Star, Trash2, X, HardDrive, LogOut } from "lucide-react";
 
 const Sidebar = ({
   activeView,
@@ -39,7 +31,10 @@ const Sidebar = ({
         {/* Header */}
         <div className="px-5 py-6 border-b border-zinc-800 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xl font-bold text-white" onClick={() => setShowSidebar(false)}>
+            <div
+              className="flex items-center gap-2 text-xl font-bold text-white"
+              onClick={() => setShowSidebar(false)}
+            >
               <img
                 src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
                 alt="NovaDrive logo"
@@ -64,7 +59,10 @@ const Sidebar = ({
                 ? "bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/30"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
             }`}
-            onClick={() => setActiveView("files")}
+            onClick={() => {
+              setActiveView("files");
+              setShowSidebar(false);
+            }}
           >
             <Files className="w-5 h-5" />
             <span>My Files</span>
@@ -75,7 +73,10 @@ const Sidebar = ({
                 ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
             }`}
-            onClick={() => setActiveView("recent")}
+            onClick={() => {
+              setActiveView("recent");
+              setShowSidebar(false);
+            }}
           >
             <Clock className="w-5 h-5" />
             <span>Recent Files</span>
@@ -86,7 +87,10 @@ const Sidebar = ({
                 ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
             }`}
-            onClick={() => setActiveView("favorites")}
+            onClick={() => {
+              setActiveView("favorites");
+              setShowSidebar(false);
+            }}
           >
             <Star className="w-5 h-5" />
             <span>Favorites</span>
@@ -97,7 +101,10 @@ const Sidebar = ({
                 ? "bg-white/10 text-white font-semibold border border-white/20"
                 : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
             }`}
-            onClick={() => setActiveView("trash")}
+            onClick={() => {
+              setActiveView("trash");
+              setShowSidebar(false);
+            }}
           >
             <Trash2 className="w-5 h-5" />
             <span>Recycle Bin</span>
