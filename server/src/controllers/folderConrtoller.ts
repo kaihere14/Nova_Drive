@@ -62,3 +62,19 @@ export const deleteFolder = async (req: Request, res: Response) => {
     }
 };  
 
+
+export const renameFolder = async (req: Request, res: Response) => {
+    try {
+        const { folderId } = req.params;
+        const { newName } = req.body;
+        const folder = await Folder.findById(folderId);
+        if (!folder) {
+            return res.status(404).json({ message: "Folder not found" });
+        }
+        folder.name = newName;
+        await folder.save();
+        res.status(200).json({ message: "Folder renamed successfully", folder });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};

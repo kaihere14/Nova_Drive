@@ -78,7 +78,7 @@ export const aiFileSearch = async(req:Request,res:Response)=>{
     let parsedResults;
     try {
       // Extract JSON from the response string (in case there's extra text)
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+      const jsonMatch = aiResponse && aiResponse.match(/\{[\s\S]*\}/);
       parsedResults = jsonMatch ? JSON.parse(jsonMatch[0]) : { matches: [] };
     } catch (parseError) {
       console.error("Error parsing AI response:", parseError);

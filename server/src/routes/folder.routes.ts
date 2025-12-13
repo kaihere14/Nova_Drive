@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {  createFolder, deleteFolder, getFolders } from "../controllers/folderConrtoller.js";
+import {  createFolder, deleteFolder, getFolders, renameFolder } from "../controllers/folderConrtoller.js";
 import { verifyJwt } from "../middleware/verifyJwt.js";
 const router = Router();
 
@@ -10,7 +10,8 @@ router.get("/", verifyJwt, getFolders);
 // Delete a folder
 router.delete("/:folderId", verifyJwt, deleteFolder);
 
-// New route to get total number of folders for a user
+//Rename a folder
+router.post("/rename/:folderId", verifyJwt,renameFolder);
 
 
 // Health check route
