@@ -313,7 +313,7 @@ const FilesList = forwardRef(
           `${BASE_URL}/api/files/move-file`,
           {
             fileId: moveModal.file._id,
-            folderId: folderId,
+            folderId: folderId === null ? "" : folderId,
           },
           {
             headers: {
