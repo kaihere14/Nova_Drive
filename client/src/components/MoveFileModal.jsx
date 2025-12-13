@@ -44,7 +44,7 @@ const MoveFileModal = ({ isOpen, onClose, onConfirm, fileName, currentFolderId, 
   };
 
   const handleConfirm = async () => {
-    if (selectedFolderId === null) return;
+    if (selectedFolderId === currentFolderId) return;
     
     setMoving(true);
     setError(null);
@@ -150,7 +150,7 @@ const MoveFileModal = ({ isOpen, onClose, onConfirm, fileName, currentFolderId, 
           <button
             onClick={handleConfirm}
             className="flex-1 relative overflow-hidden px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-cyan-500/20 group/btn"
-            disabled={moving || loading || selectedFolderId === currentFolderId}
+            disabled={moving || loading || selectedFolderId === currentFolderId || (selectedFolderId === null && currentFolderId === null)}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
             <span className="relative">{moving ? "Moving..." : "Move File"}</span>
