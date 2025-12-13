@@ -78,3 +78,14 @@ export const renameFolder = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Server error", error });
     }
 };
+
+export const fetchAllFolders = async (req: Request, res: Response) => {
+    try {
+      console.log("Fetching all folders");
+        const userId = (req as any).userId;
+        const folders = await Folder.find({ ownerId: userId }).sort({ createdAt: -1 }).select("_id name");
+        res.status(200).json({ folders });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};

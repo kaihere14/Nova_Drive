@@ -96,3 +96,19 @@ export const aiFileSearch = async(req:Request,res:Response)=>{
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const moveFileToFolder = async (req: Request, res: Response) => {
+    try {
+        
+        const { folderId,fileId } = req.body;
+        const file = await FileModel.findById(fileId);
+        if (!file) {
+            return res.status(404).json({ message: "File not found" });
+        }
+        file.location = folderId || null;
+        await file.save();
+        res.status(200).json({ message: "File moved successfully", file });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};

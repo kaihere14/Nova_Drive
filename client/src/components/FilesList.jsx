@@ -20,10 +20,12 @@ import {
   Copy,
   Check,
   Eye,
+  FolderInput,
 } from "lucide-react";
 import BASE_URL from "../config";
 import { useUser } from "../hooks/useUser";
 import { useFolder } from "../context/FolderContext";
+import MoveFileModal from "./MoveFileModal";
 
 const FilesList = forwardRef(
   (
@@ -59,6 +61,10 @@ const FilesList = forwardRef(
     const [selectedTag, setSelectedTag] = useState("");
     const [showAllTags, setShowAllTags] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [moveModal, setMoveModal] = useState({
+      open: false,
+      file: null,
+    });
     const pollTimers = useRef([]);
 
     useEffect(() => {
@@ -295,6 +301,33 @@ const FilesList = forwardRef(
       } catch (err) {
         console.error("Error copying to clipboard:", err);
         alert("Failed to copy link");
+      }
+    };
+
+    const handleMoveFile = async (folderId) => {
+      if (!moveModal.file) return;
+
+      try {
+        const token = localStorage.getItem("accessToken");
+        await axios.post(
+          `${BASE_URL}/api/files/move-file`,
+          {
+            fileId: moveModal.file._id,
+            folderId: folderId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Refresh files list after successful move
+        fetchFiles();
+        setMoveModal({ open: false, file: null });
+      } catch (err) {
+        console.error("Error moving file:", err);
+        throw err;
       }
     };
 
@@ -645,6 +678,13 @@ const FilesList = forwardRef(
                               <Share2 className="w-4 h-4 text-zinc-400" />
                             </button>
                             <button
+                              className="w-8 h-8 flex items-center justify-center hover:bg-cyan-500/10 rounded-md transition-colors group"
+                              title="Move to folder"
+                              onClick={() => setMoveModal({ open: true, file: file })}
+                            >
+                              <FolderInput className="w-4 h-4 text-zinc-400 group-hover:text-cyan-400" />
+                            </button>
+                            <button
                               className="w-8 h-8 flex items-center justify-center hover:bg-red-500/10 rounded-md transition-colors group"
                               title="Delete"
                               onClick={() => handleDelete(file)}
@@ -756,6 +796,13 @@ const FilesList = forwardRef(
                       >
                         <Share2 className="w-4 h-4 text-zinc-400" />
                         <span className="text-zinc-300">Share</span>
+                      </button>
+                      <button
+                        className="px-3 py-2 bg-zinc-800 hover:bg-cyan-500/10 rounded-md transition-colors group"
+                        title="Move to folder"
+                        onClick={() => setMoveModal({ open: true, file: file })}
+                      >
+                        <FolderInput className="w-4 h-4 text-zinc-400 group-hover:text-cyan-400" />
                       </button>
                       <button
                         className="px-3 py-2 bg-zinc-800 hover:bg-red-500/10 rounded-md transition-colors"
@@ -934,6 +981,16 @@ const FilesList = forwardRef(
             </div>
           </div>
         )}
+
+        {/* Move File Modal */}
+        <MoveFileModal
+          isOpen={moveModal.open}
+          onClose={() => setMoveModal({ open: false, file: null })}
+          onConfirm={handleMoveFile}
+          fileName={moveModal.file?.originalFileName || ""}
+          currentFolderId={currentFolderId}
+          userId={userId}
+        />
       </div>
     );
   }
