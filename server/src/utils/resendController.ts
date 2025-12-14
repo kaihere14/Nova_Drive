@@ -104,14 +104,21 @@ export const sendOtpEmail = async ({ email, otp }: SendOtpEmailParams) => {
     });
 
     if (error) {
-      logger.error('Error sending OTP email:', error);
+      logger.error('otp_email_send_failed', {
+        email,
+        error: JSON.stringify(error),
+      });
       return { success: false, error };
     }
 
     
     return { success: true, data };
-  } catch (error) {
-    logger.error('Error in sendOtpEmail:', error);
+  } catch (error: any) {
+    logger.error('otp_email_error', {
+      email,
+      error: error.message,
+      stack: error.stack,
+    });
     return { success: false, error };
   }
 };

@@ -46,26 +46,29 @@ export const connection = new IORedis({
   connectTimeout: 10000,
   retryStrategy: (times) => {
     const delay = Math.min(times * 50, 2000);
-    logger.info(`Redis reconnect attempt ${times}, delay: ${delay}ms`);
+    logger.info("redis_reconnect_attempt", { attempt: times, delayMs: delay });
     return delay;
   },
 });
 
 // Add error handlers for Redis connection
 connection.on("error", (err) => {
-  logger.error("Redis connection error:", err);
+  logger.error("redis_connection_error", {
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 connection.on("connect", () => {
-  logger.info("Redis connected successfully");
+  logger.info("redis_connected");
 });
 
 connection.on("reconnecting", () => {
-  logger.info("Redis reconnecting...");
+  logger.info("redis_reconnecting");
 });
 
 connection.on("close", () => {
-  logger.info("Redis connection closed");
+  logger.info("redis_connection_closed");
 });
 
 // Reuse the same connection for all queues
@@ -178,8 +181,13 @@ const workerExtraction = new Worker(
     } catch (err) {
       try {
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
-      } catch (updateErr) {
-        logger.error("Failed to update error status:", updateErr);
+      } catch (updateErr: any) {
+        logger.error("ai_status_update_failed", {
+          fileId,
+          fileName,
+          error: updateErr.message,
+          stack: updateErr.stack,
+        });
       }
       throw err;
     }
@@ -283,9 +291,15 @@ Return strictly in JSON:
       let parsed: { tags?: string[]; summary?: string } = {};
       try {
         parsed = JSON.parse(rawText);
-      } catch (parseErr) {
-        logger.warn("Failed to parse AI response, using defaults:", parseErr);
-        logger.warn("Raw response:", rawText);
+      } catch (parseErr: any) {
+        logger.warn("ai_response_parse_failed", {
+          fileId,
+          fileName,
+          mimeType,
+          worker: "image",
+          error: parseErr.message,
+          rawResponsePreview: rawText.substring(0, 200),
+        });
 
         // Update status to failed
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
@@ -299,17 +313,34 @@ Return strictly in JSON:
         aiStatus: "completed",
       });
 
-      logger.info(
-        `AI Processing completed for image: ${fileName} (ID: ${fileId})`
-      );
-    } catch (err) {
-      logger.error("AI Processing Failed for image:", fileName, err);
+      logger.info("ai_processing_completed", {
+        fileId,
+        fileName,
+        mimeType,
+        worker: "image",
+        tagsCount: (parsed.tags || []).length,
+      });
+    } catch (err: any) {
+      logger.error("ai_processing_failed", {
+        fileId,
+        fileName,
+        mimeType,
+        worker: "image",
+        error: err.message,
+        stack: err.stack,
+      });
 
       // Update status to failed if not already done
       try {
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
-      } catch (updateErr) {
-        logger.error("Failed to update error status:", updateErr);
+      } catch (updateErr: any) {
+        logger.error("ai_status_update_failed", {
+          fileId,
+          fileName,
+          worker: "image",
+          error: updateErr.message,
+          stack: updateErr.stack,
+        });
       }
 
       throw err;
@@ -325,9 +356,12 @@ const otherWorker = new Worker(
 
     try {
       await FileModel.findByIdAndUpdate(fileId, { aiStatus: "processing" });
-      logger.info(
-        `AI Processing started for other file: ${fileName} (ID: ${fileId})`
-      );
+      logger.info("ai_processing_started", {
+        fileId,
+        fileName,
+        mimeType,
+        worker: "other",
+      });
 
       const prompt = `
 You are an AI file organizer for a cloud storage app.
@@ -363,12 +397,15 @@ Return strictly in JSON:
       let parsed: { tags?: string[]; summary?: string } = {};
       try {
         parsed = JSON.parse(rawText);
-      } catch (parseErr) {
-        logger.warn(
-          "Failed to parse AI response for other file, using defaults:",
-          parseErr
-        );
-        logger.warn("Raw response:", rawText);
+      } catch (parseErr: any) {
+        logger.warn("ai_response_parse_failed", {
+          fileId,
+          fileName,
+          mimeType,
+          worker: "other",
+          error: parseErr.message,
+          rawResponsePreview: rawText.substring(0, 200),
+        });
 
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
         throw parseErr;
@@ -380,16 +417,33 @@ Return strictly in JSON:
         aiStatus: "completed",
       });
 
-      logger.info(
-        `AI Processing completed for other file: ${fileName} (ID: ${fileId})`
-      );
-    } catch (err) {
-      logger.error("AI Processing Failed for other file:", fileName, err);
+      logger.info("ai_processing_completed", {
+        fileId,
+        fileName,
+        mimeType,
+        worker: "other",
+        tagsCount: (parsed.tags || []).length,
+      });
+    } catch (err: any) {
+      logger.error("ai_processing_failed", {
+        fileId,
+        fileName,
+        mimeType,
+        worker: "other",
+        error: err.message,
+        stack: err.stack,
+      });
 
       try {
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
-      } catch (updateErr) {
-        logger.error("Failed to update error status:", updateErr);
+      } catch (updateErr: any) {
+        logger.error("ai_status_update_failed", {
+          fileId,
+          fileName,
+          worker: "other",
+          error: updateErr.message,
+          stack: updateErr.stack,
+        });
       }
 
       throw err;
@@ -404,33 +458,73 @@ export const queues = [myQueue, imageQueue, otherQueue, extractionQueue];
 
 // Add error handlers to all workers
 workerExtraction.on("error", (err) => {
-  logger.error("Worker extraction error:", err);
+  logger.error("worker_error", {
+    workerName: "extraction",
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 workerExtraction.on("failed", (job, err) => {
-  logger.error(`Extraction job ${job?.id} failed:`, err);
+  logger.error("worker_job_failed", {
+    workerName: "extraction",
+    jobId: job?.id,
+    jobData: job?.data,
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 worker.on("error", (err) => {
-  logger.error("PDF AI worker error:", err);
+  logger.error("worker_error", {
+    workerName: "pdf_ai",
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 worker.on("failed", (job, err) => {
-  logger.error(`PDF AI job ${job?.id} failed:`, err);
+  logger.error("worker_job_failed", {
+    workerName: "pdf_ai",
+    jobId: job?.id,
+    jobData: job?.data,
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 imageWorker.on("error", (err) => {
-  logger.error("Image AI worker error:", err);
+  logger.error("worker_error", {
+    workerName: "image_ai",
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 imageWorker.on("failed", (job, err) => {
-  logger.error(`Image AI job ${job?.id} failed:`, err);
+  logger.error("worker_job_failed", {
+    workerName: "image_ai",
+    jobId: job?.id,
+    jobData: job?.data,
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 otherWorker.on("error", (err) => {
-  logger.error("Other file worker error:", err);
+  logger.error("worker_error", {
+    workerName: "other_file",
+    error: err.message,
+    stack: err.stack,
+  });
 });
 
 otherWorker.on("failed", (job, err) => {
-  logger.error(`Other file job ${job?.id} failed:`, err);
+  logger.error("worker_job_failed", {
+    workerName: "other_file",
+    jobId: job?.id,
+    jobData: job?.data,
+    error: err.message,
+    stack: err.stack,
+  });
 });

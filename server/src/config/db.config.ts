@@ -12,22 +12,30 @@ const connectDB = async (): Promise<void> => {
       socketTimeoutMS: 45000,
       family: 4, // Use IPv4
     });
-    logger.info("MongoDB connected successfully");
+    logger.info("mongodb_connected", {
+      host: mongoURI.split('@')[1]?.split('/')[0] || 'unknown',
+    });
 
     // Listen for connection events
     mongoose.connection.on("error", (err) => {
-      logger.error("MongoDB connection error:", err);
+      logger.error("mongodb_connection_error", {
+        error: err.message,
+        stack: err.stack,
+      });
     });
 
     mongoose.connection.on("disconnected", () => {
-      logger.warn("MongoDB disconnected");
+      logger.warn("mongodb_disconnected");
     });
 
     mongoose.connection.on("reconnected", () => {
-      logger.info("MongoDB reconnected");
+      logger.info("mongodb_reconnected");
     });
-  } catch (error) {
-    logger.error("MongoDB connection error:", error);
+  } catch (error: any) {
+    logger.error("mongodb_connection_failed", {
+      error: error.message,
+      stack: error.stack,
+    });
     process.exit(1); // Exit process with failure
   }
 };

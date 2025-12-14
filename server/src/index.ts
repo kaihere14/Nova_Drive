@@ -64,7 +64,13 @@ app.get("/health", (req: Request, res: Response) => {
 
 // Global error handler middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  logger.error("Express Error:", err);
+  logger.error("express_error", {
+    error: err.message,
+    stack: err.stack,
+    status: err.status || 500,
+    path: req.path,
+    method: req.method,
+  });
   res.status(err.status || 500).json({
     message: "Internal Server Error",
     error: process.env.NODE_ENV === "development" ? err.message : undefined,
@@ -73,29 +79,33 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 // Graceful shutdown handler
 async function gracefulShutdown(signal: string) {
-  logger.info(`\n${signal} received, shutting down gracefully...`);
+  logger.info("shutdown_initiated", { signal });
 
   try {
     // Close all workers
     for (const worker of workers) {
-      logger.info("Closing worker...");
+      logger.info("worker_closing", { workerName: worker.name });
       await worker.close();
     }
 
     // Close all queues
     for (const queue of queues) {
-      logger.info("Closing queue...");
+      logger.info("queue_closing", { queueName: queue.name });
       await queue.close();
     }
 
     // Close Redis connection
-    logger.info("Closing Redis connection...");
+    logger.info("redis_disconnecting");
     await connection.quit();
 
-    logger.info("Graceful shutdown completed");
+    logger.info("shutdown_completed", { signal });
     process.exit(0);
-  } catch (error) {
-    logger.error("Error during graceful shutdown:", error);
+  } catch (error: any) {
+    logger.error("shutdown_failed", {
+      signal,
+      error: error.message,
+      stack: error.stack,
+    });
     process.exit(1);
   }
 }
@@ -106,23 +116,38 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 // Handle uncaught exceptions
 process.on("uncaughtException", (error) => {
-  logger.error("Uncaught Exception:", error);
+  logger.error("uncaught_exception", {
+    error: error.message,
+    stack: error.stack,
+    name: error.name,
+  });
   gracefulShutdown("uncaughtException");
 });
 
 // Handle unhandled rejections
-process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+process.on("unhandledRejection", (reason: any, promise) => {
+  logger.error("unhandled_rejection", {
+    reason: reason?.message || String(reason),
+    stack: reason?.stack,
+    promise: String(promise),
+  });
   gracefulShutdown("unhandledRejection");
 });
 
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
-      logger.info(`Server is running on port ${PORT}`);
+      logger.info("server_started", {
+        port: PORT,
+        nodeEnv: process.env.NODE_ENV || "development",
+      });
     });
   })
-  .catch((error) => {
-    logger.error("Failed to start server:", error);
+  .catch((error: any) => {
+    logger.error("server_startup_failed", {
+      error: error.message,
+      stack: error.stack,
+      port: PORT,
+    });
     process.exit(1);
   });

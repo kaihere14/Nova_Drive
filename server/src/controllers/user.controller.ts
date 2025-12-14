@@ -16,8 +16,12 @@ export const generateToken = (
     const refreshToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "7d" });
     const accessToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15m" });
     return { refreshToken, accessToken };
-  } catch (error) {
-    logger.error("Error generating tokens:", error);
+  } catch (error: any) {
+    logger.error("token_generation_failed", {
+      userId,
+      error: error.message,
+      stack: error.stack,
+    });
     return { refreshToken: "", accessToken: "" };
   }
 };
@@ -75,8 +79,12 @@ export const loginUser = async (req: Request, res: Response) => {
     res
       .status(200)
       .json({ message: "Login successful", user, accessToken, refreshToken });
-  } catch (error) {
-    logger.error("Login error:", error);
+  } catch (error: any) {
+    logger.error("user_login_failed", {
+      email: req.body.email,
+      error: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Error logging in", error });
   }
 };
@@ -137,7 +145,10 @@ export const refreshAccessToken = (req: Request, res: Response) => {
       JWT_SECRET,
       (err: Error | null, decoded?: unknown) => {
         if (err) {
-          logger.error("Refresh token verification error:", err);
+          logger.error("refresh_token_verification_failed", {
+            error: err.message,
+            stack: err.stack,
+          });
           return res.status(401).json({ message: "Invalid refresh token" });
         }
 
@@ -148,16 +159,22 @@ export const refreshAccessToken = (req: Request, res: Response) => {
           return res
             .status(200)
             .json({ accessToken, refreshToken: newRefreshToken });
-        } catch (error) {
-          logger.error("Error generating new tokens:", error);
+        } catch (error: any) {
+          logger.error("new_token_generation_failed", {
+            error: error.message,
+            stack: error.stack,
+          });
           return res
             .status(500)
             .json({ message: "Error generating new tokens", error });
         }
       }
     );
-  } catch (error) {
-    logger.error("Unhandled error in refreshAccessToken:", error);
+  } catch (error: any) {
+    logger.error("refresh_token_unhandled_error", {
+      error: error.message,
+      stack: error.stack,
+    });
     return res
       .status(500)
       .json({ message: "Error refreshing access token", error });

@@ -40,8 +40,13 @@ const checkLimit = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
     next();
-  } catch (error) {
-    logger.error("Error checking upload limit:", error);
+  } catch (error: any) {
+    logger.error("upload_limit_check_failed", {
+      userId: (req as any).userId,
+      fileSize: req.body.fileSize,
+      error: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Internal server error" });
   }
 };

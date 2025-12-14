@@ -21,8 +21,13 @@ export const listFiles = async (req: Request, res: Response) => {
     
     const files = await FileModel.find(query).sort({ createdAt: -1 });
     res.status(200).json({ files });
-  } catch (error) {
-    logger.error("Error listing files:", error);
+  } catch (error: any) {
+    logger.error("list_files_failed", {
+      userId: (req as any).userId,
+      directory: req.query.directory,
+      error: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -32,8 +37,12 @@ export const totalFilesOfUser = async (req: Request, res: Response) => {
     const userId = (req as any).userId;
     const fileCount = await FileModel.countDocuments({ owner: userId });
     res.status(200).json({ totalFiles: fileCount });
-  } catch (error) {
-    logger.error("Error counting files:", error);
+  } catch (error: any) {
+    logger.error("count_files_failed", {
+      userId: (req as any).userId,
+      error: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -58,8 +67,12 @@ export const listFavouriteFiles = async (req: Request, res: Response) => {
         const userId = (req as any).userId;
         const favouriteFiles = await FileModel.find({ owner: userId, favourite: true }).sort({ createdAt: -1 });
         res.status(200).json({ files: favouriteFiles });
-    } catch (error) {
-        logger.error("Error listing favourite files:", error);
+    } catch (error: any) {
+        logger.error("list_favourite_files_failed", {
+            userId: (req as any).userId,
+            error: error.message,
+            stack: error.stack,
+        });
         res.status(500).json({ message: "Server error" });
     }
 }
@@ -81,8 +94,14 @@ export const aiFileSearch = async(req:Request,res:Response)=>{
       // Extract JSON from the response string (in case there's extra text)
       const jsonMatch = aiResponse && aiResponse.match(/\{[\s\S]*\}/);
       parsedResults = jsonMatch ? JSON.parse(jsonMatch[0]) : { matches: [] };
-    } catch (parseError) {
-      logger.error("Error parsing AI response:", parseError);
+    } catch (parseError: any) {
+      logger.error("ai_response_parse_failed", {
+        userId,
+        query,
+        error: parseError.message,
+        stack: parseError.stack,
+        rawResponse: aiResponse?.substring(0, 200),
+      });
       parsedResults = { matches: [] };
     }
 
@@ -92,8 +111,13 @@ export const aiFileSearch = async(req:Request,res:Response)=>{
       matches: parsedResults.matches || [],
       totalMatches: (parsedResults.matches || []).length
     });
-  } catch (error) {
-    logger.error("Error performing AI file search:", error);
+  } catch (error: any) {
+    logger.error("ai_file_search_failed", {
+      userId: (req as any).userId,
+      query: req.body.query,
+      error: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Server error" });
   }
 };

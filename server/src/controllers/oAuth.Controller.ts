@@ -69,8 +69,13 @@ export const createOAuthUser = async (profile: any) => {
         const { accessToken, refreshToken } = generateToken(user._id.toString());
         return { user, accessToken, refreshToken,message};
       }
-     catch (error) {
-        logger.error("Error creating OAuth user:", error);
+     catch (error: any) {
+        logger.error("oauth_user_creation_failed", {
+            email: profile.email,
+            provider: "google",
+            error: error.message,
+            stack: error.stack,
+        });
         throw error;
     }
 };

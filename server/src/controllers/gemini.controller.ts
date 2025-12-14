@@ -64,7 +64,12 @@ export const fileSearch = async (allFiles:any,query:string) => {
         const isRateLimit = err?.status === 429 || err?.code === 429 || (err?.error && err.error.status === "RESOURCE_EXHAUSTED") || (typeof err?.message === 'string' && err.message.toLowerCase().includes('quota'));
         if (isRateLimit) {
           // Log and break attempts for this key; move to next key
-          logger.warn(`Gemini key (attempt ${attempt}) hit rate limit, rotating keys: ${err?.message || err}`);
+          logger.warn("gemini_rate_limit_hit", {
+            attempt,
+            keyIndex: keys.indexOf(k) + 1,
+            totalKeys: keys.length,
+            error: err?.message || String(err),
+          });
           break;
         }
 

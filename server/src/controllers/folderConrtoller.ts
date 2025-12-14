@@ -82,11 +82,16 @@ export const renameFolder = async (req: Request, res: Response) => {
 
 export const fetchAllFolders = async (req: Request, res: Response) => {
     try {
-      logger.info("Fetching all folders");
         const userId = (req as any).userId;
+        logger.info("fetch_all_folders", { userId });
         const folders = await Folder.find({ ownerId: userId }).sort({ createdAt: -1 }).select("_id name");
         res.status(200).json({ folders });
-    } catch (error) {
+    } catch (error: any) {
+        logger.error("fetch_folders_failed", {
+            userId: (req as any).userId,
+            error: error.message,
+            stack: error.stack,
+        });
         res.status(500).json({ message: "Server error", error });
     }
 };

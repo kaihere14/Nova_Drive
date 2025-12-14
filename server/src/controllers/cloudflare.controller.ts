@@ -50,8 +50,14 @@ export async function r2CreateMultipart(
 
     const response = await r2.send(cmd);
     return response.UploadId!;
-  } catch (error) {
-    logger.error("Error creating multipart upload:", error);
+  } catch (error: any) {
+    logger.error("r2_multipart_create_failed", {
+      key,
+      filename,
+      contentType,
+      error: error.message,
+      stack: error.stack,
+    });
     throw error;
   }
 }
@@ -102,8 +108,14 @@ export async function r2CompleteMultipart(
  
 
     return result;
-  } catch (err) {
-    logger.error("Complete multipart failed:", err);
+  } catch (err: any) {
+    logger.error("r2_multipart_complete_failed", {
+      uploadId,
+      key,
+      partsCount: parts.length,
+      error: err.message,
+      stack: err.stack,
+    });
     throw err;
   }
 }
@@ -116,16 +128,16 @@ export async function r2AbortMultipart(uploadId: string, key: string) {
       UploadId: uploadId,
     });
 
-    logger.info(
-      "Aborting multipart upload for key:",
-      key,
-      "uploadId:",
-      uploadId
-    );
+    logger.info("r2_multipart_abort_initiated", { key, uploadId });
     await r2.send(cmd);
-    logger.info("Multipart upload aborted successfully");
-  } catch (err) {
-    logger.error("Abort multipart failed:", err);
+    logger.info("r2_multipart_abort_success", { key, uploadId });
+  } catch (err: any) {
+    logger.error("r2_multipart_abort_failed", {
+      uploadId,
+      key,
+      error: err.message,
+      stack: err.stack,
+    });
     throw err;
   }
 }
@@ -149,8 +161,13 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
         });
         const headResponse = await r2.send(headCmd);
         originalName = headResponse.Metadata?.originalname || "downloaded-file";
-      } catch (err) {
-        logger.error("Error retrieving metadata:", err);
+      } catch (err: any) {
+        logger.error("r2_metadata_retrieval_failed", {
+          key,
+          userId,
+          error: err.message,
+          stack: err.stack,
+        });
         originalName = "downloaded-file";
       }
     }
@@ -166,8 +183,13 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
     const url = await getSignedUrl(r2, cmd, { expiresIn: 3600 });
 
     res.json({ url });
-  } catch (err) {
-    logger.error(err);
+  } catch (err: any) {
+    logger.error("download_url_generation_failed", {
+      key: req.body.key,
+      userId: req.body.userId,
+      error: err.message,
+      stack: err.stack,
+    });
     res.status(500).json({ error: "Failed to generate download url" });
   }
 };
@@ -197,8 +219,13 @@ export const getPreviewUrl = async (req: Request, res: Response) => {
     
 
     res.json({ url ,fileType});
-  } catch (err) {
-    logger.error(err);
+  } catch (err: any) {
+    logger.error("preview_url_generation_failed", {
+      key: req.body.key,
+      userId: req.body.userId,
+      error: err.message,
+      stack: err.stack,
+    });
     res.status(500).json({ error: "Failed to generate preview url" });
   }
 };
@@ -237,8 +264,13 @@ export const deleteUserFile = async (req: Request, res: Response) => {
   
 
     return res.json({ success: true, message: "File deleted successfully" });
-  } catch (err) {
-    logger.error("Delete file error:", err);
+  } catch (err: any) {
+    logger.error("file_delete_failed", {
+      userId: req.body.userId,
+      key: req.body.key,
+      error: err.message,
+      stack: err.stack,
+    });
     res.status(500).json({ error: "Failed to delete file", details: err });
   }
 };

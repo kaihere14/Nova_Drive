@@ -37,8 +37,13 @@ export const loggingHash = async (
     await newHash.save();
 
     res.status(201).json({ message: "File hash logged successfully" });
-  } catch (error) {
-    logger.error("Error logging file hash:", error);
+  } catch (error: any) {
+    logger.error("hash_logging_failed", {
+      fileHash: req.body.fileHash,
+      sessionId: req.body.sessionId,
+      error: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -89,8 +94,13 @@ export const computeHashCheck = async (
     } else {
       res.status(200).json({ exists: false });
     }
-  } catch (error) {
-    logger.error("Error checking file hash:", error);
+  } catch (error: any) {
+    logger.error("hash_check_failed", {
+      fileHash: req.body.fileHash,
+      userId: req.body.userId,
+      error: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -148,8 +158,14 @@ export const uploadInitiate = async (
       uploadId: uploadId,
       key: key,
     });
-  } catch (error) {
-    logger.error("Error initiating upload session:", error);
+  } catch (error: any) {
+    logger.error("upload_session_init_failed", {
+      userId: req.body.userId,
+      fileName: req.body.fileName,
+      fileSize: req.body.fileSize,
+      error: error.message,
+      stack: error.stack,
+    });
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -162,8 +178,14 @@ export const preAssignUrls = async (
   try {
     const url = await r2GetPresignedUrl(key, uploadId, PartNumber);
     res.status(200).json({ url });
-  } catch (err) {
-    logger.error(err);
+  } catch (err: any) {
+    logger.error("presigned_url_generation_failed", {
+      key: req.body.key,
+      uploadId: req.body.uploadId,
+      partNumber: req.body.PartNumber,
+      error: err.message,
+      stack: err.stack,
+    });
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -239,8 +261,15 @@ export const completeUpload = async (
       location: result.Location,
       key: result.Key,
     });
-  } catch (err) {
-    logger.error("Error completing upload:", err);
+  } catch (err: any) {
+    logger.error("upload_completion_failed", {
+      sessionId: req.body.sessionId,
+      uploadId: req.body.uploadId,
+      key: req.body.key,
+      fileName: req.body.fileName,
+      error: err instanceof Error ? err.message : "Unknown error",
+      stack: err instanceof Error ? err.stack : undefined,
+    });
     res.status(500).json({
       error: "Server error",
       details: err instanceof Error ? err.message : "Unknown error",
@@ -256,8 +285,12 @@ export const deleteHashSession = async (
   try {
     await Hash.findOneAndDelete({ sessionId: sessionId });
     res.status(200).json({ message: "Hash session deleted successfully" });
-  } catch (err) {
-    logger.error(err);
+  } catch (err: any) {
+    logger.error("hash_session_delete_failed", {
+      sessionId: req.params.sessionId,
+      error: err.message,
+      stack: err.stack,
+    });
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -275,8 +308,12 @@ export const getUploadStatus = async (
     }
 
     if (session.status === "completed") {
-      Hash.findOneAndDelete({ sessionId: sessionId }).catch((err) => {
-        logger.error("Error deleting hash after completion:", err);
+      Hash.findOneAndDelete({ sessionId: sessionId }).catch((err: any) => {
+        logger.error("hash_cleanup_after_completion_failed", {
+          sessionId,
+          error: err.message,
+          stack: err.stack,
+        });
       });
     }
 
@@ -285,8 +322,12 @@ export const getUploadStatus = async (
       totalChunks: session.totalChunks,
       uploadId: session.uploadId,
     });
-  } catch (err) {
-    logger.error(err);
+  } catch (err: any) {
+    logger.error("upload_status_check_failed", {
+      sessionId,
+      error: err.message,
+      stack: err.stack,
+    });
     res.status(500).json({ error: "Server error" });
   }
 };
