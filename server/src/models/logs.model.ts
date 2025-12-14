@@ -11,6 +11,8 @@ export interface IActivity extends Document {
     | "folder_deleted"
     | "file_moved"
     | "folder_renamed"
+    | "setFavorite"
+    | "removeFavorite";
   fileId?: Schema.Types.ObjectId;
   fileName?: string;
   newFileName?: string;
@@ -32,7 +34,9 @@ const ActivitySchema = new Schema<IActivity>(
         "folder_created",
         "folder_deleted",
         "file_moved",
-        "folder_renamed"
+        "folder_renamed",
+        "setFavorite",
+        "removeFavorite"
       ],
       required: true,
     },

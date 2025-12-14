@@ -3,6 +3,7 @@ import FileModel from "../models/fileSchema.model.js";
 import { Request, Response } from "express";
 import { fileSearch } from "./gemini.controller.js";
 import { logger } from "../index.js";
+import Activity from "../models/logs.model.js";
 
 
 export const listFiles = async (req: Request, res: Response) => {
@@ -55,8 +56,16 @@ export const setFavourite = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "File not found" });
         }
         file.favourite = !file.favourite;
+        
         await file.save();
         res.status(200).json({ message: "File favourite status updated", favourite: file.favourite });
+        const activity = new Activity({
+          userId: (req as any).userId,
+          fileId: file._id,
+          fileName: file.originalFileName,
+          action: file.favourite ? "setFavorite" : "removeFavorite"
+        });
+        await activity.save();
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }

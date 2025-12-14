@@ -24,6 +24,7 @@ import {
   FolderEdit,
   Upload,
   Move,
+  Star,
 } from "lucide-react";
 
 const ProfilePage = () => {
@@ -232,6 +233,10 @@ const ProfilePage = () => {
     switch (action) {
       case "file_uploaded":
         return <Upload className="w-4 h-4" />;
+      case "setFavorite":
+        return <Star className="w-4 h-4" />;
+      case "removeFavorite":
+        return <Star className="w-4 h-4" />;
       case "file_deleted":
         return <Trash2 className="w-4 h-4" />;
       case "file_renamed":
@@ -255,6 +260,10 @@ const ProfilePage = () => {
     switch (action) {
       case "file_uploaded":
         return "from-green-500/20 to-green-600/10 border-green-500/20 text-green-400";
+      case "setFavorite":
+        return "from-yellow-500/20 to-yellow-600/10 border-yellow-500/20 text-yellow-400";
+      case "removeFavorite":
+        return "from-amber-500/20 to-amber-600/10 border-amber-500/20 text-amber-400";
       case "file_deleted":
       case "folder_deleted":
         return "from-red-500/20 to-red-600/10 border-red-500/20 text-red-400";
@@ -322,6 +331,18 @@ const ProfilePage = () => {
         return (
           <>
             Initiated upload for <span className="font-semibold text-white">{fileName}</span>
+          </>
+        );
+      case "setFavorite":
+        return (
+          <>
+            Added to favorites <span className="font-semibold text-white">{fileName}</span>
+          </>
+        );
+      case "removeFavorite":
+        return (
+          <>
+            Removed from favorites <span className="font-semibold text-white">{fileName}</span>
           </>
         );
       default:
