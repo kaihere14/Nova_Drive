@@ -9,6 +9,7 @@ import {
 import FileModel from "../models/fileSchema.model.js";
 import { connection, extractData } from "../utils/bullmqJobs.js";
 import { User } from "../models/user.model.js";
+import { logger } from "../index.js";
 
 interface UploadInitiateBody {
   userId: string;
@@ -37,7 +38,7 @@ export const loggingHash = async (
 
     res.status(201).json({ message: "File hash logged successfully" });
   } catch (error) {
-    console.error("Error logging file hash:", error);
+    logger.error("Error logging file hash:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -89,7 +90,7 @@ export const computeHashCheck = async (
       res.status(200).json({ exists: false });
     }
   } catch (error) {
-    console.error("Error checking file hash:", error);
+    logger.error("Error checking file hash:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -148,7 +149,7 @@ export const uploadInitiate = async (
       key: key,
     });
   } catch (error) {
-    console.error("Error initiating upload session:", error);
+    logger.error("Error initiating upload session:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -162,7 +163,7 @@ export const preAssignUrls = async (
     const url = await r2GetPresignedUrl(key, uploadId, PartNumber);
     res.status(200).json({ url });
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -239,7 +240,7 @@ export const completeUpload = async (
       key: result.Key,
     });
   } catch (err) {
-    console.error("Error completing upload:", err);
+    logger.error("Error completing upload:", err);
     res.status(500).json({
       error: "Server error",
       details: err instanceof Error ? err.message : "Unknown error",
@@ -256,7 +257,7 @@ export const deleteHashSession = async (
     await Hash.findOneAndDelete({ sessionId: sessionId });
     res.status(200).json({ message: "Hash session deleted successfully" });
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -275,7 +276,7 @@ export const getUploadStatus = async (
 
     if (session.status === "completed") {
       Hash.findOneAndDelete({ sessionId: sessionId }).catch((err) => {
-        console.error("Error deleting hash after completion:", err);
+        logger.error("Error deleting hash after completion:", err);
       });
     }
 
@@ -285,7 +286,7 @@ export const getUploadStatus = async (
       uploadId: session.uploadId,
     });
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };

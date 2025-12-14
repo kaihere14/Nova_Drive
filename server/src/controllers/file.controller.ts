@@ -2,6 +2,7 @@ import { Schema } from "inspector/promises";
 import FileModel from "../models/fileSchema.model.js";
 import { Request, Response } from "express";
 import { fileSearch } from "./gemini.controller.js";
+import { logger } from "../index.js";
 
 
 export const listFiles = async (req: Request, res: Response) => {
@@ -21,7 +22,7 @@ export const listFiles = async (req: Request, res: Response) => {
     const files = await FileModel.find(query).sort({ createdAt: -1 });
     res.status(200).json({ files });
   } catch (error) {
-    console.error("Error listing files:", error);
+    logger.error("Error listing files:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -32,7 +33,7 @@ export const totalFilesOfUser = async (req: Request, res: Response) => {
     const fileCount = await FileModel.countDocuments({ owner: userId });
     res.status(200).json({ totalFiles: fileCount });
   } catch (error) {
-    console.error("Error counting files:", error);
+    logger.error("Error counting files:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -58,7 +59,7 @@ export const listFavouriteFiles = async (req: Request, res: Response) => {
         const favouriteFiles = await FileModel.find({ owner: userId, favourite: true }).sort({ createdAt: -1 });
         res.status(200).json({ files: favouriteFiles });
     } catch (error) {
-        console.error("Error listing favourite files:", error);
+        logger.error("Error listing favourite files:", error);
         res.status(500).json({ message: "Server error" });
     }
 }
@@ -81,7 +82,7 @@ export const aiFileSearch = async(req:Request,res:Response)=>{
       const jsonMatch = aiResponse && aiResponse.match(/\{[\s\S]*\}/);
       parsedResults = jsonMatch ? JSON.parse(jsonMatch[0]) : { matches: [] };
     } catch (parseError) {
-      console.error("Error parsing AI response:", parseError);
+      logger.error("Error parsing AI response:", parseError);
       parsedResults = { matches: [] };
     }
 
@@ -92,7 +93,7 @@ export const aiFileSearch = async(req:Request,res:Response)=>{
       totalMatches: (parsedResults.matches || []).length
     });
   } catch (error) {
-    console.error("Error performing AI file search:", error);
+    logger.error("Error performing AI file search:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

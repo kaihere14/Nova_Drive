@@ -1,5 +1,6 @@
 import { connection } from "../utils/bullmqJobs.js";
 import { Request, Response, NextFunction } from "express";
+import { logger } from "../index.js";
 
 const checkLimit = async (req: Request, res: Response, next: NextFunction) => {
   const DAILY_LIMIT = 250 * 1024 * 1024;
@@ -40,7 +41,7 @@ const checkLimit = async (req: Request, res: Response, next: NextFunction) => {
     }
     next();
   } catch (error) {
-    console.error("Error checking upload limit:", error);
+    logger.error("Error checking upload limit:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

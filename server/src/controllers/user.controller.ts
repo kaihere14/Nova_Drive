@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import Folder from "../models/folderModel.js";
 import FileModel from "../models/fileSchema.model.js";
+import { logger } from "../index.js";
 
 const JWT_SECRET = process.env.JWT_SECRET as Secret;
 
@@ -16,7 +17,7 @@ export const generateToken = (
     const accessToken = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15m" });
     return { refreshToken, accessToken };
   } catch (error) {
-    console.error("Error generating tokens:", error);
+    logger.error("Error generating tokens:", error);
     return { refreshToken: "", accessToken: "" };
   }
 };
@@ -75,7 +76,7 @@ export const loginUser = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Login successful", user, accessToken, refreshToken });
   } catch (error) {
-    console.error("Login error:", error);
+    logger.error("Login error:", error);
     res.status(500).json({ message: "Error logging in", error });
   }
 };
@@ -136,7 +137,7 @@ export const refreshAccessToken = (req: Request, res: Response) => {
       JWT_SECRET,
       (err: Error | null, decoded?: unknown) => {
         if (err) {
-          console.error("Refresh token verification error:", err);
+          logger.error("Refresh token verification error:", err);
           return res.status(401).json({ message: "Invalid refresh token" });
         }
 
@@ -148,7 +149,7 @@ export const refreshAccessToken = (req: Request, res: Response) => {
             .status(200)
             .json({ accessToken, refreshToken: newRefreshToken });
         } catch (error) {
-          console.error("Error generating new tokens:", error);
+          logger.error("Error generating new tokens:", error);
           return res
             .status(500)
             .json({ message: "Error generating new tokens", error });
@@ -156,7 +157,7 @@ export const refreshAccessToken = (req: Request, res: Response) => {
       }
     );
   } catch (error) {
-    console.error("Unhandled error in refreshAccessToken:", error);
+    logger.error("Unhandled error in refreshAccessToken:", error);
     return res
       .status(500)
       .json({ message: "Error refreshing access token", error });

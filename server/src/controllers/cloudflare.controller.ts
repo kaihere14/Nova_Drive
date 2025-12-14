@@ -13,6 +13,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { Request, Response } from "express";
 import FileModel from "../models/fileSchema.model.js";
 import { User } from "../models/user.model.js";
+import { logger } from "../index.js";
 
 export const r2 = new S3Client({
   region: "auto",
@@ -50,7 +51,7 @@ export async function r2CreateMultipart(
     const response = await r2.send(cmd);
     return response.UploadId!;
   } catch (error) {
-    console.error("Error creating multipart upload:", error);
+    logger.error("Error creating multipart upload:", error);
     throw error;
   }
 }
@@ -102,7 +103,7 @@ export async function r2CompleteMultipart(
 
     return result;
   } catch (err) {
-    console.error("Complete multipart failed:", err);
+    logger.error("Complete multipart failed:", err);
     throw err;
   }
 }
@@ -115,16 +116,16 @@ export async function r2AbortMultipart(uploadId: string, key: string) {
       UploadId: uploadId,
     });
 
-    console.log(
+    logger.info(
       "Aborting multipart upload for key:",
       key,
       "uploadId:",
       uploadId
     );
     await r2.send(cmd);
-    console.log("Multipart upload aborted successfully");
+    logger.info("Multipart upload aborted successfully");
   } catch (err) {
-    console.error("Abort multipart failed:", err);
+    logger.error("Abort multipart failed:", err);
     throw err;
   }
 }
@@ -149,7 +150,7 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
         const headResponse = await r2.send(headCmd);
         originalName = headResponse.Metadata?.originalname || "downloaded-file";
       } catch (err) {
-        console.error("Error retrieving metadata:", err);
+        logger.error("Error retrieving metadata:", err);
         originalName = "downloaded-file";
       }
     }
@@ -166,7 +167,7 @@ export const getDownloadUrl = async (req: Request, res: Response) => {
 
     res.json({ url });
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     res.status(500).json({ error: "Failed to generate download url" });
   }
 };
@@ -197,7 +198,7 @@ export const getPreviewUrl = async (req: Request, res: Response) => {
 
     res.json({ url ,fileType});
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     res.status(500).json({ error: "Failed to generate preview url" });
   }
 };
@@ -237,7 +238,7 @@ export const deleteUserFile = async (req: Request, res: Response) => {
 
     return res.json({ success: true, message: "File deleted successfully" });
   } catch (err) {
-    console.error("Delete file error:", err);
+    logger.error("Delete file error:", err);
     res.status(500).json({ error: "Failed to delete file", details: err });
   }
 };

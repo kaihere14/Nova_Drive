@@ -1,6 +1,7 @@
 import Folder from "../models/folderModel.js";
 import { Request, Response } from "express";
 import fileModel from "../models/fileSchema.model.js";
+import { logger } from "../index.js";
 
 export const createFolder = async (req: Request, res: Response) => {
   try {
@@ -81,7 +82,7 @@ export const renameFolder = async (req: Request, res: Response) => {
 
 export const fetchAllFolders = async (req: Request, res: Response) => {
     try {
-      console.log("Fetching all folders");
+      logger.info("Fetching all folders");
         const userId = (req as any).userId;
         const folders = await Folder.find({ ownerId: userId }).sort({ createdAt: -1 }).select("_id name");
         res.status(200).json({ folders });

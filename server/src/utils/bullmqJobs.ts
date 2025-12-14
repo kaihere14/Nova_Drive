@@ -5,6 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 import FileModel from "../models/fileSchema.model.js";
 import { getPresignedDownloadUrl } from "../controllers/cloudflare.controller.js";
 import pdf from "pdf-parse";
+import { logger } from "../index.js";
 
 // Helper function for fetch with timeout
 async function fetchWithTimeout(url: string, timeout = 30000) {
@@ -45,26 +46,26 @@ export const connection = new IORedis({
   connectTimeout: 10000,
   retryStrategy: (times) => {
     const delay = Math.min(times * 50, 2000);
-    console.log(`Redis reconnect attempt ${times}, delay: ${delay}ms`);
+    logger.info(`Redis reconnect attempt ${times}, delay: ${delay}ms`);
     return delay;
   },
 });
 
 // Add error handlers for Redis connection
 connection.on("error", (err) => {
-  console.error("Redis connection error:", err);
+  logger.error("Redis connection error:", err);
 });
 
 connection.on("connect", () => {
-  console.log("Redis connected successfully");
+  logger.info("Redis connected successfully");
 });
 
 connection.on("reconnecting", () => {
-  console.log("Redis reconnecting...");
+  logger.info("Redis reconnecting...");
 });
 
 connection.on("close", () => {
-  console.log("Redis connection closed");
+  logger.info("Redis connection closed");
 });
 
 // Reuse the same connection for all queues
@@ -178,7 +179,7 @@ const workerExtraction = new Worker(
       try {
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
       } catch (updateErr) {
-        console.error("Failed to update error status:", updateErr);
+        logger.error("Failed to update error status:", updateErr);
       }
       throw err;
     }
@@ -283,8 +284,8 @@ Return strictly in JSON:
       try {
         parsed = JSON.parse(rawText);
       } catch (parseErr) {
-        console.warn("Failed to parse AI response, using defaults:", parseErr);
-        console.warn("Raw response:", rawText);
+        logger.warn("Failed to parse AI response, using defaults:", parseErr);
+        logger.warn("Raw response:", rawText);
 
         // Update status to failed
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
@@ -298,17 +299,17 @@ Return strictly in JSON:
         aiStatus: "completed",
       });
 
-      console.log(
+      logger.info(
         `AI Processing completed for image: ${fileName} (ID: ${fileId})`
       );
     } catch (err) {
-      console.error("AI Processing Failed for image:", fileName, err);
+      logger.error("AI Processing Failed for image:", fileName, err);
 
       // Update status to failed if not already done
       try {
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
       } catch (updateErr) {
-        console.error("Failed to update error status:", updateErr);
+        logger.error("Failed to update error status:", updateErr);
       }
 
       throw err;
@@ -324,7 +325,7 @@ const otherWorker = new Worker(
 
     try {
       await FileModel.findByIdAndUpdate(fileId, { aiStatus: "processing" });
-      console.log(
+      logger.info(
         `AI Processing started for other file: ${fileName} (ID: ${fileId})`
       );
 
@@ -363,11 +364,11 @@ Return strictly in JSON:
       try {
         parsed = JSON.parse(rawText);
       } catch (parseErr) {
-        console.warn(
+        logger.warn(
           "Failed to parse AI response for other file, using defaults:",
           parseErr
         );
-        console.warn("Raw response:", rawText);
+        logger.warn("Raw response:", rawText);
 
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
         throw parseErr;
@@ -379,16 +380,16 @@ Return strictly in JSON:
         aiStatus: "completed",
       });
 
-      console.log(
+      logger.info(
         `AI Processing completed for other file: ${fileName} (ID: ${fileId})`
       );
     } catch (err) {
-      console.error("AI Processing Failed for other file:", fileName, err);
+      logger.error("AI Processing Failed for other file:", fileName, err);
 
       try {
         await FileModel.findByIdAndUpdate(fileId, { aiStatus: "failed" });
       } catch (updateErr) {
-        console.error("Failed to update error status:", updateErr);
+        logger.error("Failed to update error status:", updateErr);
       }
 
       throw err;
@@ -403,33 +404,33 @@ export const queues = [myQueue, imageQueue, otherQueue, extractionQueue];
 
 // Add error handlers to all workers
 workerExtraction.on("error", (err) => {
-  console.error("Worker extraction error:", err);
+  logger.error("Worker extraction error:", err);
 });
 
 workerExtraction.on("failed", (job, err) => {
-  console.error(`Extraction job ${job?.id} failed:`, err);
+  logger.error(`Extraction job ${job?.id} failed:`, err);
 });
 
 worker.on("error", (err) => {
-  console.error("PDF AI worker error:", err);
+  logger.error("PDF AI worker error:", err);
 });
 
 worker.on("failed", (job, err) => {
-  console.error(`PDF AI job ${job?.id} failed:`, err);
+  logger.error(`PDF AI job ${job?.id} failed:`, err);
 });
 
 imageWorker.on("error", (err) => {
-  console.error("Image AI worker error:", err);
+  logger.error("Image AI worker error:", err);
 });
 
 imageWorker.on("failed", (job, err) => {
-  console.error(`Image AI job ${job?.id} failed:`, err);
+  logger.error(`Image AI job ${job?.id} failed:`, err);
 });
 
 otherWorker.on("error", (err) => {
-  console.error("Other file worker error:", err);
+  logger.error("Other file worker error:", err);
 });
 
 otherWorker.on("failed", (job, err) => {
-  console.error(`Other file job ${job?.id} failed:`, err);
+  logger.error(`Other file job ${job?.id} failed:`, err);
 });

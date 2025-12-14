@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import axios from "axios";
 import { User } from '../models/user.model';
 import { generateToken } from './user.controller';
+import { logger } from "../index.js";
 
 
 
@@ -69,7 +70,7 @@ export const createOAuthUser = async (profile: any) => {
         return { user, accessToken, refreshToken,message};
       }
      catch (error) {
-        console.error("Error creating OAuth user:", error);
+        logger.error("Error creating OAuth user:", error);
         throw error;
     }
 };

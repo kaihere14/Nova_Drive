@@ -3,5 +3,7 @@ dist
 .env
 .DS_Store
 .uploads
-
+logs/
+combined.log
+error.log
 CODEBASE_SUMMARY.md

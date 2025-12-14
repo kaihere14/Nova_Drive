@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { logger } from "../index.js";
 
 const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY_5!});
 
@@ -63,7 +64,7 @@ export const fileSearch = async (allFiles:any,query:string) => {
         const isRateLimit = err?.status === 429 || err?.code === 429 || (err?.error && err.error.status === "RESOURCE_EXHAUSTED") || (typeof err?.message === 'string' && err.message.toLowerCase().includes('quota'));
         if (isRateLimit) {
           // Log and break attempts for this key; move to next key
-          console.warn(`Gemini key (attempt ${attempt}) hit rate limit, rotating keys: ${err?.message || err}`);
+          logger.warn(`Gemini key (attempt ${attempt}) hit rate limit, rotating keys: ${err?.message || err}`);
           break;
         }
 

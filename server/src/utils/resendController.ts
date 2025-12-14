@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { logger } from "../index.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -103,14 +104,14 @@ export const sendOtpEmail = async ({ email, otp }: SendOtpEmailParams) => {
     });
 
     if (error) {
-      console.error('Error sending OTP email:', error);
+      logger.error('Error sending OTP email:', error);
       return { success: false, error };
     }
 
     
     return { success: true, data };
   } catch (error) {
-    console.error('Error in sendOtpEmail:', error);
+    logger.error('Error in sendOtpEmail:', error);
     return { success: false, error };
   }
 };
