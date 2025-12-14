@@ -78,19 +78,15 @@ const ProfilePage = () => {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
         try {
-          // Fetch user's files to calculate actual storage
-          const response = await axios.get(`${BASE_URL}/api/files/list-files`, {
+          // Fetch user's total counts and storage
+          const response = await axios.get(`${BASE_URL}/api/user/total`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
           });
 
-          const files = response.data.files || [];
-          const totalFiles = files.length;
-          const totalBytes = files.reduce(
-            (acc, file) => acc + (file.size || 0),
-            0
-          );
+          const totalFiles = response.data.totalFiles || 0;
+          const totalBytes = response.data.totalStorageUsed || 0;
 
           // Format storage size
           const formatSize = (bytes) => {
