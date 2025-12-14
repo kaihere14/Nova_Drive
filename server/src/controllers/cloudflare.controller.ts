@@ -12,6 +12,7 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { Request, Response } from "express";
 import FileModel from "../models/fileSchema.model.js";
+import { User } from "../models/user.model.js";
 
 export const r2 = new S3Client({
   region: "auto",
@@ -217,8 +218,22 @@ export const deleteUserFile = async (req: Request, res: Response) => {
         Key: key,
       })
     );
+    const fileRecord = await FileModel.findOne({ r2Key: key, owner: userId });
+    if (fileRecord) {
+      const user = await User.findById(userId);
+      
+      if (user) {
+        
+        user.storageUsed = Math.max(0, (user.storageUsed || 0) - fileRecord.size);
+        
+        await user.save();
+      }
 
+    }
     await FileModel.deleteOne({ r2Key: key, owner: userId });
+    
+    
+  
 
     return res.json({ success: true, message: "File deleted successfully" });
   } catch (err) {

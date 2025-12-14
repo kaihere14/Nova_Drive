@@ -5,6 +5,7 @@ export interface IUser extends Document {
   username: string;
   email: string;
   password?: string; // ✅ Optional now
+  storageUsed?: number;
   storageQuota: number;
   createdAt: Date;
   otp?: string;
@@ -25,6 +26,7 @@ const UserSchema = new Schema<IUser>({
   
   password: { type: String, required: false },
 
+  storageUsed: { type: Number, default: 0 },
   storageQuota: { type: Number, default: 10 * 1024 * 1024 * 1024 },
   createdAt: { type: Date, default: Date.now },
 

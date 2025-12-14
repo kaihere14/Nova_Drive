@@ -8,6 +8,7 @@ import {
 } from "./cloudflare.controller.js";
 import FileModel from "../models/fileSchema.model.js";
 import { connection, extractData } from "../utils/bullmqJobs.js";
+import { User } from "../models/user.model.js";
 
 interface UploadInitiateBody {
   userId: string;
@@ -46,12 +47,27 @@ export const computeHashCheck = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { fileHash } = req.body;
+    const { fileHash,userId } = req.body;
 
     if (!fileHash) {
       res.status(400).json({ message: "Missing fileHash field" });
       return;
     }
+    const user = await User.findById(userId);
+    
+    if(!user) {
+      res.status(404).json({message: "User not found"});
+      return;
+    }
+    if(user){
+      if(user.storageUsed && user.storageQuota) {
+        if(user.storageUsed >= user.storageQuota) {
+          res.status(403).json({message: "Storage quota exceeded"});
+          return;
+        }
+      }
+    }
+    
 
     const existingHash = await Hash.findOne({ fileHash });
     if (existingHash) {
@@ -160,6 +176,11 @@ export const completeUpload = async (
     
 
     const session = await chunkModel.findById(sessionId);
+    const user  = await User.findById(session?.userId);
+    if(user) {
+      user.storageUsed = (user.storageUsed || 0) + size;
+      await user.save();
+    }
     if (!session) return res.status(404).json({ error: "Invalid session" });
 
     // Validate required parameters for multipart completion
