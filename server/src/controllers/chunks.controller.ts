@@ -10,6 +10,7 @@ import FileModel from "../models/fileSchema.model.js";
 import { connection, extractData } from "../utils/bullmqJobs.js";
 import { User } from "../models/user.model.js";
 import { logger } from "../index.js";
+import { Activity } from "../models/logs.model.js";
 
 interface UploadInitiateBody {
   userId: string;
@@ -136,7 +137,8 @@ export const uploadInitiate = async (
     // Create key with userId path structure
     const key = `uploads/${userId}/${fileHash}+${new Date().getSeconds()}`;
     const uploadId = await r2CreateMultipart(key, fileName, contentType);
-
+    
+    
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // Expires in 24 hours
 
     const newUploadSession = new chunkModel({
@@ -151,6 +153,13 @@ export const uploadInitiate = async (
     });
 
     const savedSession = await newUploadSession.save();
+    const activity = await  Activity.create({
+      userId: userId,
+      fileId: savedSession._id,
+      fileName: fileName,
+      action: "file_initiated"
+    });
+    await activity.save();
 
     res.status(201).json({
       message: "Upload session initiated",
@@ -204,6 +213,14 @@ export const completeUpload = async (
       user.storageUsed = (user.storageUsed || 0) + size;
       await user.save();
     }
+    const activity =await Activity.findOne({fileId: session?._id,action: "file_initiated"});
+    
+    if(activity) {
+      activity.action = "file_uploaded";
+      await activity.save();
+    }
+   
+
     if (!session) return res.status(404).json({ error: "Invalid session" });
 
     // Validate required parameters for multipart completion

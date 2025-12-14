@@ -7,6 +7,7 @@ import fileRoue from "./routes/file.routes.js";
 import otpRoute from "./routes/otpRoutes.js";
 import folderRoute from "./routes/folder.routes.js";
 import oAuthRoute from "./routes/oAuth.route.js";
+import logRoutes from "./routes/logs.routes.js";
 import cors from "cors";
 
 import { workers, queues, connection } from "./utils/bullmqJobs.js";
@@ -48,6 +49,7 @@ app.use("/api/files", fileRoue);
 app.use("/api/otp", otpRoute);
 app.use("/api/folders", folderRoute);
 app.use("/api/auth/google", oAuthRoute);
+app.use("/api/logs",logRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Server is running!" });

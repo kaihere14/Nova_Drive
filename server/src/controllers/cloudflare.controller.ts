@@ -14,6 +14,7 @@ import type { Request, Response } from "express";
 import FileModel from "../models/fileSchema.model.js";
 import { User } from "../models/user.model.js";
 import { logger } from "../index.js";
+import  { Activity } from "../models/logs.model.js";
 
 export const r2 = new S3Client({
   region: "auto",
@@ -261,7 +262,13 @@ export const deleteUserFile = async (req: Request, res: Response) => {
     await FileModel.deleteOne({ r2Key: key, owner: userId });
     
     
-  
+  const activity = new Activity({
+      userId: userId,
+      fileId: fileRecord?._id,
+      fileName: fileRecord?.originalFileName,
+      action: "file_deleted"
+    });
+    await activity.save();
 
     return res.json({ success: true, message: "File deleted successfully" });
   } catch (err: any) {

@@ -16,6 +16,14 @@ import {
   Lock,
   Eye,
   EyeOff,
+  Activity,
+  FileText,
+  Folder,
+  FolderPlus,
+  Trash2,
+  FolderEdit,
+  Upload,
+  Move,
 } from "lucide-react";
 
 const ProfilePage = () => {
@@ -47,6 +55,12 @@ const ProfilePage = () => {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+
+  // Activity Log States
+  const [activities, setActivities] = useState([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(false);
+  const [activitiesError, setActivitiesError] = useState("");
+  const [showAllActivities, setShowAllActivities] = useState(false);
 
   useEffect(() => {
     if (!user && !loading) {
@@ -107,6 +121,32 @@ const ProfilePage = () => {
     };
 
     fetchUserStats();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      if (!user) return;
+
+      setActivitiesLoading(true);
+      setActivitiesError("");
+
+      try {
+        const response = await axios.get(`${BASE_URL}/api/logs/user-activities`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
+
+        setActivities(response.data.activities || []);
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+        setActivitiesError("Failed to load activity log");
+      } finally {
+        setActivitiesLoading(false);
+      }
+    };
+
+    fetchActivities();
   }, [user]);
 
   const handleLogout = async () => {
@@ -189,6 +229,129 @@ const ProfilePage = () => {
       year: "numeric",
       month: "long",
       day: "numeric",
+    });
+  };
+
+  const getActivityIcon = (action) => {
+    switch (action) {
+      case "file_uploaded":
+        return <Upload className="w-4 h-4" />;
+      case "file_deleted":
+        return <Trash2 className="w-4 h-4" />;
+      case "file_renamed":
+        return <Edit2 className="w-4 h-4" />;
+      case "file_moved":
+        return <Move className="w-4 h-4" />;
+      case "folder_created":
+        return <FolderPlus className="w-4 h-4" />;
+      case "folder_deleted":
+        return <Trash2 className="w-4 h-4" />;
+      case "folder_renamed":
+        return <FolderEdit className="w-4 h-4" />;
+      case "file_initiated":
+        return <FileText className="w-4 h-4" />;
+      default:
+        return <Activity className="w-4 h-4" />;
+    }
+  };
+
+  const getActivityColor = (action) => {
+    switch (action) {
+      case "file_uploaded":
+        return "from-green-500/20 to-green-600/10 border-green-500/20 text-green-400";
+      case "file_deleted":
+      case "folder_deleted":
+        return "from-red-500/20 to-red-600/10 border-red-500/20 text-red-400";
+      case "file_renamed":
+      case "folder_renamed":
+        return "from-blue-500/20 to-blue-600/10 border-blue-500/20 text-blue-400";
+      case "file_moved":
+        return "from-purple-500/20 to-purple-600/10 border-purple-500/20 text-purple-400";
+      case "folder_created":
+        return "from-cyan-500/20 to-cyan-600/10 border-cyan-500/20 text-cyan-400";
+      case "file_initiated":
+        return "from-yellow-500/20 to-yellow-600/10 border-yellow-500/20 text-yellow-400";
+      default:
+        return "from-zinc-500/20 to-zinc-600/10 border-zinc-500/20 text-zinc-400";
+    }
+  };
+
+  const getActivityText = (activity) => {
+    const { action, fileName, newFileName } = activity;
+    
+    switch (action) {
+      case "file_uploaded":
+        return (
+          <>
+            Uploaded file <span className="font-semibold text-white">{fileName}</span>
+          </>
+        );
+      case "file_deleted":
+        return (
+          <>
+            Deleted file <span className="font-semibold text-white">{fileName}</span>
+          </>
+        );
+      case "file_renamed":
+        return (
+          <>
+            Renamed file from <span className="font-semibold text-white">{fileName}</span> to <span className="font-semibold text-white">{newFileName}</span>
+          </>
+        );
+      case "file_moved":
+        return (
+          <>
+            Moved file <span className="font-semibold text-white">{fileName}</span>
+          </>
+        );
+      case "folder_created":
+        return (
+          <>
+            Created folder <span className="font-semibold text-white">{fileName}</span>
+          </>
+        );
+      case "folder_deleted":
+        return (
+          <>
+            Deleted folder <span className="font-semibold text-white">{fileName}</span>
+          </>
+        );
+      case "folder_renamed":
+        return (
+          <>
+            Renamed folder from <span className="font-semibold text-white">{fileName}</span> to <span className="font-semibold text-white">{newFileName}</span>
+          </>
+        );
+      case "file_initiated":
+        return (
+          <>
+            Initiated upload for <span className="font-semibold text-white">{fileName}</span>
+          </>
+        );
+      default:
+        return (
+          <>
+            Performed action on <span className="font-semibold text-white">{fileName || "unknown"}</span>
+          </>
+        );
+    }
+  };
+
+  const formatActivityTime = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return "Just now";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
     });
   };
 
@@ -327,6 +490,84 @@ const ProfilePage = () => {
                 {stats.accountAge}
               </p>
             </div>
+          </div>
+
+          {/* Activity Log */}
+          <div className="relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 border border-zinc-700/50 rounded-xl p-6 overflow-hidden mb-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-transparent pointer-events-none" />
+            <h2 className="relative text-xl font-bold text-white mb-4 font-mono bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent flex items-center gap-2">
+              <Activity className="w-5 h-5 text-cyan-400" />
+              RECENT_ACTIVITY
+            </h2>
+
+            {activitiesLoading ? (
+              <div className="relative flex items-center justify-center py-8">
+                <div className="w-8 h-8 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+              </div>
+            ) : activitiesError ? (
+              <div className="relative p-4 bg-gradient-to-br from-red-900/30 to-red-950/30 border border-red-500/30 rounded-lg">
+                <p className="text-red-300 text-sm font-mono">{activitiesError}</p>
+              </div>
+            ) : activities.length === 0 ? (
+              <div className="relative text-center py-8">
+                <Activity className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
+                <p className="text-zinc-500 font-mono text-sm">NO_ACTIVITY_YET</p>
+              </div>
+            ) : (
+              <div className="relative space-y-2 max-h-96 overflow-y-auto pr-2 hide-scrollbar">
+                {(showAllActivities ? activities : activities.slice(0, 3)).map((activity) => (
+                  <div
+                    key={activity._id}
+                    className="group relative flex items-start gap-3 p-4 bg-gradient-to-br from-zinc-800/30 to-zinc-900/30 hover:from-zinc-800/50 hover:to-zinc-900/50 border border-zinc-700/30 hover:border-zinc-600/50 rounded-lg transition-all duration-200"
+                  >
+                    {/* Activity Icon */}
+                    <div
+                      className={`flex-shrink-0 w-9 h-9 bg-gradient-to-br ${getActivityColor(
+                        activity.action
+                      )} rounded-lg flex items-center justify-center border`}
+                    >
+                      {getActivityIcon(activity.action)}
+                    </div>
+
+                    {/* Activity Content */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-zinc-300 leading-relaxed">
+                        {getActivityText(activity)}
+                      </p>
+                      <p className="text-xs text-zinc-500 font-mono mt-1">
+                        {formatActivityTime(activity.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* View More Button */}
+            {!activitiesLoading && !activitiesError && activities.length > 3 && (
+              <div className="relative mt-4 flex justify-center">
+                <button
+                  onClick={() => setShowAllActivities(!showAllActivities)}
+                  className="px-6 py-2 bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 hover:from-cyan-500/20 hover:to-cyan-600/10 border border-cyan-500/30 hover:border-cyan-500/50 text-cyan-400 hover:text-cyan-300 rounded-lg transition-all duration-200 font-mono text-sm flex items-center gap-2 group"
+                >
+                  {showAllActivities ? (
+                    <>
+                      <span>SHOW_LESS</span>
+                      <svg className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                      </svg>
+                    </>
+                  ) : (
+                    <>
+                      <span>VIEW_MORE ({activities.length - 3})</span>
+                      <svg className="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Account Settings */}

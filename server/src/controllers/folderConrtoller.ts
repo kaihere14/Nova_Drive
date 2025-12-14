@@ -2,6 +2,7 @@ import Folder from "../models/folderModel.js";
 import { Request, Response } from "express";
 import fileModel from "../models/fileSchema.model.js";
 import { logger } from "../index.js";
+import { Activity } from "../models/logs.model.js";
 
 export const createFolder = async (req: Request, res: Response) => {
   try {
@@ -16,6 +17,13 @@ export const createFolder = async (req: Request, res: Response) => {
     });
     await newFolder.save();
     res.status(201).json(newFolder);
+    const activity = new  Activity({
+      userId: userId,
+      fileId: newFolder._id,
+      fileName: folderName,
+      action: "folder_created",
+    });
+    await activity.save();
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
@@ -58,6 +66,13 @@ export const deleteFolder = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Folder not found" });
         }
         res.status(200).json({ message: "Folder deleted successfully" });
+        const activity = new  Activity({
+            userId: deletedFolder.ownerId,
+            fileId: deletedFolder._id,
+            fileName: deletedFolder.name,
+            action: "folder_deleted"
+        });
+        await activity.save();
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }
@@ -69,12 +84,21 @@ export const renameFolder = async (req: Request, res: Response) => {
         const { folderId } = req.params;
         const { newName } = req.body;
         const folder = await Folder.findById(folderId);
+        const oldName = folder?.name;
         if (!folder) {
             return res.status(404).json({ message: "Folder not found" });
         }
         folder.name = newName;
         await folder.save();
         res.status(200).json({ message: "Folder renamed successfully", folder });
+        const activity = new  Activity({
+            userId: folder.ownerId,
+            fileId: folder._id,
+            fileName: oldName,
+            newFileName: newName,
+            action: "folder_renamed"
+        });
+        await activity.save();
     } catch (error) {
         res.status(500).json({ message: "Server error", error });
     }
