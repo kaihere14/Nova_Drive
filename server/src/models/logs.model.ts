@@ -22,7 +22,7 @@ export interface IActivity extends Document {
 
 const ActivitySchema = new Schema<IActivity>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true ,index: true },
 
     action: {
       type: String,

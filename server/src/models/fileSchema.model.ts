@@ -19,9 +19,9 @@ export interface IFile extends Document {
 }
 
 const FileSchema = new Schema<IFile>({
-  r2Key: { type: String, required: true, unique: true },
+  r2Key: { type: String, required: true, unique: true ,index: true},
   eTag: { type: String },
-  owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  owner: { type: Schema.Types.ObjectId, ref: "User", required: true ,index: true},
   originalFileName: { type: String, required: true },
   mimeType: { type: String, required: true },
   size: { type: Number, required: true },

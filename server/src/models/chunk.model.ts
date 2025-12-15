@@ -16,8 +16,8 @@ export interface IUploadSession extends Document {
 
 const uploadSessionSchema = new Schema<IUploadSession>(
   {
-    userId: { type: Schema.Types.ObjectId, required: true },
-    uploadId: { type: String, required: true, unique: true },
+    userId: { type: Schema.Types.ObjectId, required: true,index: true },
+    uploadId: { type: String, required: true, unique: true,index: true },
     fileName: { type: String, required: true },
     fileSize: { type: Number, required: true },
     contentType: { type: String, required: true },
