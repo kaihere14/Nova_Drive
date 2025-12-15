@@ -6,7 +6,7 @@ const router = Router();
 
 // File listing route
 router.get("/list-files", verifyJwt, listFiles);
-router.get("/set-favourite/:fileId",  setFavourite);
+router.get("/set-favourite/:fileId", verifyJwt, setFavourite);
 router.get("/list-favourite-files", verifyJwt, listFavouriteFiles);
 router.post("/move-file", verifyJwt, moveFileToFolder);
 router.post("/ai-search", verifyJwt, aiFileSearch);

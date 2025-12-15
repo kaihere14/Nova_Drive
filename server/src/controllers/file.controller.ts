@@ -56,18 +56,19 @@ export const setFavourite = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "File not found" });
         }
         file.favourite = !file.favourite;
-        
-        await file.save();
-        res.status(200).json({ message: "File favourite status updated", favourite: file.favourite });
         const activity = new Activity({
           userId: (req as any).userId,
-          fileId: file._id,
+          fileId: fileId,
           fileName: file.originalFileName,
           action: file.favourite ? "setFavorite" : "removeFavorite"
         });
+        await file.save();
         await activity.save();
+        res.status(200).json({ message: "File favourite status updated", favourite: file.favourite });
+        
+        
     } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+      res.status(500).json({ message: "Server error", error });
     }
 };
 
