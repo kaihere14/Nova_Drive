@@ -4,14 +4,14 @@ import bcrypt from "bcrypt";
 export interface IUser extends Document {
   username: string;
   email: string;
-  password?: string; // ✅ Optional now
+  password?: string; 
   storageUsed?: number;
   storageQuota: number;
   createdAt: Date;
   otp?: string;
   otpExpiry?: Date;
 
-  // ✅ OAuth Fields
+
   googleId?: string;
   avatar?: string;
   authProvider: "local" | "google";
