@@ -1,15 +1,16 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import usePageMeta from "../utils/usePageMeta";
 
 const PricingPage = () => {
   usePageMeta(
     "Pricing — NovaDrive",
-    "Simple and transparent pricing for personal and business storage plans with AI analysis included."
+    "Simple and transparent pricing for personal and business storage."
   );
+
   return (
-    <div className="min-h-[100dvh] bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200">
-      {/* --- Subtle Grid Background --- */}
+    <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200">
       <div
         className="fixed inset-0 z-0 pointer-events-none"
         style={{
@@ -22,316 +23,194 @@ const PricingPage = () => {
       <Navbar />
 
       <main className="relative z-10 pt-24 sm:pt-32 pb-20 px-4 sm:px-6 max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-12 sm:mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1] mb-6">
-            Transparent Resource Allocation
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-6">
+            Simple, Transparent Pricing
           </h1>
           <p className="text-xl text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-            Scale as you grow. No hidden bandwidth fees. Choose the plan that
-            fits your storage needs.
+            Start for free, upgrade for power. No hidden bandwidth fees.
           </p>
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 rounded-lg overflow-hidden mb-12 sm:mb-20">
-          {[
-            {
-              name: "Developer",
-              price: "$0",
-              storage: "10 GB",
-              band: "Unlimited",
-              users: "1 User",
-              api: "Read-Only",
-              support: "Community",
-              highlight: false,
-            },
-            {
-              name: "Pro",
-              price: "$12",
-              storage: "2 TB",
-              band: "Unlimited",
-              users: "5 Users",
-              api: "Full",
-              support: "Priority Email",
-              highlight: true,
-            },
-            {
-              name: "Organization",
-              price: "Custom",
-              storage: "Custom",
-              band: "Priority",
-              users: "Unlimited",
-              api: "Full",
-              support: "24/7 Dedicated",
-              highlight: false,
-            },
-          ].map((plan, i) => (
-            <div
-              key={i}
-              className={`p-6 sm:p-8 bg-zinc-950 flex flex-col h-full ${
-                plan.highlight ? "bg-zinc-900/80 border-2 border-white/10" : ""
-              }`}
-            >
-              {plan.highlight && (
-                <div className="mb-4">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
-                    Most Popular
-                  </span>
-                </div>
-              )}
-              <h3 className="font-mono text-sm text-zinc-400 uppercase tracking-wider mb-2">
-                {plan.name}
-              </h3>
-              <div className="text-4xl font-bold text-white mb-6">
-                {plan.price}
-                {plan.price !== "Custom" && (
-                  <span className="text-lg text-zinc-500 font-normal">/mo</span>
-                )}
-              </div>
-
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
-                  <span>Storage</span>
-                  <span className="font-mono text-white">{plan.storage}</span>
-                </li>
-                <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
-                  <span>Bandwidth</span>
-                  <span className="font-mono text-white">{plan.band}</span>
-                </li>
-                <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
-                  <span>Team Size</span>
-                  <span className="font-mono text-white">{plan.users}</span>
-                </li>
-                <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
-                  <span>AI Analysis</span>
-                  <span className="font-mono text-white">
-                    {i === 0 ? "Basic" : "Advanced"}
-                  </span>
-                </li>
-                <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
-                  <span>API Access</span>
-                  <span className="font-mono text-white">{plan.api}</span>
-                </li>
-                <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
-                  <span>Support</span>
-                  <span className="font-mono text-white">{plan.support}</span>
-                </li>
-              </ul>
-
-              <button
-                className={`w-full py-3 rounded text-sm font-medium border transition-colors ${
-                  plan.highlight
-                    ? "bg-white text-black border-white hover:bg-zinc-200"
-                    : "text-white border-zinc-700 hover:bg-zinc-800"
-                }`}
-              >
-                {i === 2 ? "Contact Us" : plan.highlight ? "Get Started" : "Select Plan"}
-              </button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24">
+          <div className="p-8 bg-zinc-900/30 border border-zinc-800 rounded-2xl flex flex-col h-full hover:border-zinc-700 transition-all">
+            <h3 className="font-mono text-sm text-zinc-400 uppercase tracking-wider mb-2">
+              Starter
+            </h3>
+            <div className="text-4xl font-bold text-white mb-6">
+              ₹0
+              <span className="text-lg text-zinc-500 font-normal">/mo</span>
             </div>
-          ))}
+
+            <ul className="space-y-4 mb-8 flex-1">
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
+                <span>Storage</span>
+                <span className="font-mono text-white">10 GB</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
+                <span>Max File Size</span>
+                <span className="font-mono text-white">2 GB</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
+                <span>AI Tagging</span>
+                <span className="font-mono text-white">Basic</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
+                <span>Support</span>
+                <span className="font-mono text-white">Community</span>
+              </li>
+            </ul>
+
+            <button className="w-full py-3 rounded-lg text-sm font-semibold bg-white text-black hover:bg-zinc-200 transition-colors">
+              Current Plan
+            </button>
+          </div>
+
+          <div className="p-8 bg-zinc-900/80 border border-blue-500/30 rounded-2xl flex flex-col h-full relative overflow-hidden shadow-2xl shadow-blue-900/10">
+            <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">
+              MOST POPULAR
+            </div>
+            <h3 className="font-mono text-sm text-blue-400 uppercase tracking-wider mb-2">
+              Pro
+            </h3>
+            <div className="text-4xl font-bold text-white mb-6">
+              ₹499
+              <span className="text-lg text-zinc-500 font-normal">/mo</span>
+            </div>
+
+            <ul className="space-y-4 mb-8 flex-1">
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-800 pb-2">
+                <span>Storage</span>
+                <span className="font-mono text-white">2 TB</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-800 pb-2">
+                <span>Max File Size</span>
+                <span className="font-mono text-white">10 GB</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-800 pb-2">
+                <span>AI Intelligence</span>
+                <span className="font-mono text-white">Advanced</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-800 pb-2">
+                <span>Support</span>
+                <span className="font-mono text-white">Priority Email</span>
+              </li>
+            </ul>
+
+            <button className="w-full py-3 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+              Upgrade to Pro
+            </button>
+          </div>
+
+          <div className="p-8 bg-zinc-900/30 border border-zinc-800 rounded-2xl flex flex-col h-full hover:border-zinc-700 transition-all">
+            <h3 className="font-mono text-sm text-zinc-400 uppercase tracking-wider mb-2">
+              Business
+            </h3>
+            <div className="text-4xl font-bold text-white mb-6">Custom</div>
+
+            <ul className="space-y-4 mb-8 flex-1">
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
+                <span>Storage</span>
+                <span className="font-mono text-white">Unlimited</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
+                <span>Team Mgmt</span>
+                <span className="font-mono text-white">Included</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
+                <span>API Access</span>
+                <span className="font-mono text-white">Full</span>
+              </li>
+              <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-900 pb-2">
+                <span>Support</span>
+                <span className="font-mono text-white">24/7 Dedicated</span>
+              </li>
+            </ul>
+
+            <button className="w-full py-3 rounded-lg text-sm font-semibold border border-zinc-700 text-zinc-300 hover:bg-zinc-800 transition-colors">
+              Contact Sales
+            </button>
+          </div>
         </div>
 
-        {/* Feature Comparison */}
-        <div className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight mb-8 text-center">
-            Feature Comparison
+        <div className="mb-24">
+          <h2 className="text-3xl font-semibold text-white mb-8 text-center">
+            Compare Plans
           </h2>
 
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden">
+          <div className="bg-zinc-900/20 border border-zinc-800 rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-zinc-800">
-                    <th className="text-left p-6 text-zinc-400 font-medium">
-                      Feature
-                    </th>
-                    <th className="text-center p-6 text-zinc-400 font-medium">
-                      Developer
-                    </th>
-                    <th className="text-center p-6 text-zinc-400 font-medium bg-zinc-800/50">
+                  <tr className="border-b border-zinc-800 text-xs uppercase tracking-wider text-zinc-500 bg-zinc-900/50">
+                    <th className="p-4 font-medium">Feature</th>
+                    <th className="p-4 font-medium text-center">Starter</th>
+                    <th className="p-4 font-medium text-center text-blue-400">
                       Pro
                     </th>
-                    <th className="text-center p-6 text-zinc-400 font-medium">
-                      Organization
-                    </th>
+                    <th className="p-4 font-medium text-center">Business</th>
                   </tr>
                 </thead>
-                <tbody className="text-sm">
+                <tbody className="text-sm divide-y divide-zinc-800">
                   {[
                     {
-                      feature: "Storage Space",
-                      dev: "10 GB",
+                      feature: "Storage Capacity",
+                      starter: "10 GB",
                       pro: "2 TB",
-                      org: "20 TB",
+                      biz: "Custom",
                     },
                     {
-                      feature: "File Upload Size",
-                      dev: "100 MB",
-                      pro: "5 GB",
-                      org: "Unlimited",
+                      feature: "Single File Limit",
+                      starter: "2 GB",
+                      pro: "10 GB",
+                      biz: "Unlimited",
                     },
                     {
-                      feature: "Version History",
-                      dev: "7 days",
-                      pro: "30 days",
-                      org: "Unlimited",
+                      feature: "Auto-Tagging (AI)",
+                      starter: "Basic",
+                      pro: "Advanced",
+                      biz: "Custom Models",
                     },
                     {
-                      feature: "Chunked Upload",
-                      dev: true,
-                      pro: true,
-                      org: true,
+                      feature: "Semantic Search",
+                      starter: "Limited",
+                      pro: "Unlimited",
+                      biz: "Unlimited",
                     },
                     {
-                      feature: "AI Auto-Tagging",
-                      dev: false,
-                      pro: true,
-                      org: true,
+                      feature: "Bandwidth",
+                      starter: "Standard",
+                      pro: "High Speed",
+                      biz: "Priority",
                     },
                     {
-                      feature: "Custom Domains",
-                      dev: false,
-                      pro: false,
-                      org: true,
+                      feature: "File History",
+                      starter: "30 Days",
+                      pro: "1 Year",
+                      biz: "Unlimited",
                     },
                     {
-                      feature: "Advanced Analytics",
-                      dev: false,
-                      pro: true,
-                      org: true,
+                      feature: "Encryption",
+                      starter: "AES-256",
+                      pro: "AES-256",
+                      biz: "AES-256",
                     },
-                    {
-                      feature: "SSO Integration",
-                      dev: false,
-                      pro: false,
-                      org: true,
-                    },
-                  ].map((row, idx) => (
-                    <tr key={idx} className="border-b border-zinc-800/50">
-                      <td className="p-6 text-zinc-300">{row.feature}</td>
-                      <td className="text-center p-6">
-                        {typeof row.dev === "boolean" ? (
-                          row.dev ? (
-                            <div className="inline-flex w-5 h-5 bg-green-500/20 rounded-full items-center justify-center">
-                              <svg
-                                className="w-3 h-3 text-green-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            </div>
-                          ) : (
-                            <div className="inline-flex w-5 h-5 bg-zinc-800 rounded-full items-center justify-center">
-                              <svg
-                                className="w-3 h-3 text-zinc-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </div>
-                          )
-                        ) : (
-                          <span className="text-zinc-400 font-mono">
-                            {row.dev}
-                          </span>
-                        )}
+                  ].map((row, i) => (
+                    <tr
+                      key={i}
+                      className="hover:bg-zinc-900/30 transition-colors"
+                    >
+                      <td className="p-4 text-zinc-300 font-medium">
+                        {row.feature}
                       </td>
-                      <td className="text-center p-6 bg-zinc-800/30">
-                        {typeof row.pro === "boolean" ? (
-                          row.pro ? (
-                            <div className="inline-flex w-5 h-5 bg-green-500/20 rounded-full items-center justify-center">
-                              <svg
-                                className="w-3 h-3 text-green-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            </div>
-                          ) : (
-                            <div className="inline-flex w-5 h-5 bg-zinc-800 rounded-full items-center justify-center">
-                              <svg
-                                className="w-3 h-3 text-zinc-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </div>
-                          )
-                        ) : (
-                          <span className="text-zinc-400 font-mono">
-                            {row.pro}
-                          </span>
-                        )}
+                      <td className="p-4 text-center text-zinc-400 font-mono">
+                        {row.starter}
                       </td>
-                      <td className="text-center p-6">
-                        {typeof row.org === "boolean" ? (
-                          row.org ? (
-                            <div className="inline-flex w-5 h-5 bg-green-500/20 rounded-full items-center justify-center">
-                              <svg
-                                className="w-3 h-3 text-green-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            </div>
-                          ) : (
-                            <div className="inline-flex w-5 h-5 bg-zinc-800 rounded-full items-center justify-center">
-                              <svg
-                                className="w-3 h-3 text-zinc-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </div>
-                          )
-                        ) : (
-                          <span className="text-zinc-400 font-mono">
-                            {row.org}
-                          </span>
-                        )}
+                      <td className="p-4 text-center text-white font-mono">
+                        {row.pro}
+                      </td>
+                      <td className="p-4 text-center text-zinc-400 font-mono">
+                        {row.biz}
                       </td>
                     </tr>
                   ))}
@@ -341,88 +220,68 @@ const PricingPage = () => {
           </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="mb-20">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight mb-8 text-center">
+        <div className="mb-20 max-w-4xl mx-auto">
+          <h2 className="text-3xl font-semibold text-white mb-8 text-center">
             Frequently Asked Questions
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              {
-                q: "Can I upgrade or downgrade my plan?",
-                a: "Yes, you can change your plan at any time. Changes take effect immediately, and we'll prorate any charges.",
-              },
-              {
-                q: "What payment methods do you accept?",
-                a: "We accept all major credit cards, PayPal, and wire transfers for organization plans.",
-              },
-              {
-                q: "Is there a limit on file uploads?",
-                a: "Each plan has different limits. Developer: 100MB per file, Pro: 5GB per file, Organization: Unlimited.",
-              },
-              {
-                q: "What happens if I exceed my storage limit?",
-                a: "You'll receive a notification when you reach 80% capacity. You can upgrade or purchase additional storage.",
-              },
-              {
-                q: "Do you offer custom enterprise plans?",
-                a: "Yes! Contact our sales team for custom storage solutions and dedicated infrastructure.",
-              },
-              {
-                q: "Is my data encrypted?",
-                a: "Absolutely. All files are encrypted client-side with AES-256 before upload. We use zero-knowledge architecture.",
-              },
-            ].map((faq, idx) => (
-              <div
-                key={idx}
-                className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 hover:border-zinc-600 transition-colors"
-              >
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  {faq.q}
-                </h3>
-                <p className="text-zinc-400 text-sm">{faq.a}</p>
-              </div>
-            ))}
+            <div className="bg-zinc-900/30 p-6 rounded-xl border border-zinc-800">
+              <h4 className="text-white font-medium mb-2">
+                Is the storage really free?
+              </h4>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                Yes, the Starter plan gives you 10GB of storage for free,
+                forever. We support this through our premium tiers.
+              </p>
+            </div>
+            <div className="bg-zinc-900/30 p-6 rounded-xl border border-zinc-800">
+              <h4 className="text-white font-medium mb-2">
+                How secure is my data?
+              </h4>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                We use industry-standard AES-256 encryption for storage and TLS
+                1.3 for data in transit.
+              </p>
+            </div>
+            <div className="bg-zinc-900/30 p-6 rounded-xl border border-zinc-800">
+              <h4 className="text-white font-medium mb-2">
+                What happens if I stop paying?
+              </h4>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                Your account will downgrade to the Free tier. If you are over
+                the 10GB limit, you will need to download your files within 30
+                days.
+              </p>
+            </div>
+            <div className="bg-zinc-900/30 p-6 rounded-xl border border-zinc-800">
+              <h4 className="text-white font-medium mb-2">
+                Does the AI read my personal files?
+              </h4>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                The AI only accesses files to generate tags and summaries when
+                you upload them. We do not use your data to train public models.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-12 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to get started?
-          </h2>
-          <p className="text-zinc-400 mb-8 max-w-2xl mx-auto">
-            Join thousands of developers and organizations who trust NovaDrive
-            for their storage infrastructure.
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <button className="bg-white text-black px-8 py-3 rounded-md font-medium hover:bg-zinc-200 transition-colors">
-              Start Free Trial
-            </button>
-            <button className="px-8 py-3 rounded-md font-medium text-white border border-zinc-700 hover:bg-zinc-800 transition-colors">
-              Contact Sales
-            </button>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <footer className="border-t border-zinc-800 mt-20 pt-12 flex flex-col md:flex-row justify-between items-center text-sm text-zinc-500">
+        <footer className="border-t border-zinc-800 pt-12 flex flex-col md:flex-row justify-between items-center text-sm text-zinc-500">
           <div className="mb-4 md:mb-0">
             <span className="font-bold text-zinc-300">NovaDrive</span> &copy;
             2025
           </div>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">
+            <Link to="/privacy" className="hover:text-white transition-colors">
               Privacy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </Link>
+            <Link to="/terms" className="hover:text-white transition-colors">
               Terms
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Status
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </Link>
+            <a
+              href="https://github.com"
+              className="hover:text-white transition-colors"
+            >
               GitHub
             </a>
           </div>
