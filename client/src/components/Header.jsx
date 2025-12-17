@@ -147,7 +147,7 @@ const Header = ({
     <>
       <header className="px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
         {/* Mobile Layout - Single Row */}
-        <div className="flex lg:hidden items-center gap-3 w-full pr-6 lg:pr-0">
+        <div className="flex lg:hidden items-center gap-3 w-full  ">
           <button
             className="p-2 hover:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
             onClick={() => setShowSidebar(true)}
@@ -156,7 +156,7 @@ const Header = ({
           </button>
 
           {/* Mobile: Gradient border outer wrapper */}
-          <div className="w-full max-w-full">
+          <div className="flex-1 min-w-0">
             <div
               className={`relative p-[1px] rounded-full transition-all duration-300 ease-in-out ${
                 aiSearch
@@ -164,7 +164,7 @@ const Header = ({
                   : "bg-zinc-700/20"
               }`}
             >
-              <div className="relative flex items-center gap-2 bg-zinc-900 rounded-full px-3 py-2 w-full">
+              <div className="relative flex items-center gap-2 bg-zinc-900 rounded-full px-3 py-2 w-full min-w-0 overflow-hidden">
                 <Search
                   className={`w-4 h-4 transition-colors duration-300 ${
                     aiSearch ? "text-purple-400" : "text-zinc-500"
@@ -175,7 +175,7 @@ const Header = ({
                   placeholder={aiSearch ? "Ask anything..." : "Search..."}
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-100 placeholder-zinc-500 font-mono"
+                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-zinc-100 placeholder-zinc-500 font-mono"
                 />
                 <button
                   onClick={() => setAiSearch(!aiSearch)}
@@ -208,7 +208,7 @@ const Header = ({
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden lg:flex justify-between items-center">
+          <div className="hidden lg:flex justify-between items-center">
           <div
             className={`flex items-center gap-2 bg-zinc-800/50 rounded-lg w-96 transition-all duration-200 ${
               aiSearch
@@ -224,7 +224,7 @@ const Header = ({
                   placeholder="Search files..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
+                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
                 />
                 <button
                   onClick={() => setAiSearch(!aiSearch)}
