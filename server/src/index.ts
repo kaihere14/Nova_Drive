@@ -42,7 +42,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-//testiing ci/cd setup part 2
+//testiing ci/cd setup part 3
 
 app.use("/api/chunks", chunkRoutes);
 app.use("/api/user", userRouted);

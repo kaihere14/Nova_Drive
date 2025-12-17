@@ -42,7 +42,6 @@ export const connection = new IORedis({
   password: process.env.REDIS_PASSWORD,
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
-  maxRetriesPerRequest: null,
   connectTimeout: 10000,
   retryStrategy: (times) => {
     const delay = Math.min(times * 50, 2000);
