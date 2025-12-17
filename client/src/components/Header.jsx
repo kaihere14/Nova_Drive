@@ -147,7 +147,7 @@ const Header = ({
     <>
       <header className="px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
         {/* Mobile Layout - Single Row */}
-        <div className="flex lg:hidden items-center gap-3 w-full">
+        <div className="flex lg:hidden items-center gap-3 w-full pr-6 lg:pr-0">
           <button
             className="p-2 hover:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
             onClick={() => setShowSidebar(true)}
