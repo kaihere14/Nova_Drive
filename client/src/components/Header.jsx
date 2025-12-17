@@ -208,7 +208,7 @@ const Header = ({
         </div>
 
         {/* Desktop Layout */}
-          <div className="hidden lg:flex justify-between items-center">
+        <div className="hidden lg:flex justify-between items-center">
           <div
             className={`flex items-center gap-2 bg-zinc-800/50 rounded-lg w-96 transition-all duration-200 ${
               aiSearch
