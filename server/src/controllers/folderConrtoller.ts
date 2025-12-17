@@ -5,9 +5,6 @@ import { logger } from "../index.js";
 import { Activity } from "../models/logs.model.js";
 import { GoogleGenAI } from "@google/genai";
 
-const genai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY_7!,
-});
 
 export const createFolder = async (req: Request, res: Response) => {
   try {
@@ -137,7 +134,7 @@ export const suggestedFolderNames = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const genai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY_1!,
+      apiKey: process.env.GEMINI_API_KEY_4!,
     });
     const existingFoldersName = await Folder.find({ ownerId: (req as any).userId }).select("name -_id");
     const existingNamesList = existingFoldersName.map(folder => folder.name).join(", ");

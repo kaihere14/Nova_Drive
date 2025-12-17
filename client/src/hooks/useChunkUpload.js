@@ -6,7 +6,7 @@ import { useFolder } from "../context/FolderContext";
 
 export const useChunkUpload = () => {
   const { user, fetchTotalCounts } = useUser();
-  const { currentFolderId } = useFolder();
+  const { currentFolderId, fetchFolders } = useFolder();
   const [file, setFile] = useState(null);
   const [totalChunks, setTotalChunks] = useState(0);
   const [form, setForm] = useState({
@@ -251,11 +251,11 @@ export const useChunkUpload = () => {
 
         console.log("Selected folder before API call:", selectedFolder); // Debugging log
         let location = currentFolderId || "";
-        if (selectedFolder && selectedFolder.name) {
+        if (selectedFolder) {
           try {
             const folderResponse = await axios.post(
               `${BASE_URL}/api/folders/find-or-create`,
-              { folderName: selectedFolder.name },
+              { folderName: selectedFolder },
               {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -283,6 +283,9 @@ export const useChunkUpload = () => {
         });
 
         fetchTotalCounts();
+        if (selectedFolder) {
+          fetchFolders(currentFolderId); // Refresh folders
+        }
         // Cleanup hash session after successful upload
         try {
           await axios.delete(
