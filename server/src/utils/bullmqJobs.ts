@@ -23,7 +23,7 @@ async function fetchWithTimeout(url: string, timeout = 30000) {
 
 // Initialize AI instances with different API keys for specific tasks
 const aiForImageAnalysis = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY_1,
+  apiKey: process.env.GEMINI_API_KEY_8,
 });
 const aiForPdfTagGeneration = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY_2,

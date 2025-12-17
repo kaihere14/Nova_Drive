@@ -134,7 +134,7 @@ export const suggestedFolderNames = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const genai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY_4!,
+      apiKey: process.env.GEMINI_API_KEY_1!,
     });
     const existingFoldersName = await Folder.find({ ownerId: (req as any).userId }).select("name -_id");
     const existingNamesList = existingFoldersName.map(folder => folder.name).join(", ");
@@ -170,7 +170,7 @@ RULES:
 
 
 const response = await genai.models.generateContent({
-  model: "gemini-2.5-flash",
+  model: "gemini-2.5-flash-lite",
   contents: prompt,
 });
 console.log("Suggested folder names raw response:", response);
