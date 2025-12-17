@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {  createFolder, deleteFolder, fetchAllFolders, getFolders, renameFolder } from "../controllers/folderConrtoller.js";
+import {  createFolder, deleteFolder, fetchAllFolders, findFolderByNameOrCreate, getFolders, renameFolder, suggestedFolderNames } from "../controllers/folderConrtoller.js";
 import { verifyJwt } from "../middleware/verifyJwt.js";
 const router = Router();
 
@@ -21,4 +21,9 @@ router.get("/health", (req, res) => {
     res.status(200).json({ message: "Folder route is healthy" });
 });
 
+//folder-suggestion
+router.post("/folder-suggestion", verifyJwt, suggestedFolderNames);
+
+//find folder by name or create if not found
+router.post("/find-or-create", verifyJwt,findFolderByNameOrCreate);
 export default router;

@@ -22,6 +22,9 @@ export const useChunkUpload = () => {
   const [progress, setProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [suggestedFolders, setSuggestedFolders] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState(null);
   // New state for folder location
 
   const getChunk = (file, chunkIndex, chunkSize) => {
@@ -41,7 +44,7 @@ export const useChunkUpload = () => {
     return hashHex;
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
 
@@ -77,6 +80,39 @@ export const useChunkUpload = () => {
 
       // Clear any previous error messages
       setUploadStatus("");
+
+      // Fetch folder suggestions
+      await fetchFolderSuggestions(selectedFile.name, selectedFile.type);
+    }
+  };
+
+  const fetchFolderSuggestions = async (fileName, fileType) => {
+    setLoadingSuggestions(true);
+    setSuggestedFolders([]);
+    setSelectedFolder(null);
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/folders/folder-suggestion`,
+        {
+          name: fileName,
+          type: fileType || "application/octet-stream",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+
+      if (response.data.suggestedFolders) {
+        setSuggestedFolders(response.data.suggestedFolders);
+      }
+    } catch (error) {
+      console.error("Failed to fetch folder suggestions:", error);
+      setSuggestedFolders([]);
+    } finally {
+      setLoadingSuggestions(false);
     }
   };
 
@@ -212,6 +248,29 @@ export const useChunkUpload = () => {
         // Switch to processing loader and complete multipart upload
         setProcessing(true);
         setUploadStatus("");
+
+        console.log("Selected folder before API call:", selectedFolder); // Debugging log
+        let location = currentFolderId || "";
+        if (selectedFolder && selectedFolder.name) {
+          try {
+            const folderResponse = await axios.post(
+              `${BASE_URL}/api/folders/find-or-create`,
+              { folderName: selectedFolder.name },
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                },
+              }
+            );
+            if (folderResponse.data.folderId) {
+              location = folderResponse.data.folderId;
+            }
+          } catch (error) {
+            console.error("Failed to find or create folder:", error);
+            // Optional: handle error, maybe stop upload? For now, proceed with default location.
+          }
+        }
+
         await axios.post(`${BASE_URL}/api/chunks/upload-complete`, {
           sessionId: sessionId,
           uploadId: uploadId,
@@ -220,7 +279,7 @@ export const useChunkUpload = () => {
           size: form.fileSize,
           key: key,
           parts: partsArray,
-          location: currentFolderId || "", // Pass folder location
+          location: location, // Pass folder location
         });
 
         fetchTotalCounts();
@@ -325,5 +384,9 @@ export const useChunkUpload = () => {
     processing,
     handleFileChange,
     handleUpload,
+    suggestedFolders,
+    loadingSuggestions,
+    selectedFolder,
+    setSelectedFolder,
   };
 };

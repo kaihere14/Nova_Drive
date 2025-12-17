@@ -53,6 +53,10 @@ const FolderPage = () => {
     processing,
     handleFileChange,
     handleUpload,
+    suggestedFolders,
+    loadingSuggestions,
+    selectedFolder,
+    setSelectedFolder,
   } = useChunkUpload();
 
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -333,6 +337,10 @@ const FolderPage = () => {
         processing={processing}
         handleFileChange={handleFileChange}
         handleUpload={handleUpload}
+        suggestedFolders={suggestedFolders}
+        loadingSuggestions={loadingSuggestions}
+        selectedFolder={selectedFolder}
+        setSelectedFolder={setSelectedFolder}
       />
 
       {/* Create Folder Modal Component */}
