@@ -32,6 +32,10 @@ const checkLimit = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (totalUploaded > DAILY_LIMIT) {
+      await connection.set(
+        redisKey,
+        (totalUploaded - fileSize).toString(),
+      );
       return res.status(403).json({
         message: "Daily upload limit exceeded",
         limit: DAILY_LIMIT,
