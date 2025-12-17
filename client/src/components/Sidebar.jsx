@@ -32,13 +32,13 @@ const Sidebar = ({
         <div className="px-5 py-6 border-b border-zinc-800 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div
-              className="flex items-center gap-2 text-xl font-bold text-white"
+              className="flex items-center text-xl font-bold text-white"
               onClick={() => setShowSidebar(false)}
             >
               <img
-                src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
+                src="https://res.cloudinary.com/dw87upoot/image/upload/v1765959245/Logo_Feedback_Dec_17_2025_1_bha0nd.png"
                 alt="NovaDrive logo"
-                className="w-8 h-8 object-contain"
+                className="w-12 h-12 object-contain"
               />
               <span className="text-xl font-bold text-white">NovaDrive</span>
             </div>

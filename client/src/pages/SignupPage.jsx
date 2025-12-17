@@ -151,11 +151,11 @@ const SignupPage = () => {
         <div className="w-full max-w-md">
           {/* Logo/Brand */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-3 mb-4">
+            <div className="inline-flex items-center mb-4">
               <img
-                src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
+                src="https://res.cloudinary.com/dw87upoot/image/upload/v1765959245/Logo_Feedback_Dec_17_2025_1_bha0nd.png"
                 alt="NovaDrive logo"
-                className="w-12 h-12 object-contain"
+                className="w-20 h-20 object-contain"
               />
               <span className="text-3xl font-bold text-white">NovaDrive</span>
             </div>

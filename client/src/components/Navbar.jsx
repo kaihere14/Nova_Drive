@@ -7,13 +7,13 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto  px-4 sm:px-6 h-16 flex items-center justify-between ">
         {/* Left Logo */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center ">
           <img
-            src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
+            src="https://res.cloudinary.com/dw87upoot/image/upload/v1765959245/Logo_Feedback_Dec_17_2025_1_bha0nd.png"
             alt="NovaDrive logo"
-            className="w-8 h-8 object-contain"
+            className="w-12 h-12 object-contain"
           />
           <span className="font-bold text-white tracking-tight text-base sm:text-lg">
             NovaDrive
@@ -63,7 +63,11 @@ const Navbar = () => {
           className="md:hidden p-2 text-zinc-400 hover:text-white"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
         </button>
       </div>
 
