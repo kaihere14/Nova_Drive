@@ -12,7 +12,7 @@ export const UserProvider = ({ children }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showRefreshIndicator, setShowRefreshIndicator] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState("");
-  const[oAuthUser,setOAuthUser]=useState(null);
+  const [oAuthUser, setOAuthUser] = useState(null);
   const [directory, setDirectory] = useState(null); // New state for folder location
   const [totalCounts, setTotalCounts] = useState({
     totalFiles: 0,
@@ -161,6 +161,10 @@ export const UserProvider = ({ children }) => {
       if (response.status === 200 && response.data) {
         // Store full user object from response
         setUser(response.data);
+        // Persist OAuth flag so UI can reliably hide password/email actions
+        setOAuthUser(
+          response.data.authProvider && response.data.authProvider !== "local"
+        );
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -198,6 +202,7 @@ export const UserProvider = ({ children }) => {
 
         // Update state with full user object
         setUser(user);
+        setOAuthUser(user.authProvider && user.authProvider !== "local");
         setIsAuthenticated(true);
 
         return { success: true };
@@ -215,8 +220,8 @@ export const UserProvider = ({ children }) => {
   const googleRegisterOrLogin = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/auth/google`);
-        return { success: true };
-      } catch (error) {
+      return { success: true };
+    } catch (error) {
       console.error("Google Registration failed:", error);
       return {
         success: false,
@@ -243,6 +248,7 @@ export const UserProvider = ({ children }) => {
 
         // Update state with full user object
         setUser(newUser);
+        setOAuthUser(newUser.authProvider && newUser.authProvider !== "local");
         setIsAuthenticated(true);
 
         return { success: true };
@@ -266,6 +272,7 @@ export const UserProvider = ({ children }) => {
       // Clear state
       setUser(null);
       setIsAuthenticated(false);
+      setOAuthUser(false);
 
       return { success: true };
     } catch (error) {
