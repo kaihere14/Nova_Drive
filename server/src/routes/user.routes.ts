@@ -1,21 +1,35 @@
-import { allFoldersAndFiles, changePassword, createUser, deleteUser,  forgotPassword,  getUserProfile, loginUser, refreshAccessToken, verifyUser } from "../controllers/user.controller.js";
+import {
+  allFoldersAndFiles,
+  changeAvatar,
+  changeName,
+  changePassword,
+  createUser,
+  deleteUser,
+  forgotPassword,
+  getUserProfile,
+  loginUser,
+  refreshAccessToken,
+  verifyUser,
+} from "../controllers/user.controller.js";
 import { Router } from "express";
 import { verifyJwt } from "../middleware/verifyJwt.js";
+import { upload } from "../utils/multer.js";
 
 const router = Router();
 
 router.post("/register", createUser);
 router.post("/login", loginUser);
-router.get("/profile/:userId",verifyJwt, getUserProfile);
-router.delete("/delete/:userId",verifyJwt, deleteUser);
+router.get("/profile/:userId", verifyJwt, getUserProfile);
+router.delete("/delete/:userId", verifyJwt, deleteUser);
 router.get("/verify-auth", verifyJwt, verifyUser);
 router.post("/refresh-token", refreshAccessToken);
-router.post("/forgot-password",forgotPassword);
-router.post("/change-password",verifyJwt,changePassword)
+router.post("/forgot-password", forgotPassword);
+router.post("/change-password", verifyJwt, changePassword);
 router.get("/total", verifyJwt, allFoldersAndFiles);
+router.post("/change-name", verifyJwt, changeName);
+router.post("/change-avatar", verifyJwt, upload.single("avatar"), changeAvatar);
 router.get("/health", (req, res) => {
-    res.status(200).json({ message: "User route is healthy" });
+  res.status(200).json({ message: "User route is healthy" });
 });
-
 
 export default router;

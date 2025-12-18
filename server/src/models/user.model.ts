@@ -4,16 +4,16 @@ import bcrypt from "bcrypt";
 export interface IUser extends Document {
   username: string;
   email: string;
-  password?: string; 
+  password?: string;
   storageUsed?: number;
   storageQuota: number;
   createdAt: Date;
   otp?: string;
   otpExpiry?: Date;
 
-
   googleId?: string;
   avatar?: string;
+  avatarPublicId?: string;
   authProvider: "local" | "google";
 
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -21,9 +21,8 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>({
   username: { type: String, required: true },
-  email: { type: String, required: true, unique: true ,index: true },
+  email: { type: String, required: true, unique: true, index: true },
 
-  
   password: { type: String, required: false },
 
   storageUsed: { type: Number, default: 0 },
@@ -33,9 +32,9 @@ const UserSchema = new Schema<IUser>({
   otp: { type: String },
   otpExpiry: { type: Date },
 
- 
   googleId: { type: String },
   avatar: { type: String },
+  avatarPublicId: { type: String },
   authProvider: {
     type: String,
     enum: ["local", "google"],
@@ -43,14 +42,11 @@ const UserSchema = new Schema<IUser>({
   },
 });
 
-
-
 UserSchema.pre<IUser>("save", async function (next) {
   if (!this.password || !this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
-
 
 UserSchema.methods.comparePassword = function (
   inputPassword: string
