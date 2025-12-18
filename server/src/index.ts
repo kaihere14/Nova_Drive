@@ -11,18 +11,16 @@ import logRoutes from "./routes/logs.routes.js";
 import cors from "cors";
 
 import { workers, queues, connection } from "./utils/bullmqJobs.js";
-import winston from "winston"
+import winston from "winston";
 
 const app = express();
 export const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.json()
-  ),
+  level: "info",
+  format: winston.format.combine(winston.format.json()),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.File({ filename: "logs/error.log", level: "error" }),
+    new winston.transports.File({ filename: "logs/combined.log" }),
   ],
 });
 
@@ -50,7 +48,7 @@ app.use("/api/files", fileRoue);
 app.use("/api/otp", otpRoute);
 app.use("/api/folders", folderRoute);
 app.use("/api/auth/google", oAuthRoute);
-app.use("/api/logs",logRoutes);
+app.use("/api/logs", logRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Server is running!" });

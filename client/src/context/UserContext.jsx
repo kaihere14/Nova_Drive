@@ -333,6 +333,23 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const updateUser = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(`${BASE_URL}/api/user/verify-auth`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200 && response.data) {
+        setUser(response.data);
+        return { success: true, user: response.data };
+      }
+      return { success: false };
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      return { success: false, error };
+    }
+  };
+
   const deleteAccount = async () => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -496,6 +513,7 @@ export const UserProvider = ({ children }) => {
     logout,
     refreshAccessToken,
     updateProfile,
+    updateUser,
     deleteAccount,
     getAuthHeader,
     checkAuth,

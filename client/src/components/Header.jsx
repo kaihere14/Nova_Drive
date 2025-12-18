@@ -199,11 +199,19 @@ const Header = ({
             className="p-2 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
             onClick={() => navigate("/profile")}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-              {user?.username
-                ? user.username.substring(0, 2).toUpperCase()
-                : "U"}
-            </div>
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user?.username || "User avatar"}
+                className="w-8 h-8 rounded-lg object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
+                {user?.username
+                  ? user.username.substring(0, 2).toUpperCase()
+                  : "U"}
+              </div>
+            )}
           </div>
         </div>
 
@@ -268,11 +276,19 @@ const Header = ({
               <span className="text-sm font-medium text-zinc-200">
                 {user?.username || "User"}
               </span>
-              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-                {user?.username
-                  ? user.username.substring(0, 2).toUpperCase()
-                  : "U"}
-              </div>
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user?.username || "User avatar"}
+                  className="w-8 h-8 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
+                  {user?.username
+                    ? user.username.substring(0, 2).toUpperCase()
+                    : "U"}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -33,7 +33,8 @@ const ProfilePage = () => {
     "Your NovaDrive profile, storage usage and account details."
   );
   const navigate = useNavigate();
-  const { user, loading, logout, deleteAccount, changePassword } = useUser();
+  const { user, loading, logout, deleteAccount, changePassword, updateUser } =
+    useUser();
   const showLocalAuthActions = user?.authProvider === "local";
   const [stats, setStats] = useState({
     totalFiles: 0,
@@ -56,6 +57,15 @@ const ProfilePage = () => {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+
+  // Edit Profile Modal States
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [newUsername, setNewUsername] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [editSuccess, setEditSuccess] = useState("");
 
   // Activity Log States
   const [activities, setActivities] = useState([]);
@@ -392,6 +402,72 @@ const ProfilePage = () => {
     });
   };
 
+  useEffect(() => {
+    if (user) {
+      setNewUsername(user.username);
+      setAvatarPreview(user.avatar);
+    }
+  }, [user]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setEditLoading(true);
+    setEditError("");
+    setEditSuccess("");
+
+    try {
+      // Update username if changed
+      if (newUsername.trim() && newUsername !== user.username) {
+        await axios.post(
+          `${BASE_URL}/api/user/change-name`,
+          { newName: newUsername },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+      }
+
+      // Update avatar if a new file is selected
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append("avatar", avatarFile);
+        await axios.post(`${BASE_URL}/api/user/change-avatar`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
+      // Refetch user data to update UI
+      await updateUser();
+
+      setEditSuccess("Profile updated successfully!");
+      setTimeout(() => {
+        setShowEditModal(false);
+        setEditSuccess("");
+        setAvatarFile(null);
+      }, 1500);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to update profile";
+      setEditError(errorMessage);
+      console.error("Error updating profile:", error);
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-[100dvh] bg-zinc-950 flex items-center justify-center">
@@ -439,17 +515,28 @@ const ProfilePage = () => {
           {/* Profile Card */}
           <div className="relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 sm:p-8 backdrop-blur-md mb-6">
             {/* Edit button placed top-right of the card */}
-            <button className="absolute top-3 right-3 sm:top-4 sm:right-4 w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors">
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors"
+            >
               <Edit2 className="w-4 h-4 text-zinc-400" />
             </button>
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold shadow-[0_0_30px_-5px_rgba(6,182,212,0.4)]">
-                  {user?.username
-                    ? user.username.substring(0, 2).toUpperCase()
-                    : "U"}
-                </div>
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user?.username || "User avatar"}
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-[0_0_30px_-5px_rgba(6,182,212,0.4)]"
+                  />
+                ) : (
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold shadow-[0_0_30px_-5px_rgba(6,182,212,0.4)]">
+                    {user?.username
+                      ? user.username.substring(0, 2).toUpperCase()
+                      : "U"}
+                  </div>
+                )}
               </div>
 
               {/* Info */}
@@ -685,6 +772,143 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-cyan-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-transparent group-hover:from-cyan-500/3 transition-all duration-300 pointer-events-none" />
+            <button
+              onClick={() => {
+                setShowEditModal(false);
+                setEditError("");
+                setEditSuccess("");
+                setAvatarFile(null);
+                setAvatarPreview(user.avatar);
+                setNewUsername(user.username);
+              }}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border border-cyan-500/20 hover:border-cyan-500/40 hover:bg-cyan-500/20 rounded-lg transition-all duration-200 hover:scale-110 z-10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-cyan-400 hover:text-cyan-300 transition-colors"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            <div className="relative mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 rounded-lg flex items-center justify-center mb-4 border border-cyan-500/20">
+                <Edit2 className="w-6 h-6 text-cyan-400" />
+              </div>
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent mb-2 font-mono">
+                EDIT_PROFILE
+              </h3>
+              <p className="text-zinc-400 text-sm">
+                Update your username and avatar.
+              </p>
+            </div>
+
+            {editError && (
+              <div className="relative mb-4 p-4 bg-gradient-to-br from-red-900/30 to-red-950/30 border border-red-500/30 rounded-lg">
+                <p className="text-red-300 text-sm font-medium">{editError}</p>
+              </div>
+            )}
+
+            {editSuccess && (
+              <div className="relative mb-4 p-4 bg-gradient-to-br from-green-900/30 to-green-950/30 border border-green-500/30 rounded-lg">
+                <p className="text-green-300 text-sm font-medium">
+                  {editSuccess}
+                </p>
+              </div>
+            )}
+
+            <form onSubmit={handleProfileUpdate} className="relative space-y-4">
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-mono text-zinc-400 mb-2"
+                >
+                  USERNAME
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <input
+                    type="text"
+                    id="username"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    required
+                    className="w-full pl-11 pr-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    placeholder="Enter new username"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="avatar"
+                  className="block text-sm font-mono text-zinc-400 mb-2"
+                >
+                  AVATAR
+                </label>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar preview"
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                  <label
+                    htmlFor="avatar-upload"
+                    className="cursor-pointer flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-all font-mono text-sm border border-zinc-700 hover:border-zinc-600 text-center"
+                  >
+                    Choose File
+                  </label>
+                  <input
+                    type="file"
+                    id="avatar-upload"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-all font-mono text-sm border border-zinc-700 hover:border-zinc-600"
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="submit"
+                  disabled={editLoading}
+                  className="flex-1 px-4 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_-5px_rgba(6,182,212,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono text-sm"
+                >
+                  {editLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      SAVING...
+                    </>
+                  ) : (
+                    "SAVE_CHANGES"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Change Password Modal */}
       {showPasswordModal && (

@@ -33,26 +33,27 @@ export const createUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-    if(existingUser && existingUser.authProvider === "google") {
-      return res.status(409).json({ message: "Email already registered via Google OAuth. Please login using Google." });
+    if (existingUser && existingUser.authProvider === "google") {
+      return res.status(409).json({
+        message:
+          "Email already registered via Google OAuth. Please login using Google.",
+      });
     }
     if (existingUser) {
       return res
         .status(409)
         .json({ message: "Username or email already exists" });
     }
-   
+
     const newUser: IUser = new User({ username, email, password });
     await newUser.save();
     const { accessToken, refreshToken } = generateToken(newUser._id.toString());
-    res
-      .status(201)
-      .json({
-        message: "User created successfully",
-        newUser,
-        accessToken,
-        refreshToken,
-      });
+    res.status(201).json({
+      message: "User created successfully",
+      newUser,
+      accessToken,
+      refreshToken,
+    });
   } catch (error) {
     res.status(500).json({ message: "Error creating user", error });
   }
@@ -68,8 +69,10 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    if(user.authProvider === "google") {
-      return res.status(401).json({ message: "Please login using Google OAuth" });
+    if (user.authProvider === "google") {
+      return res
+        .status(401)
+        .json({ message: "Please login using Google OAuth" });
     }
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
@@ -204,9 +207,11 @@ export const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
-
-export const changePassword = async(req:Request,res:Response):Promise<unknown>=>{
-  const {oldPassword,newPassword}= req.body;
+export const changePassword = async (
+  req: Request,
+  res: Response
+): Promise<unknown> => {
+  const { oldPassword, newPassword } = req.body;
   const userId = (req as any).userId;
   try {
     if (!oldPassword || !newPassword) {
@@ -222,26 +227,136 @@ export const changePassword = async(req:Request,res:Response):Promise<unknown>=>
     }
     user.password = newPassword;
     await user.save();
-    return res.status(200).json({message:"Password changed successfully"});
+    return res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Error changing password", error });
   }
-}
+};
 
 export const allFoldersAndFiles = async (req: Request, res: Response) => {
-    try {
-        const  userId  = (req as any).userId;
-        
-        const foldersCount = await Folder.countDocuments({ ownerId: userId });
-        const filesCount = await FileModel.countDocuments({ owner: userId });
-          const all_files = await FileModel.find({ owner: userId });
-          const totalStorageUsed = all_files.reduce((accumulator, file) => {
-            return accumulator + (file.size || 0);
-          }, 0);
-          const totalFavoriteFiles =all_files.filter(file => file.favourite).length;
-       
-        res.status(200).json({ totalFolders: foldersCount, totalFiles: filesCount, totalStorageUsed: totalStorageUsed ,totalFavoriteFiles:totalFavoriteFiles});
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+  try {
+    const userId = (req as any).userId;
+
+    const foldersCount = await Folder.countDocuments({ ownerId: userId });
+    const filesCount = await FileModel.countDocuments({ owner: userId });
+    const all_files = await FileModel.find({ owner: userId });
+    const totalStorageUsed = all_files.reduce((accumulator, file) => {
+      return accumulator + (file.size || 0);
+    }, 0);
+    const totalFavoriteFiles = all_files.filter(
+      (file) => file.favourite
+    ).length;
+
+    res.status(200).json({
+      totalFolders: foldersCount,
+      totalFiles: filesCount,
+      totalStorageUsed: totalStorageUsed,
+      totalFavoriteFiles: totalFavoriteFiles,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const changeName = async (
+  req: Request,
+  res: Response
+): Promise<unknown> => {
+  const { newName } = req.body;
+  const userId = (req as any).userId;
+  try {
+    if (!newName) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const existingUser = await User.findOne({ username: newName });
+    if (existingUser) {
+      return res.status(409).json({ message: "Username already exists" });
+    }
+    user.username = newName;
+    await user.save();
+    return res.status(200).json({ message: "Name changed successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error changing name", error });
+  }
+};
+
+import cloudinary from "../utils/cloudinary.js";
+import fs from "fs";
+
+export const changeAvatar = async (
+  req: Request,
+  res: Response
+): Promise<unknown> => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded." });
+    }
+
+    const userId = (req as any).userId;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      // If user not found, delete uploaded file
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete all existing avatars for this user in the `nova/avatars` folder (if any)
+    try {
+      const prefix = `nova/avatars/${user._id}_`;
+      const list = await cloudinary.api.resources({
+        type: "upload",
+        prefix,
+        max_results: 500,
+      });
+      if (list.resources && list.resources.length > 0) {
+        for (const r of list.resources) {
+          try {
+            await cloudinary.uploader.destroy(r.public_id);
+          } catch (err) {
+            console.warn(
+              "Failed to delete old avatar resource:",
+              r.public_id,
+              err
+            );
+          }
+        }
+      }
+    } catch (err) {
+      // ignore listing errors - proceed with upload
+      console.warn("Error listing old avatar resources:", err);
+    }
+
+    // Upload new avatar with a public_id that includes the user id so we can later find/delete it
+    const publicIdForUpload = `nova/avatars/${user._id}_${Date.now()}`;
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      public_id: publicIdForUpload,
+      resource_type: "image",
+    });
+
+    // Delete temp file
+    fs.unlinkSync(req.file.path);
+
+    // Save new avatar URL
+    user.avatar = result.secure_url;
+    await user.save();
+
+    // Return updated user info (without password)
+    const updatedUser = await User.findById(userId).select("-password");
+
+    return res
+      .status(200)
+      .json({ message: "Avatar changed successfully", user: updatedUser });
+  } catch (error) {
+    // If error, try to delete temp file if it exists
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    console.error("Error changing avatar:", error);
+    return res.status(500).json({ message: "Error changing avatar", error });
+  }
 };
