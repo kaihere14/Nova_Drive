@@ -145,7 +145,7 @@ const Header = ({
   }, []);
   return (
     <>
-      <header className="px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
+      <header className="fixed inset-x-0 top-0 z-50 px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800 lg:static">
         {/* Mobile Layout - Single Row */}
         <div className="flex lg:hidden items-center gap-3 w-full  ">
           <button
@@ -293,6 +293,9 @@ const Header = ({
           </div>
         </div>
       </header>
+
+      {/* Spacer so fixed header doesn't cover content on mobile */}
+      <div className="h-20 lg:hidden" />
 
       {/* AI Search Results Dropdown */}
       {aiSearch && showAiResults && (
