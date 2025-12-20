@@ -511,7 +511,7 @@ const HomePage = () => {
               </div>
               <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-300">
                 <li className="flex justify-between border-b border-zinc-800 pb-2">
-                  <span>Storage</span> <span className="text-white">400 GB</span>
+                  <span>Storage</span> <span className="text-white">300 GB</span>
                 </li>
                 <li className="flex justify-between border-b border-zinc-800 pb-2">
                   <span>Bandwidth</span>{" "}
