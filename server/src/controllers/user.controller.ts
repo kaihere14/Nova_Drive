@@ -48,6 +48,8 @@ export const createUser = async (req: Request, res: Response) => {
     const newUser: IUser = new User({ username, email, password });
     await newUser.save();
     const { accessToken, refreshToken } = generateToken(newUser._id.toString());
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
     res.status(201).json({
       message: "User created successfully",
       newUser,
@@ -79,6 +81,8 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
     const { accessToken, refreshToken } = generateToken(user._id.toString());
+    user.refreshToken = refreshToken;
+    await user.save();
     res
       .status(200)
       .json({ message: "Login successful", user, accessToken, refreshToken });
@@ -130,7 +134,7 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-export const refreshAccessToken = (req: Request, res: Response) => {
+export const refreshAccessToken = async(req: Request, res: Response) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {
@@ -143,10 +147,11 @@ export const refreshAccessToken = (req: Request, res: Response) => {
       exp?: number;
     }
 
+
     jwt.verify(
       refreshToken,
       JWT_SECRET,
-      (err: Error | null, decoded?: unknown) => {
+      async(err: Error | null, decoded?: unknown) => {
         if (err) {
           logger.error("refresh_token_verification_failed", {
             error: err.message,
@@ -157,8 +162,17 @@ export const refreshAccessToken = (req: Request, res: Response) => {
 
         try {
           const userId = (decoded as RefreshTokenPayload).userId;
+          const user = await User.findById(userId);
+          if (!user) {
+            return res.status(404).json({ message: "User not found" });
+          }
+          if(refreshToken !== (user as any).refreshToken){
+            return res.status(401).json({ message: "Refresh token does not match" });
+          }
           const { accessToken, refreshToken: newRefreshToken } =
             generateToken(userId);
+          (user as any).refreshToken = newRefreshToken;
+          await (user as any).save();
           return res
             .status(200)
             .json({ accessToken, refreshToken: newRefreshToken });

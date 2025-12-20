@@ -23,7 +23,7 @@ const router = Router();
 router.post("/compute-hash-check",verifyJwt,checkLimit, computeHashCheck);
 router.post("/logging-hash", loggingHash);
 router.post("/upload-initiate", verifyJwt, uploadInitiate);
-router.post("/get-presigned-url", preAssignUrls);
+router.post("/get-presigned-url", verifyJwt,preAssignUrls);
 router.post("/upload-complete", completeUpload);
 router.post("/upload-status/:sessionId", getUploadStatus);
 router.delete("/delete-hash-session/:sessionId", verifyJwt, deleteHashSession);
@@ -31,10 +31,10 @@ router.delete("/delete-hash-session/:sessionId", verifyJwt, deleteHashSession);
 
 
 // Download route
-router.post("/get-download-url", getDownloadUrl);
-router.post("/get-preview-url", getPreviewUrl);
+router.post("/get-download-url",verifyJwt, getDownloadUrl);
+router.post("/get-preview-url",verifyJwt, getPreviewUrl);
 
 // Delete route
-router.delete("/delete-file", deleteUserFile);
+router.delete("/delete-file",verifyJwt, deleteUserFile);
 
 export default router;
