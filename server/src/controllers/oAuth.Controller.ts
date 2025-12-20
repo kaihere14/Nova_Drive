@@ -67,6 +67,8 @@ export const createOAuthUser = async (profile: any) => {
         }
         
         const { accessToken, refreshToken } = generateToken(user._id.toString());
+        user.refreshToken = refreshToken;
+        await user.save();
         return { user, accessToken, refreshToken,message};
       }
      catch (error: any) {

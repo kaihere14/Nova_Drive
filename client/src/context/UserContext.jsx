@@ -12,7 +12,7 @@ export const UserProvider = ({ children }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showRefreshIndicator, setShowRefreshIndicator] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState("");
-  const[oAuthUser,setOAuthUser]=useState(null);
+  const [oAuthUser, setOAuthUser] = useState(null);
   const [directory, setDirectory] = useState(null); // New state for folder location
   const [totalCounts, setTotalCounts] = useState({
     totalFiles: 0,
@@ -28,13 +28,28 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     let isCurrentlyRefreshing = false;
     let refreshPromise = null;
+    let consecutiveRefreshFailures = 0;
+    const MAX_CONSECUTIVE_REFRESH_FAILURES = 3;
 
     const interceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
 
+        // If this response is 401 and we haven't retried this request yet
         if (error.response?.status === 401 && !originalRequest._retry) {
+          // If the request itself was the refresh-token call, do not attempt to refresh again
+          if (originalRequest && originalRequest._isRefreshRequest) {
+            console.warn(
+              "Refresh endpoint returned 401 — aborting refresh attempts"
+            );
+            // cleanup UI and logout
+            setShowRefreshIndicator(false);
+            setIsRefreshing(false);
+            setLoading(false);
+            await logout();
+            return Promise.reject(error);
+          }
           const refreshToken = localStorage.getItem("refreshToken");
 
           if (!refreshToken) {
@@ -83,11 +98,23 @@ export const UserProvider = ({ children }) => {
             const duration = Date.now() - startTime;
 
             if (refreshed) {
+              consecutiveRefreshFailures = 0;
               // Retry the original request with new token
               const newToken = localStorage.getItem("accessToken");
               originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
               return axios(originalRequest);
             } else {
+              consecutiveRefreshFailures += 1;
+              if (
+                consecutiveRefreshFailures >= MAX_CONSECUTIVE_REFRESH_FAILURES
+              ) {
+                console.error("Too many refresh failures — forcing logout");
+                setShowRefreshIndicator(false);
+                setIsRefreshing(false);
+                setLoading(false);
+                await logout();
+                return Promise.reject(error);
+              }
               setRefreshMessage("Session expired. Please log in again.");
               setTimeout(() => {
                 setRefreshMessage("");
@@ -98,6 +125,20 @@ export const UserProvider = ({ children }) => {
               return Promise.reject(error);
             }
           } catch (refreshError) {
+            consecutiveRefreshFailures += 1;
+            if (
+              consecutiveRefreshFailures >= MAX_CONSECUTIVE_REFRESH_FAILURES
+            ) {
+              console.error(
+                "Refresh failed repeatedly — forcing logout",
+                refreshError
+              );
+              setShowRefreshIndicator(false);
+              setIsRefreshing(false);
+              setLoading(false);
+              await logout();
+              return Promise.reject(refreshError);
+            }
             clearTimeout(indicatorTimeout);
             setShowRefreshIndicator(false);
             setRefreshMessage("Session expired. Please log in again.");
@@ -161,6 +202,10 @@ export const UserProvider = ({ children }) => {
       if (response.status === 200 && response.data) {
         // Store full user object from response
         setUser(response.data);
+        // Persist OAuth flag so UI can reliably hide password/email actions
+        setOAuthUser(
+          response.data.authProvider && response.data.authProvider !== "local"
+        );
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -198,6 +243,7 @@ export const UserProvider = ({ children }) => {
 
         // Update state with full user object
         setUser(user);
+        setOAuthUser(user.authProvider && user.authProvider !== "local");
         setIsAuthenticated(true);
 
         return { success: true };
@@ -215,8 +261,8 @@ export const UserProvider = ({ children }) => {
   const googleRegisterOrLogin = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/auth/google`);
-        return { success: true };
-      } catch (error) {
+      return { success: true };
+    } catch (error) {
       console.error("Google Registration failed:", error);
       return {
         success: false,
@@ -243,6 +289,7 @@ export const UserProvider = ({ children }) => {
 
         // Update state with full user object
         setUser(newUser);
+        setOAuthUser(newUser.authProvider && newUser.authProvider !== "local");
         setIsAuthenticated(true);
 
         return { success: true };
@@ -257,7 +304,7 @@ export const UserProvider = ({ children }) => {
       };
     }
   };
-  const logout = async () => {
+  const logout = async (options = { redirect: true }) => {
     try {
       // Clear tokens
       localStorage.removeItem("accessToken");
@@ -266,7 +313,7 @@ export const UserProvider = ({ children }) => {
       // Clear state
       setUser(null);
       setIsAuthenticated(false);
-
+      setOAuthUser(false);
       return { success: true };
     } catch (error) {
       console.error("Logout failed:", error);
@@ -281,21 +328,27 @@ export const UserProvider = ({ children }) => {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) {
+        // No refresh token available — ensure cleanup and redirect
+        await logout();
         return false;
       }
+      console.log("Attempting token refresh with token:", refreshToken);
 
-      const response = await axios.post(`${BASE_URL}/api/user/refresh-token`, {
-        refreshToken,
-      });
-
+      // include a flag on the request so interceptor won't attempt to refresh this request
+      const response = await axios.post(
+        `${BASE_URL}/api/user/refresh-token`,
+        { refreshToken },
+        { _isRefreshRequest: true }
+      );
+      console.log("Refresh response:", response.data);
       const { accessToken, refreshToken: refreshToken2 } = response.data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken2);
       return true;
-
-      return false;
     } catch (error) {
       console.error("Token refresh failed:", error);
+      // On refresh failure, remove any stored tokens and redirect to root
+      await logout();
       return false;
     }
   };
@@ -323,6 +376,23 @@ export const UserProvider = ({ children }) => {
         success: false,
         message: error.response?.data?.message || "Profile update failed.",
       };
+    }
+  };
+
+  const updateUser = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await axios.get(`${BASE_URL}/api/user/verify-auth`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200 && response.data) {
+        setUser(response.data);
+        return { success: true, user: response.data };
+      }
+      return { success: false };
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      return { success: false, error };
     }
   };
 
@@ -489,6 +559,7 @@ export const UserProvider = ({ children }) => {
     logout,
     refreshAccessToken,
     updateProfile,
+    updateUser,
     deleteAccount,
     getAuthHeader,
     checkAuth,

@@ -145,9 +145,9 @@ const Header = ({
   }, []);
   return (
     <>
-      <header className="px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800">
+      <header className="fixed inset-x-0 top-0 z-50 px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800 lg:static">
         {/* Mobile Layout - Single Row */}
-        <div className="flex lg:hidden items-center gap-3 w-full">
+        <div className="flex lg:hidden items-center gap-3 w-full  ">
           <button
             className="p-2 hover:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
             onClick={() => setShowSidebar(true)}
@@ -156,7 +156,7 @@ const Header = ({
           </button>
 
           {/* Mobile: Gradient border outer wrapper */}
-          <div className="w-full max-w-full">
+          <div className="flex-1 min-w-0">
             <div
               className={`relative p-[1px] rounded-full transition-all duration-300 ease-in-out ${
                 aiSearch
@@ -164,7 +164,7 @@ const Header = ({
                   : "bg-zinc-700/20"
               }`}
             >
-              <div className="relative flex items-center gap-2 bg-zinc-900 rounded-full px-3 py-2 w-full">
+              <div className="relative flex items-center gap-2 bg-zinc-900 rounded-full px-3 py-2 w-full min-w-0 overflow-hidden">
                 <Search
                   className={`w-4 h-4 transition-colors duration-300 ${
                     aiSearch ? "text-purple-400" : "text-zinc-500"
@@ -175,7 +175,7 @@ const Header = ({
                   placeholder={aiSearch ? "Ask anything..." : "Search..."}
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-100 placeholder-zinc-500 font-mono"
+                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-zinc-100 placeholder-zinc-500 font-mono"
                 />
                 <button
                   onClick={() => setAiSearch(!aiSearch)}
@@ -199,11 +199,19 @@ const Header = ({
             className="p-2 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
             onClick={() => navigate("/profile")}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-              {user?.username
-                ? user.username.substring(0, 2).toUpperCase()
-                : "U"}
-            </div>
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user?.username || "User avatar"}
+                className="w-8 h-8 rounded-lg object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
+                {user?.username
+                  ? user.username.substring(0, 2).toUpperCase()
+                  : "U"}
+              </div>
+            )}
           </div>
         </div>
 
@@ -224,7 +232,7 @@ const Header = ({
                   placeholder="Search files..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
+                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
                 />
                 <button
                   onClick={() => setAiSearch(!aiSearch)}
@@ -268,15 +276,26 @@ const Header = ({
               <span className="text-sm font-medium text-zinc-200">
                 {user?.username || "User"}
               </span>
-              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-                {user?.username
-                  ? user.username.substring(0, 2).toUpperCase()
-                  : "U"}
-              </div>
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user?.username || "User avatar"}
+                  className="w-8 h-8 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
+                  {user?.username
+                    ? user.username.substring(0, 2).toUpperCase()
+                    : "U"}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </header>
+
+      {/* Spacer so fixed header doesn't cover content on mobile */}
+      <div className="h-20 lg:hidden" />
 
       {/* AI Search Results Dropdown */}
       {aiSearch && showAiResults && (

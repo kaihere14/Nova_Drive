@@ -1,7 +1,93 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Sparkles, FolderPlus, Folder } from "lucide-react";
 import Navbar from "../components/Navbar";
 import usePageMeta from "../utils/usePageMeta";
+
+const FolderSuggestionVisual = () => {
+  const [selectedFolder, setSelectedFolder] = useState("Music");
+  const suggestedFolders = ["Music", "Audio", "Songs"];
+
+  return (
+    <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 font-mono text-xs shadow-2xl">
+      <div className="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
+        <span className="text-zinc-400">summer_vibes_mix.mp3</span>
+        <span className="text-purple-400 flex items-center gap-1">
+          <Sparkles className="w-3 h-3" />
+          AI Analyzing
+        </span>
+      </div>
+
+      <div className="space-y-2 mb-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-3 h-3 text-purple-400 animate-pulse" />
+          <span className="text-purple-300 text-[10px] font-semibold tracking-wider">
+            SUGGESTED FOLDERS
+          </span>
+        </div>
+        <p className="text-[10px] text-zinc-500">
+          AI suggests where to store your file
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        {suggestedFolders.map((folder, index) => (
+          <button
+            key={index}
+            onClick={() => setSelectedFolder(folder)}
+            className={`w-full flex items-center gap-2 p-2 rounded transition-all ${
+              selectedFolder === folder
+                ? "bg-purple-500/20 border border-purple-500/50"
+                : "bg-zinc-800/50 border border-zinc-700/50 hover:border-purple-500/30"
+            }`}
+          >
+            <div
+              className={`w-6 h-6 rounded flex items-center justify-center ${
+                selectedFolder === folder
+                  ? "bg-purple-500/30 border border-purple-500/40"
+                  : "bg-purple-500/10 border border-purple-500/20"
+              }`}
+            >
+              <FolderPlus className="w-3 h-3 text-purple-400" />
+            </div>
+            <span
+              className={`flex-1 text-left text-[11px] ${
+                selectedFolder === folder
+                  ? "text-purple-300 font-semibold"
+                  : "text-zinc-300"
+              }`}
+            >
+              {folder}
+            </span>
+            {selectedFolder === folder && (
+              <div className="w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-2.5 h-2.5 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 pt-3 border-t border-zinc-800 flex justify-between text-zinc-500">
+        <span className="text-[10px]">Auto-organize</span>
+        <span className="text-[10px]">AI Powered</span>
+      </div>
+    </div>
+  );
+};
+
 const ChunkUploadVisual = () => {
   const [chunks] = useState([
     { id: 1, status: "complete", size: "5MB" },
@@ -108,8 +194,11 @@ const HomePage = () => {
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-transparent opacity-20 blur-xl"></div>
-            <ChunkUploadVisual />
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 blur-xl"></div>
+            <div className="relative grid grid-cols-1 gap-6">
+              <ChunkUploadVisual />
+              <FolderSuggestionVisual />
+            </div>
 
             <div className="absolute -bottom-6 -left-6 bg-black border border-zinc-800 p-4 rounded-lg shadow-xl w-64">
               <div className="text-xs text-zinc-500 uppercase mb-2 font-mono tracking-wider">
@@ -180,6 +269,38 @@ const HomePage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-2 bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-30 transition-opacity">
+                <Sparkles className="w-32 h-32 text-blue-500" />
+              </div>
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-5 h-5 text-blue-400" />
+                <span className="text-xs font-mono text-blue-400 font-semibold tracking-wider">
+                  NEW FEATURE
+                </span>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                Smart Folder Suggestions
+              </h3>
+              <p className="text-zinc-400 max-w-sm mb-4">
+                AI analyzes your file and instantly suggests where to store it.
+                If folders exist, it finds them. If not, it creates smart
+                suggestions like "Music", "Documents", or "Photos" — all with
+                one click.
+              </p>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="bg-zinc-800/40 border border-zinc-700 text-zinc-300 px-3 py-1 rounded-full font-mono">
+                  Auto-detect
+                </span>
+                <span className="bg-zinc-800/40 border border-zinc-700 text-zinc-300 px-3 py-1 rounded-full font-mono">
+                  One-click organize
+                </span>
+                <span className="bg-zinc-800/40 border border-zinc-700 text-zinc-300 px-3 py-1 rounded-full font-mono">
+                  AI-powered
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity">
                 <svg
                   className="w-32 h-32 text-blue-500"
@@ -254,17 +375,28 @@ const HomePage = () => {
               </p>
             </div>
 
-            <div className="md:col-span-2 bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors">
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Bank-Grade Security
-              </h3>
-              <p className="text-zinc-400 max-w-md">
-                We use the same encryption standards as banks. Your account is
-                protected by advanced verification codes.
-              </p>
-              <div className="mt-6 font-mono text-xs text-zinc-500 bg-black/50 p-3 rounded border border-zinc-800 inline-block">
-                Secure Encryption | 2-Step Verification | Safe Transfer
+            <div className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors">
+              <div className="text-blue-500 mb-4">
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="1.5"
+                    d="M15 12H9m6-4H9m6 8H9M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
               </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                Quick Share
+              </h3>
+              <p className="text-zinc-400 text-sm">
+                Create secure, time-limited share links to send files instantly.
+              </p>
             </div>
           </div>
         </section>

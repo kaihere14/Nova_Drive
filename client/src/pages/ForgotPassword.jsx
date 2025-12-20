@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Mail, Lock, ArrowLeft, Loader2, Shield, Eye, EyeOff } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  ArrowLeft,
+  Loader2,
+  Shield,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { useUser } from "../hooks/useUser";
 import usePageMeta from "../utils/usePageMeta";
 
@@ -9,7 +17,7 @@ const ForgotPassword = () => {
     "Forgot Password — NovaDrive",
     "Reset your NovaDrive password securely."
   );
-  
+
   const navigate = useNavigate();
   const { forgotPasswordOtp, forgotPassword } = useUser();
   const [step, setStep] = useState(1); // 1: email, 2: otp & password
@@ -51,7 +59,7 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    
+
     if (!otp.trim()) {
       setError("OTP is required");
       return;
@@ -100,11 +108,11 @@ const ForgotPassword = () => {
         <div className="w-full max-w-md">
           {/* Logo/Brand */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-3 mb-4">
+            <div className="inline-flex items-center mb-4">
               <img
-                src="https://res.cloudinary.com/dw87upoot/image/upload/v1764738404/Screenshot_2025-12-03_at_10.35.02_AM_b1bbag.png"
+                src="https://res.cloudinary.com/dw87upoot/image/upload/v1765959245/Logo_Feedback_Dec_17_2025_1_bha0nd.png"
                 alt="NovaDrive logo"
-                className="w-12 h-12 object-contain"
+                className="w-20 h-20 object-contain"
               />
               <span className="text-3xl font-bold text-white">NovaDrive</span>
             </div>
@@ -189,7 +197,11 @@ const ForgotPassword = () => {
 
             {/* Step 2: OTP & Password */}
             {step === 2 && (
-              <form key="step2" onSubmit={handleResetPassword} className="space-y-5">
+              <form
+                key="step2"
+                onSubmit={handleResetPassword}
+                className="space-y-5"
+              >
                 {/* OTP Input */}
                 <div>
                   <label
@@ -264,7 +276,9 @@ const ForgotPassword = () => {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
                     >
                       {showConfirmPassword ? (

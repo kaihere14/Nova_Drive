@@ -139,7 +139,8 @@ const FilesList = forwardRef(
             if (!f) return false;
             if (path && f.r2Key && f.r2Key === path) return true;
             if (path && f.r2Key && f.r2Key.endsWith(path)) return true;
-            if (name && f.originalFileName && f.originalFileName === name) return true;
+            if (name && f.originalFileName && f.originalFileName === name)
+              return true;
             return false;
           });
 
@@ -157,7 +158,9 @@ const FilesList = forwardRef(
                 { key: path, userId: userId },
                 {
                   headers: {
-                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    Authorization: `Bearer ${localStorage.getItem(
+                      "accessToken"
+                    )}`,
                   },
                 }
               );
@@ -173,11 +176,23 @@ const FilesList = forwardRef(
                   loading: false,
                 });
               } else {
-                setPreviewModal({ open: true, file: null, fileType: "", url: "", loading: false });
+                setPreviewModal({
+                  open: true,
+                  file: null,
+                  fileType: "",
+                  url: "",
+                  loading: false,
+                });
               }
             } catch (err) {
               console.error("Error opening preview from event:", err);
-              setPreviewModal({ open: true, file: null, fileType: "", url: "", loading: false });
+              setPreviewModal({
+                open: true,
+                file: null,
+                fileType: "",
+                url: "",
+                loading: false,
+              });
             }
           }
         } catch (err) {
@@ -397,6 +412,24 @@ const FilesList = forwardRef(
       return (
         <div className="w-full">
           <div className="text-center py-10 text-red-400">{error}</div>
+        </div>
+      );
+    }
+
+    // Show a Coming Soon placeholder for the Recycle Bin view
+    if (activeView === "trash") {
+      return (
+        <div className="w-full">
+          <div className="text-center py-20">
+            <Trash2 className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
+            <h3 className="text-2xl font-semibold text-zinc-200 mb-2 font-mono">
+              Recycle Bin — Coming Soon
+            </h3>
+            <p className="text-sm text-zinc-400">
+              We're working on recycle bin functionality. Deleted files will be
+              visible here once available.
+            </p>
+          </div>
         </div>
       );
     }
@@ -686,7 +719,9 @@ const FilesList = forwardRef(
                             <button
                               className="w-8 h-8 flex items-center justify-center hover:bg-cyan-500/10 rounded-md transition-colors group"
                               title="Move to folder"
-                              onClick={() => setMoveModal({ open: true, file: file })}
+                              onClick={() =>
+                                setMoveModal({ open: true, file: file })
+                              }
                             >
                               <FolderInput className="w-4 h-4 text-zinc-400 group-hover:text-cyan-400" />
                             </button>
@@ -898,7 +933,7 @@ const FilesList = forwardRef(
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-                <div className="flex justify-between items-center px-5 py-4 border-b border-zinc-800 bg-zinc-900/95">
+              <div className="flex justify-between items-center px-5 py-4 border-b border-zinc-800 bg-zinc-900/95">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <Eye className="w-5 h-5 text-cyan-400 shrink-0" />
                   <span className="font-medium text-zinc-200 truncate text-sm">
