@@ -65,6 +65,11 @@ const FilesList = forwardRef(
       open: false,
       file: null,
     });
+    const [deleteModal, setDeleteModal] = useState({
+      open: false,
+      file: null,
+      isDeleting: false,
+    });
     const pollTimers = useRef([]);
 
     useEffect(() => {
@@ -224,21 +229,20 @@ const FilesList = forwardRef(
     };
 
     const handleDelete = async (file) => {
-      // Show confirmation dialog
-      const confirmed = window.confirm(
-        `Are you sure you want to delete "${file.originalFileName}"?\n\nThis action cannot be undone.`
-      );
+      setDeleteModal({ open: true, file: file, isDeleting: false });
+    };
 
-      if (!confirmed) {
-        return;
-      }
+    const confirmDelete = async () => {
+      if (!deleteModal.file) return;
 
       try {
+        setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
+
         const response = await axios.delete(
           `${BASE_URL}/api/chunks/delete-file`,
           {
             data: {
-              key: file.r2Key,
+              key: deleteModal.file.r2Key,
               userId: userId,
             },
           }
@@ -247,9 +251,11 @@ const FilesList = forwardRef(
         if (response.data.success) {
           // Refresh files list after successful deletion
           fetchFiles();
+          setDeleteModal({ open: false, file: null, isDeleting: false });
         }
       } catch (err) {
         alert("Failed to delete file");
+        setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
       }
     };
 
@@ -991,6 +997,71 @@ const FilesList = forwardRef(
           currentFolderId={currentFolderId}
           userId={userId}
         />
+
+        {/* Delete Confirmation Modal */}
+        {deleteModal.open && (
+          <div
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+            onClick={() =>
+              !deleteModal.isDeleting &&
+              setDeleteModal({ open: false, file: null, isDeleting: false })
+            }
+          >
+            <div
+              className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md mx-4 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="px-6 py-5 border-b border-zinc-800">
+                <h3 className="text-lg font-semibold text-zinc-100 font-mono">
+                  DELETE_FILE
+                </h3>
+              </div>
+              <div className="px-6 py-6 space-y-4">
+                <div className="flex gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0">
+                    <Trash2 className="w-5 h-5 text-red-400" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-zinc-100 mb-1">
+                      Are you sure?
+                    </p>
+                    <p className="text-sm text-zinc-400">
+                      This will permanently delete "{deleteModal.file?.originalFileName}". This action cannot be undone.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="px-6 py-4 border-t border-zinc-800 flex gap-3">
+                <button
+                  onClick={() =>
+                    setDeleteModal({ open: false, file: null, isDeleting: false })
+                  }
+                  disabled={deleteModal.isDeleting}
+                  className="flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono"
+                >
+                  CANCEL
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={deleteModal.isDeleting}
+                  className="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_-5px_rgba(239,68,68,0.4)] font-mono"
+                >
+                  {deleteModal.isDeleting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      DELETING...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      DELETE
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
