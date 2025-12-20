@@ -28,13 +28,28 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     let isCurrentlyRefreshing = false;
     let refreshPromise = null;
+    let consecutiveRefreshFailures = 0;
+    const MAX_CONSECUTIVE_REFRESH_FAILURES = 3;
 
     const interceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
 
+        // If this response is 401 and we haven't retried this request yet
         if (error.response?.status === 401 && !originalRequest._retry) {
+          // If the request itself was the refresh-token call, do not attempt to refresh again
+          if (originalRequest && originalRequest._isRefreshRequest) {
+            console.warn(
+              "Refresh endpoint returned 401 — aborting refresh attempts"
+            );
+            // cleanup UI and logout
+            setShowRefreshIndicator(false);
+            setIsRefreshing(false);
+            setLoading(false);
+            await logout();
+            return Promise.reject(error);
+          }
           const refreshToken = localStorage.getItem("refreshToken");
 
           if (!refreshToken) {
@@ -83,11 +98,23 @@ export const UserProvider = ({ children }) => {
             const duration = Date.now() - startTime;
 
             if (refreshed) {
+              consecutiveRefreshFailures = 0;
               // Retry the original request with new token
               const newToken = localStorage.getItem("accessToken");
               originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
               return axios(originalRequest);
             } else {
+              consecutiveRefreshFailures += 1;
+              if (
+                consecutiveRefreshFailures >= MAX_CONSECUTIVE_REFRESH_FAILURES
+              ) {
+                console.error("Too many refresh failures — forcing logout");
+                setShowRefreshIndicator(false);
+                setIsRefreshing(false);
+                setLoading(false);
+                await logout();
+                return Promise.reject(error);
+              }
               setRefreshMessage("Session expired. Please log in again.");
               setTimeout(() => {
                 setRefreshMessage("");
@@ -98,6 +125,20 @@ export const UserProvider = ({ children }) => {
               return Promise.reject(error);
             }
           } catch (refreshError) {
+            consecutiveRefreshFailures += 1;
+            if (
+              consecutiveRefreshFailures >= MAX_CONSECUTIVE_REFRESH_FAILURES
+            ) {
+              console.error(
+                "Refresh failed repeatedly — forcing logout",
+                refreshError
+              );
+              setShowRefreshIndicator(false);
+              setIsRefreshing(false);
+              setLoading(false);
+              await logout();
+              return Promise.reject(refreshError);
+            }
             clearTimeout(indicatorTimeout);
             setShowRefreshIndicator(false);
             setRefreshMessage("Session expired. Please log in again.");
@@ -263,7 +304,7 @@ export const UserProvider = ({ children }) => {
       };
     }
   };
-  const logout = async () => {
+  const logout = async (options = { redirect: true }) => {
     try {
       // Clear tokens
       localStorage.removeItem("accessToken");
@@ -273,7 +314,6 @@ export const UserProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       setOAuthUser(false);
-
       return { success: true };
     } catch (error) {
       console.error("Logout failed:", error);
@@ -288,21 +328,27 @@ export const UserProvider = ({ children }) => {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) {
+        // No refresh token available — ensure cleanup and redirect
+        await logout();
         return false;
       }
+      console.log("Attempting token refresh with token:", refreshToken);
 
-      const response = await axios.post(`${BASE_URL}/api/user/refresh-token`, {
-        refreshToken,
-      });
-
+      // include a flag on the request so interceptor won't attempt to refresh this request
+      const response = await axios.post(
+        `${BASE_URL}/api/user/refresh-token`,
+        { refreshToken },
+        { _isRefreshRequest: true }
+      );
+      console.log("Refresh response:", response.data);
       const { accessToken, refreshToken: refreshToken2 } = response.data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken2);
       return true;
-
-      return false;
     } catch (error) {
       console.error("Token refresh failed:", error);
+      // On refresh failure, remove any stored tokens and redirect to root
+      await logout();
       return false;
     }
   };
