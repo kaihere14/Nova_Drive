@@ -74,14 +74,14 @@ const PricingPage = () => {
               Pro
             </h3>
             <div className="text-4xl font-bold text-white mb-6">
-              ₹499
+              ₹599
               <span className="text-lg text-zinc-500 font-normal">/mo</span>
             </div>
 
             <ul className="space-y-4 mb-8 flex-1">
               <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-800 pb-2">
                 <span>Storage</span>
-                <span className="font-mono text-white">2 TB</span>
+                <span className="font-mono text-white">400 GB</span>
               </li>
               <li className="text-sm text-zinc-300 flex justify-between border-b border-zinc-800 pb-2">
                 <span>Max File Size</span>
@@ -156,7 +156,7 @@ const PricingPage = () => {
                     {
                       feature: "Storage Capacity",
                       starter: "10 GB",
-                      pro: "2 TB",
+                      pro: "400 GB",
                       biz: "Custom",
                     },
                     {

@@ -506,12 +506,12 @@ const HomePage = () => {
                 Pro
               </h3>
               <div className="text-4xl font-bold text-white mb-6">
-                ₹499
+                ₹599
                 <span className="text-lg text-zinc-500 font-normal">/mo</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-300">
                 <li className="flex justify-between border-b border-zinc-800 pb-2">
-                  <span>Storage</span> <span className="text-white">2 TB</span>
+                  <span>Storage</span> <span className="text-white">400 GB</span>
                 </li>
                 <li className="flex justify-between border-b border-zinc-800 pb-2">
                   <span>Bandwidth</span>{" "}
