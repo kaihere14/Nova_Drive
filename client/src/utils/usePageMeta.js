@@ -1,53 +1,109 @@
 import { useEffect } from "react";
 
-function createOrUpdateMeta(selector, attrs = {}) {
+function ensureTag(tagName, selector, attrs = {}) {
   let el = document.head.querySelector(selector);
   if (!el) {
-    el = document.createElement(attrs.tag || 'meta');
-    if (attrs.tag) delete attrs.tag;
-    if (attrs.selectorName && attrs.selectorValue) {
-      // noop - handled by selector
-    }
+    el = document.createElement(tagName);
+    Object.entries(attrs).forEach(([k, v]) => {
+      el.setAttribute(k, v);
+    });
     document.head.appendChild(el);
+  } else {
+    Object.entries(attrs).forEach(([k, v]) => {
+      el.setAttribute(k, v);
+    });
   }
-  Object.entries(attrs).forEach(([k, v]) => {
-    if (k === 'tag') return;
-    el.setAttribute(k, v);
-  });
   return el;
 }
 
-export default function usePageMeta(title, description) {
+export default function usePageMeta(titleOrOptions, description) {
   useEffect(() => {
-    if (title) document.title = title;
+    const defaultImage =
+      "https://res.cloudinary.com/dw87upoot/image/upload/v1765959245/Logo_Feedback_Dec_17_2025_1_bha0nd.png";
 
-    if (description) {
-      // meta description
-      let desc = document.head.querySelector('meta[name="description"]');
-      if (!desc) {
-        desc = document.createElement('meta');
-        desc.setAttribute('name', 'description');
-        document.head.appendChild(desc);
-      }
-      desc.setAttribute('content', description);
+    const defaults = {
+      title: "NovaDrive",
+      description:
+        "NovaDrive — secure, fast cloud storage with AI-powered auto-tagging and smart organization.",
+      image: defaultImage,
+      canonical:
+        typeof window !== "undefined"
+          ? window.location.href
+          : "https://novadrive.example.com/",
+      keywords: "NovaDrive, cloud storage, AI tagging, secure storage",
+      robots: "index,follow",
+    };
 
-      // Open Graph title
-      createOrUpdateMeta('meta[property="og:title"]', {
-        property: 'og:title',
-        content: title || document.title,
-      });
-
-      // Open Graph description
-      createOrUpdateMeta('meta[property="og:description"]', {
-        property: 'og:description',
-        content: description,
-      });
-
-      // Twitter card
-      createOrUpdateMeta('meta[name="twitter:card"]', {
-        name: 'twitter:card',
-        content: 'summary_large_image',
-      });
+    let opts = {};
+    if (typeof titleOrOptions === "object" && titleOrOptions !== null) {
+      opts = { ...defaults, ...titleOrOptions };
+    } else {
+      opts = {
+        ...defaults,
+        title: titleOrOptions || defaults.title,
+        description: description || defaults.description,
+      };
     }
-  }, [title, description]);
+
+    // Title
+    if (opts.title) document.title = opts.title;
+
+    // Basic meta tags
+    ensureTag("meta", 'meta[name="description"]', {
+      name: "description",
+      content: opts.description,
+    });
+
+    ensureTag("meta", 'meta[name="keywords"]', {
+      name: "keywords",
+      content: opts.keywords,
+    });
+
+    ensureTag("meta", 'meta[name="robots"]', {
+      name: "robots",
+      content: opts.robots,
+    });
+
+    // canonical link
+    ensureTag("link", 'link[rel="canonical"]', {
+      rel: "canonical",
+      href: opts.canonical,
+    });
+
+    // Open Graph
+    ensureTag("meta", 'meta[property="og:title"]', {
+      property: "og:title",
+      content: opts.title,
+    });
+    ensureTag("meta", 'meta[property="og:description"]', {
+      property: "og:description",
+      content: opts.description,
+    });
+    ensureTag("meta", 'meta[property="og:image"]', {
+      property: "og:image",
+      content: opts.image,
+    });
+    ensureTag("meta", 'meta[property="og:type"]', {
+      property: "og:type",
+      content: "website",
+    });
+
+    // Twitter
+    ensureTag("meta", 'meta[name="twitter:card"]', {
+      name: "twitter:card",
+      content: "summary_large_image",
+    });
+    ensureTag("meta", 'meta[name="twitter:title"]', {
+      name: "twitter:title",
+      content: opts.title,
+    });
+    ensureTag("meta", 'meta[name="twitter:description"]', {
+      name: "twitter:description",
+      content: opts.description,
+    });
+    ensureTag("meta", 'meta[name="twitter:image"]', {
+      name: "twitter:image",
+      content: opts.image,
+    });
+  }, [titleOrOptions, description]);
 }

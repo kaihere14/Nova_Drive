@@ -137,7 +137,10 @@ const ChunkUploadVisual = () => {
 };
 
 const HomePage = () => {
-  usePageMeta("NovaDrive", "Smart Cloud Storage");
+  usePageMeta(
+    "NovaDrive — Smart Cloud Storage",
+    "NovaDrive is secure, fast cloud storage with AI-powered auto-tagging, search, and smart organization."
+  );
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200 pt-5">
@@ -511,7 +514,8 @@ const HomePage = () => {
               </div>
               <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-300">
                 <li className="flex justify-between border-b border-zinc-800 pb-2">
-                  <span>Storage</span> <span className="text-white">300 GB</span>
+                  <span>Storage</span>{" "}
+                  <span className="text-white">300 GB</span>
                 </li>
                 <li className="flex justify-between border-b border-zinc-800 pb-2">
                   <span>Bandwidth</span>{" "}
