@@ -282,7 +282,7 @@ const HomePage = () => {
 
       <main className="relative z-10 pt-20 pb-12 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-          <div className=" sm:mb-20">
+          <div className="pt-4">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
               v1.0 Live
             </span>
@@ -325,7 +325,6 @@ const HomePage = () => {
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-blue-600 opacity-10 blur-xl"></div>
             <div className="relative grid grid-cols-1 gap-6">
               <ChunkUploadVisual />
-              <FolderSuggestionVisual />
             </div>
 
             <div className="absolute  -bottom-10 -left-6 bg-black border border-zinc-800 p-4 rounded-lg shadow-xl w-64">
