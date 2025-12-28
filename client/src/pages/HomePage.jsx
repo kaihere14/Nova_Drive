@@ -268,7 +268,7 @@ const HomePage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200 pt-5">
+    <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200">
       <div
         className="fixed inset-0 z-0 pointer-events-none"
         style={{
@@ -282,7 +282,7 @@ const HomePage = () => {
 
       <main className="relative z-10 pt-20 pb-12 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-          <div>
+          <div className=" sm:mb-20">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
               v1.0 Live
             </span>
