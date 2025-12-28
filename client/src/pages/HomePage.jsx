@@ -1,136 +1,261 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Sparkles, FolderPlus, Folder } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Sparkles,
+  FolderPlus,
+  Folder,
+  ChevronRight,
+  Fingerprint,
+  Box,
+  CheckCircle2,
+  CloudUpload,
+  Cpu,
+  Hash,
+} from "lucide-react";
 import Navbar from "../components/Navbar";
 import usePageMeta from "../utils/usePageMeta";
 
 const FolderSuggestionVisual = () => {
-  const [selectedFolder, setSelectedFolder] = useState("Music");
-  const suggestedFolders = ["Music", "Audio", "Songs"];
+  const [selected, setSelected] = useState("Music");
+  const suggestions = [
+    { name: "Music", score: 0.98 },
+    { name: "Audio", score: 0.85 },
+    { name: "Archive", score: 0.42 },
+  ];
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 font-mono text-xs shadow-2xl">
-      <div className="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
-        <span className="text-zinc-400">summer_vibes_mix.mp3</span>
-        <span className="text-purple-400 flex items-center gap-1">
-          <Sparkles className="w-3 h-3" />
-          AI Analyzing
-        </span>
-      </div>
-
-      <div className="space-y-2 mb-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-3 h-3 text-purple-400 animate-pulse" />
-          <span className="text-purple-300 text-[10px] font-semibold tracking-wider">
-            SUGGESTED FOLDERS
+    <div className="w-full  bg-[#0c0c0e] border border-[#27272a] rounded-xl overflow-hidden shadow-2xl font-sans">
+      {/* Header: More Functional, Less "Gimmicky" */}
+      <div className="p-4 border-b border-[#27272a] bg-[#111114]/50 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+          <span className="text-[11px] uppercase tracking-[0.2em] text-zinc-500 font-bold">
+            Classification Engine
           </span>
         </div>
-        <p className="text-[10px] text-zinc-500">
-          AI suggests where to store your file
-        </p>
+        <span className="text-[10px] text-zinc-600 font-mono">v1.0.4</span>
       </div>
 
-      <div className="space-y-2">
-        {suggestedFolders.map((folder, index) => (
-          <button
-            key={index}
-            onClick={() => setSelectedFolder(folder)}
-            className={`w-full flex items-center gap-2 p-2 rounded transition-all ${
-              selectedFolder === folder
-                ? "bg-purple-500/20 border border-purple-500/50"
-                : "bg-zinc-800/50 border border-zinc-700/50 hover:border-purple-500/30"
-            }`}
-          >
-            <div
-              className={`w-6 h-6 rounded flex items-center justify-center ${
-                selectedFolder === folder
-                  ? "bg-purple-500/30 border border-purple-500/40"
-                  : "bg-purple-500/10 border border-purple-500/20"
-              }`}
-            >
-              <FolderPlus className="w-3 h-3 text-purple-400" />
-            </div>
-            <span
-              className={`flex-1 text-left text-[11px] ${
-                selectedFolder === folder
-                  ? "text-purple-300 font-semibold"
-                  : "text-zinc-300"
-              }`}
-            >
-              {folder}
+      <div className="p-4 space-y-4">
+        {/* File Info Card */}
+        <div className="flex items-center gap-3 p-3 bg-[#16161a] border border-[#27272a] rounded-lg">
+          <div className="p-2 bg-indigo-500/10 rounded-md">
+            <Fingerprint className="w-4 h-4 text-indigo-400" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs text-zinc-200 font-medium truncate w-40">
+              summer_vibes_mix.mp3
             </span>
-            {selectedFolder === folder && (
-              <div className="w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-2.5 h-2.5 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
+            <span className="text-[10px] text-zinc-500">
+              MPEG Layer-3 Audio • 8.4MB
+            </span>
+          </div>
+        </div>
+
+        {/* Suggestion List */}
+        <div className="space-y-1.5">
+          {suggestions.map((folder) => {
+            const isSelected = selected === folder.name;
+            return (
+              <button
+                key={folder.name}
+                onClick={() => setSelected(folder.name)}
+                className="relative w-full group flex items-center justify-between p-3 rounded-lg transition-colors overflow-hidden"
+              >
+                {/* Selection Highlight (Framer Motion) */}
+                {isSelected && (
+                  <motion.div
+                    layoutId="active-bg"
+                    className="absolute inset-0 bg-indigo-500/10 border border-indigo-500/20"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
-                </svg>
-              </div>
-            )}
-          </button>
-        ))}
+                )}
+
+                <div className="relative z-10 flex items-center gap-3">
+                  <Folder
+                    className={`w-4 h-4 ${
+                      isSelected ? "text-indigo-400" : "text-zinc-500"
+                    }`}
+                  />
+                  <span
+                    className={`text-xs ${
+                      isSelected ? "text-white" : "text-zinc-400"
+                    }`}
+                  >
+                    {folder.name}
+                  </span>
+                </div>
+
+                <div className="relative z-10 flex items-center gap-2">
+                  {/* Confidence Bar */}
+                  <div className="w-12 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-indigo-500"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${folder.score * 100}%` }}
+                    />
+                  </div>
+                  <ChevronRight
+                    className={`w-3 h-3 ${
+                      isSelected ? "text-indigo-400" : "text-zinc-700"
+                    }`}
+                  />
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-zinc-800 flex justify-between text-zinc-500">
-        <span className="text-[10px]">Auto-organize</span>
-        <span className="text-[10px]">AI Powered</span>
+      {/* Footer */}
+      <div className="px-4 py-3 bg-[#111114]/50 border-t border-[#27272a] flex justify-between items-center">
+        <button className="text-[11px] text-zinc-400 hover:text-white transition-colors">
+          Ignore Suggestion
+        </button>
+        <button className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold rounded-md transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+          Confirm Path
+        </button>
       </div>
     </div>
   );
 };
 
 const ChunkUploadVisual = () => {
-  const [chunks] = useState([
-    { id: 1, status: "complete", size: "5MB" },
-    { id: 2, status: "complete", size: "5MB" },
-    { id: 3, status: "uploading", size: "5MB" },
-    { id: 4, status: "pending", size: "5MB" },
-  ]);
+  // Simulating a dynamic upload state for better realism
+  const [progress, setProgress] = useState(62);
+  const chunks = [
+    { id: 1, status: "verified", size: "5.2MB", hash: "8f2a...1b" },
+    { id: 2, status: "verified", size: "5.2MB", hash: "4c91...9d" },
+    { id: 3, status: "active", size: "5.2MB", hash: "7e32...f0" },
+    { id: 4, status: "pending", size: "4.4MB", hash: "pending" },
+  ];
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 font-mono text-xs shadow-2xl">
-      <div className="flex justify-between items-center mb-4 border-b border-zinc-800 pb-2">
-        <span className="text-zinc-400">project_alpha_v2.pdf</span>
-        <span className="text-blue-400">Processing</span>
+    <div className="w-full  bg-[#09090b] border border-zinc-800 rounded-xl overflow-hidden shadow-2xl font-mono">
+      {/* Header: System Monitor Style */}
+      <div className="px-4 py-3 bg-zinc-900/50 border-b border-zinc-800 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <Cpu className="w-3.5 h-3.5 text-indigo-500" />
+          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
+            Multipart Uploader v2
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-indigo-400 animate-pulse font-bold">
+            LHR-SEC-01
+          </span>
+        </div>
       </div>
-      <div className="space-y-2">
-        {chunks.map((chunk) => (
-          <div key={chunk.id} className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div
-                className={`h-2 w-2 rounded-full ${
-                  chunk.status === "complete"
-                    ? "bg-green-500"
-                    : chunk.status === "uploading"
-                    ? "bg-blue-500 animate-pulse"
-                    : "bg-zinc-700"
-                }`}
-              ></div>
-              <span className="text-zinc-300">Chunk_0{chunk.id}</span>
-            </div>
-            <span className="text-zinc-500">
-              {chunk.size} //{" "}
-              {chunk.status === "complete"
-                ? "SHA-256 OK"
-                : chunk.status === "uploading"
-                ? "UPLOADING..."
-                : "QUEUED"}
+
+      <div className="p-4 space-y-4">
+        {/* File Stats Header */}
+        <div className="flex justify-between items-end">
+          <div>
+            <h3 className="text-white text-xs font-bold truncate w-48">
+              project_alpha_v2.pdf
+            </h3>
+            <p className="text-[10px] text-zinc-500">
+              20.0 MB • Application/PDF
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-lg font-bold text-white tracking-tighter">
+              {progress}%
             </span>
           </div>
-        ))}
+        </div>
+
+        {/* Global Progress Bar */}
+        <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            className="h-full bg-gradient-to-r from-indigo-600 to-violet-400"
+          />
+        </div>
+
+        {/* Chunk Grid */}
+        <div className="grid grid-cols-1 gap-2">
+          {chunks.map((chunk, i) => (
+            <div
+              key={chunk.id}
+              className={`group flex items-center justify-between p-2 rounded border transition-all duration-300 ${
+                chunk.status === "active"
+                  ? "bg-indigo-500/5 border-indigo-500/30"
+                  : "bg-zinc-900/40 border-zinc-800/50"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  {chunk.status === "verified" ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  ) : chunk.status === "active" ? (
+                    <div className="relative">
+                      <CloudUpload className="w-4 h-4 text-indigo-400" />
+                      <motion.div
+                        initial={{ opacity: 0, y: 0 }}
+                        animate={{ opacity: [0, 1, 0], y: -10 }}
+                        transition={{ repeat: Infinity, duration: 1.5 }}
+                        className="absolute inset-0 flex justify-center"
+                      >
+                        <div className="w-0.5 h-2 bg-indigo-400 rounded-full" />
+                      </motion.div>
+                    </div>
+                  ) : (
+                    <Box className="w-4 h-4 text-zinc-700" />
+                  )}
+                </div>
+
+                <div className="flex flex-col">
+                  <span
+                    className={`text-[11px] ${
+                      chunk.status === "pending"
+                        ? "text-zinc-600"
+                        : "text-zinc-300"
+                    }`}
+                  >
+                    PART_0{chunk.id}
+                  </span>
+                  <div className="flex items-center gap-1 opacity-50">
+                    <Hash className="w-2.5 h-2.5" />
+                    <span className="text-[9px] uppercase">{chunk.hash}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <span
+                  className={`text-[10px] font-bold ${
+                    chunk.status === "verified"
+                      ? "text-emerald-500/70"
+                      : chunk.status === "active"
+                      ? "text-indigo-400"
+                      : "text-zinc-700"
+                  }`}
+                >
+                  {chunk.status === "verified"
+                    ? "HASH_OK"
+                    : chunk.status === "active"
+                    ? "WRITING..."
+                    : "WAITING"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="mt-4 pt-3 border-t border-zinc-800 flex justify-between text-zinc-500">
-        <span>Total: 20MB</span>
-        <span>Secure Cloud</span>
+
+      {/* Footer Log */}
+      <div className="px-4 py-2 bg-black border-t border-zinc-800 flex justify-between items-center text-[9px]">
+        <span className="text-zinc-600">
+          Speed: <span className="text-zinc-400">2.4 MB/s</span>
+        </span>
+        <span className="text-zinc-600">
+          ETA: <span className="text-zinc-400">4s</span>
+        </span>
       </div>
     </div>
   );
@@ -197,13 +322,13 @@ const HomePage = () => {
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 blur-xl"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-blue-600 opacity-10 blur-xl"></div>
             <div className="relative grid grid-cols-1 gap-6">
               <ChunkUploadVisual />
               <FolderSuggestionVisual />
             </div>
 
-            <div className="absolute -bottom-6 -left-6 bg-black border border-zinc-800 p-4 rounded-lg shadow-xl w-64">
+            <div className="absolute  -bottom-10 -left-6 bg-black border border-zinc-800 p-4 rounded-lg shadow-xl w-64">
               <div className="text-xs text-zinc-500 uppercase mb-2 font-mono tracking-wider">
                 AI Auto-Tagging
               </div>
