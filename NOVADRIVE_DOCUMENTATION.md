@@ -4,6 +4,7 @@
 
 NovaDrive is a secure cloud storage application with AI-powered file organization, chunked uploads, and intelligent search capabilities. Built with React (frontend) and Node.js/Express (backend), it uses Cloudflare R2 for storage and Gemini AI for file analysis.
 
+
 ---
 
 ## 🔐 **AUTHENTICATION FLOWS**
