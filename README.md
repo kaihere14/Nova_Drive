@@ -52,10 +52,6 @@ npm run dev
 ```
 3. Open your web browser and navigate to `http://localhost:5173`
 
-## Folder Suggestion Feature
-
-The folder suggestion feature is documented in the [FOLDER_SUGGESTION_FEATURE.md](FOLDER_SUGGESTION_FEATURE.md) file.
-
 ## Contributing
 
 To contribute to Nova Drive, please follow these steps:
@@ -94,4 +90,6 @@ Nova Drive uses the following dependencies:
 
 We would like to thank the authors and maintainers of these libraries for their hard work and dedication.
 
-Note: The API documentation has been removed from the repository. If you need information on the API, please refer to the code or contact the maintainers for more information.
+Note: API documentation is not publicly available. For more information, please refer to the code or contact the maintainers. 
+
+Note: The folder suggestion feature documentation has been removed. If you have any questions or need further clarification, please contact the maintainers.
