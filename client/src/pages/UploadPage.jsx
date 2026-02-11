@@ -68,7 +68,7 @@ const UploadPage = () => {
   const [renameLoading, setRenameLoading] = useState(false);
   const [renameError, setRenameError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(window.innerWidth >= 1024);
   const [aiSearch, setAiSearch] = useState(false);
 
   const filesListRef = useRef();
