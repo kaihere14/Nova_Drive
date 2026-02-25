@@ -1,6 +1,10 @@
 # Nova Drive 🚀
 
-![Nova Drive Logo](https://raw.githubusercontent.com/kaihere14/Nova_Drive/main/.github/logo.png)  
+<div align="center">
+  
+![Nova Drive Logo](https://www.daemondoc.online/logo.svg) 
+
+</div>
 
 **A modern, AI‑enhanced cloud storage platform** – upload, organize, share, and let AI summarize your documents in seconds.
 
