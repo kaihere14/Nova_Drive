@@ -1,9 +1,10 @@
+
 # Nova Drive
 A comprehensive cloud storage solution with a robust backend and intuitive frontend.
 
 ## Overview
-Nova Drive is a full-stack application designed to provide a seamless cloud storage experience. The project consists of a React-based frontend and an Express.js backend, utilizing a MongoDB database for data storage. This README will guide you through the project's architecture, features, installation, and usage.
 
+Nova Drive is a full-stack application designed to provide a seamless cloud storage experience. The project consists of a React-based frontend and an Express.js backend, utilizing a MongoDB database for data storage. This README will guide you through the project's architecture, features, installation, and usage.
 ## Features
 * **Cloud Storage**: Upload, download, and manage files in the cloud
 * **User Authentication**: Secure login and registration system using Google OAuth
