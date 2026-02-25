@@ -1,3 +1,4 @@
+
 # Nova Drive 🚀
 
 <div align="center">
@@ -31,7 +32,6 @@ Targeted at developers, startups, and power users who need a self‑hosted, exte
 Current stable version: **1.0.0** (2026‑02‑25).
 
 ---
-
 ## Features
 
 | Feature | Description | Status |
@@ -204,8 +204,9 @@ npm run build   # tsc → ./dist
 npm start       # node dist/index.js
 
 # Frontend
-cd ../client
-npm run build   # creates ./dist
+cd client
+npm run lint
+
 # Serve with any static server, e.g. Vercel, Netlify, or Docker:
 npm install -g serve
 serve -s dist
