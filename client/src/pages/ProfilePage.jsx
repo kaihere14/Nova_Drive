@@ -543,9 +543,17 @@ const ProfilePage = () => {
               <div className="flex-1 text-center sm:text-left">
                 <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between mb-3 sm:mb-4 w-full">
                   <div className="text-center sm:text-left">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
-                      {user?.username || "User"}
-                    </h1>
+                    <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap mb-1">
+                      <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                        {user?.username || "User"}
+                      </h1>
+                      {user?.admin && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-400 text-xs font-semibold tracking-wide">
+                          <Shield className="w-3 h-3" />
+                          ADMIN
+                        </span>
+                      )}
+                    </div>
                     <p className="text-zinc-400 font-mono text-sm">
                       ACCOUNT_PROFILE
                     </p>

@@ -16,6 +16,7 @@ export interface IUser extends Document {
   avatar?: string;
   avatarPublicId?: string;
   authProvider: "local" | "google";
+  admin: boolean;
 
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -42,6 +43,7 @@ const UserSchema = new Schema<IUser>({
     enum: ["local", "google"],
     default: "local",
   },
+  admin: { type: Boolean, default: false },
 });
 
 UserSchema.pre<IUser>("save", async function (next) {

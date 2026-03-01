@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell, Settings, Menu, Sparkles, Zap, X } from "lucide-react";
+import { Search, Bell, Settings, Menu, Sparkles, Zap, X, Shield } from "lucide-react";
 import axios from "axios";
 import BASE_URL from "../config";
 
@@ -273,9 +273,17 @@ const Header = ({
               className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors"
               onClick={() => navigate("/profile")}
             >
-              <span className="text-sm font-medium text-zinc-200">
-                {user?.username || "User"}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-medium text-zinc-200">
+                  {user?.username || "User"}
+                </span>
+                {user?.admin && (
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400 text-xs font-semibold">
+                    <Shield className="w-2.5 h-2.5" />
+                    Admin
+                  </span>
+                )}
+              </div>
               {user?.avatar ? (
                 <img
                   src={user.avatar}

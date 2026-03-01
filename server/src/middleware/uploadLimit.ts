@@ -1,6 +1,7 @@
 import { connection } from "../utils/bullmqJobs.js";
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../index.js";
+import { User } from "../models/user.model.js";
 
 const checkLimit = async (req: Request, res: Response, next: NextFunction) => {
   const DAILY_LIMIT = 250 * 1024 * 1024;
@@ -9,6 +10,12 @@ const checkLimit = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!userId || !fileSize) {
       return res.status(400).json({ message: "Invalid upload data" });
+    }
+
+    // Admins bypass the daily upload limit
+    const user = await User.findById(userId).select("admin");
+    if (user?.admin) {
+      return next();
     }
     const redisKey = `user:${userId}:dailyUpload`;
     const uploadedSize = await connection.get(redisKey);
