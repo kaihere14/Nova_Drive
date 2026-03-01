@@ -39,6 +39,7 @@ Current stable version: **1.0.0** (2026‑02‑25).
 | **File Upload / Download** | Drag‑and‑drop UI, multipart streaming, resumable uploads. | ✅ Stable |
 | **Folder Hierarchy** | Nested folders, breadcrumb navigation, move/copy actions. | ✅ Stable |
 | **User Management** | Register, login, password reset, JWT auth, Google OAuth. | ✅ Stable |
+| **Admin Role** | Admin users can bypass daily upload limits and view system status in UI. | ✅ Stable |
 | **OTP Verification** | Email‑based one‑time passwords for added security. | ✅ Stable |
 | **AI Summarization** | Generate concise summaries for PDFs & text files using OpenAI & Google AI. | 🟡 Beta |
 | **Background Jobs** | Chunked processing, virus scanning, thumbnail generation via BullMQ & Redis. | ✅ Stable |
@@ -330,7 +331,7 @@ curl http://localhost:3000/health
 | `POST` | `/api/otp/verify` | Verify OTP for email actions | ❌ |
 | `GET` | `/api/user/me` | Get current user profile | ✅ |
 | `GET` | `/api/files` | List user files | ✅ |
-| `POST` | `/api/files/upload` | Upload a new file (multipart) | ✅ |
+| `POST` | `/api/files/upload` | Upload a new file (multipart). Admins bypass daily upload limits. | ✅ |
 | `GET` | `/api/files/:id/download` | Download file by ID | ✅ |
 | `POST` | `/api/files/:id/summarize` | Generate AI summary (PDF/Text) | ✅ |
 | `GET` | `/api/folders` | List folders | ✅ |
@@ -344,12 +345,12 @@ curl http://localhost:3000/health
 
 **Error format**
 
-```json
+
 {
   "message": "Internal Server Error",
   "error": "Detailed error message (only in development)"
 }
-```
+
 
 Rate limits are enforced per IP (100 requests/minute) via `express-rate-limit` (future enhancement).
 
