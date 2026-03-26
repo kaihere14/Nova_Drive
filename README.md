@@ -50,14 +50,14 @@ Current stable version: **1.0.0** (2026‑02‑25).
 
 ---
 
-## Tech Stack
+## Tech Stack 🚀
 
 | Layer | Technologies |
 |-------|--------------|
 | **Frontend** | React 19, Vite 7, TailwindCSS 4, Framer Motion, Axios, React Router 7, Lucide‑React |
 | **Backend** | Node.js 20, Express 4, TypeScript 5, MongoDB (Mongoose 8), Redis (ioredis), BullMQ |
 | **Storage** | AWS S3, Cloudinary |
-| **AI / ML** | OpenAI SDK, @google/generative‑ai, @google/genai |
+| **AI / ML** | OpenAI SDK, @google/generative‑ai, @google/genai (Google Gemini models: gemini-3.1-flash-lite-preview, gemini-3-flash-preview, -2.5-flash) |
 | **Auth** | JSON Web Tokens, Google OAuth, bcrypt, OTP via Resend |
 | **Logging & Monitoring** | Winston, express‑status‑monitor |
 | **CI/CD** | GitHub Actions (CI + Deploy), Vercel (frontend), Docker (backend) |
@@ -65,10 +65,9 @@ Current stable version: **1.0.0** (2026‑02‑25).
 | **Other** | Multer (multipart handling), Busboy, PDF‑parse, UUID, dotenv |
 
 ---
+## Architecture 🤖
 
-## Architecture
 
-```
 root
 ├─ client/               # React SPA (Vite)
 │   ├─ src/              # components, pages, hooks, context
@@ -84,14 +83,15 @@ root
 │   └─ tsconfig.json
 ├─ .github/workflows/    # CI/CD pipelines
 └─ docker-compose.yml    # (optional) dev/prod containers
-```
+
 
 * **Client ↔ Server** – All API calls go through `client/src/config.js` which selects the correct base URL (`/api/...`).  
 * **Background Workers** – BullMQ queues (`workers`, `queues`) process heavy tasks (file chunking, AI summarization) in separate processes.  
-* **Graceful Shutdown** – Listeners for `SIGTERM`, `SIGINT`, uncaught exceptions, and unhandled rejections ensure clean resource cleanup.
+* **Graceful Shutdown** – Listeners for `SIGTERM`, `SIGINT`, uncaught exceptions, and unhandled rejections ensure clean resource cleanup.  
+* **AI Workers** – Dedicated BullMQ queues (`pdfAi-processing-queue`, `imageAi-processing-queue`, `other-processing-queue`, `metadata-extraction-queue`) employ Google Gemini models (gemini-3.1-flash-lite-preview, gemini-3-flash-preview, -2.5-flash) for PDF summarization, image captioning, and tag generation. Multiple Gemini API keys are configured to rotate on rate‑limit errors.  
+* **Folder Suggestion Service** – `POST /api/folders/suggested-names` uses Gemini‑3.1‑flash‑lite‑preview to analyze file details and existing folders, returning up to three AI‑generated folder suggestions in strict JSON.
 
 ---
-
 ## Getting Started
 
 ### Prerequisites
@@ -322,7 +322,7 @@ curl http://localhost:3000/health
 
 ---
 
-## API Documentation
+## API Documentation 📚
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
@@ -338,6 +338,7 @@ curl http://localhost:3000/health
 | `POST` | `/api/folders` | Create a new folder | ✅ |
 | `PUT` | `/api/folders/:id` | Rename/move folder | ✅ |
 | `DELETE` | `/api/folders/:id` | Delete folder | ✅ |
+| `POST` | `/api/folders/suggested-names` | Get AI‑generated folder name suggestions for a file | ✅ |
 | `GET` | `/api/chunks/:id/status` | Check background job status | ✅ |
 | `GET` | `/api/auth/google` | Initiate Google OAuth flow | ❌ |
 | `GET` | `/api/logs` | Retrieve recent logs (admin) | ✅ (admin) |
@@ -355,7 +356,6 @@ curl http://localhost:3000/health
 Rate limits are enforced per IP (100 requests/minute) via `express-rate-limit` (future enhancement).
 
 ---
-
 ## Development
 
 ### Code style & linting
@@ -365,10 +365,9 @@ Rate limits are enforced per IP (100 requests/minute) via `express-rate-limit` (
 cd client
 npm run lint
 
-# Backend (TS)
+# Backend (TS) 🛠️
 cd ../server
 npx eslint . --ext .ts,.js
-```
 
 ### Running tests
 
@@ -387,8 +386,11 @@ npx eslint . --ext .ts,.js
 3. Register the route in `server/src/index.ts`.  
 4. Write unit tests (recommended).  
 
----
+**New environment variables** – The server now supports multiple Gemini API keys (`GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, `GEMINI_API_KEY_3`, `GEMINI_API_KEY_4`, `GEMINI_API_KEY_5`, `GEMINI_API_KEY_6`, `GEMINI_API_KEY_7`, `GEMINI_API_KEY_8`) to enable model upgrades and rate‑limit rotation.
 
+**AI worker processes** – BullMQ workers defined in `server/src/utils/bullmqJobs.ts` run separate processes for PDF summarization, image captioning, and generic tag generation, leveraging the upgraded Gemini models.
+
+---
 ## Deployment
 
 ### Vercel (Frontend)
