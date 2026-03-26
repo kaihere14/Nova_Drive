@@ -81,7 +81,7 @@ export async function extractData(
   fileName: string,
   mimeType: string,
   r2Key: string,
-  userId?: string
+  userId?: string,
 ) {
   await extractionQueue.add("metadata-extraction-job", {
     fileId,
@@ -96,7 +96,7 @@ export async function pdfTags(
   fileName: string,
   mimeType: string,
   fileId: string,
-  extractData: string
+  extractData: string,
 ) {
   await myQueue.add("pdfAi-processing-queue", {
     fileName,
@@ -110,7 +110,7 @@ export async function imageTags(
   fileName: string,
   mimeType: string,
   fileId: string,
-  extractData: string
+  extractData: string,
 ) {
   await imageQueue.add("imageAi-processing-queue", {
     fileName,
@@ -123,7 +123,7 @@ export async function imageTags(
 export async function otherTags(
   fileName: string,
   mimeType: string,
-  fileId: string
+  fileId: string,
 ) {
   await otherQueue.add("other-processing-queue", {
     fileName,
@@ -151,7 +151,7 @@ const workerExtraction = new Worker(
         const base64ImageData =
           Buffer.from(imageArrayBuffer).toString("base64");
         const result = await aiForImageAnalysis.models.generateContent({
-          model: "gemini-2.5-flash",
+          model: "-2.5-flash",
           contents: [
             {
               inlineData: {
@@ -191,7 +191,7 @@ const workerExtraction = new Worker(
       throw err;
     }
   },
-  { connection }
+  { connection },
 );
 
 const worker = new Worker(
@@ -218,7 +218,7 @@ Return strictly in JSON:
   "summary": "..."
 }`.trim();
       const response = await aiForPdfTagGeneration.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-3-flash-preview",
         contents: prompt,
       });
       let rawText = response.text ?? "{}";
@@ -245,7 +245,7 @@ Return strictly in JSON:
       throw err;
     }
   },
-  { connection }
+  { connection },
 );
 
 const imageWorker = new Worker(
@@ -275,7 +275,7 @@ Return strictly in JSON:
 }`.trim();
 
       const response = await aiForImageTagGeneration.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-3-flash-preview",
         contents: prompt,
       });
 
@@ -345,7 +345,7 @@ Return strictly in JSON:
       throw err;
     }
   },
-  { connection }
+  { connection },
 );
 
 const otherWorker = new Worker(
@@ -382,9 +382,9 @@ Return strictly in JSON:
 
       const response = await aiForOtherFileTagGeneration.models.generateContent(
         {
-          model: "gemini-2.5-flash",
+          model: "gemini-3-flash-preview",
           contents: prompt,
-        }
+        },
       );
 
       let rawText = response.text ?? "{}";
@@ -448,7 +448,7 @@ Return strictly in JSON:
       throw err;
     }
   },
-  { connection }
+  { connection },
 );
 
 // Store workers for graceful shutdown

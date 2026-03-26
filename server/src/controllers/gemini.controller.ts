@@ -18,7 +18,7 @@ export const fileSearch = async (allFiles:any,query:string) => {
       try {
         const client = new GoogleGenAI({ apiKey: k! });
         const response = await client.models.generateContent({
-          model: "gemini-2.5-flash",
+          model: "gemini-3-flash-preview",
           contents: [
             {
               role: "model",

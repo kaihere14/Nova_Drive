@@ -5,13 +5,12 @@ import { logger } from "../index.js";
 import { Activity } from "../models/logs.model.js";
 import { GoogleGenAI } from "@google/genai";
 
-
 export const createFolder = async (req: Request, res: Response) => {
   try {
     const { userId, folderName, parentFolderId } = req.body;
     if (!userId || !folderName) {
-      return res.status(400).json({ message: "Missing required fields" })
-    };
+      return res.status(400).json({ message: "Missing required fields" });
+    }
     const newFolder = new Folder({
       name: folderName,
       ownerId: userId,
@@ -35,8 +34,8 @@ export const getFolders = async (req: Request, res: Response) => {
   try {
     const { userId, parentFolderId } = req.query;
     if (!userId) {
-      return res.status(400).json({ message: "Missing required fields" })
-    };
+      return res.status(400).json({ message: "Missing required fields" });
+    }
     const query: any = { ownerId: userId };
     if (parentFolderId !== "null") {
       query.parentFolderId = parentFolderId;
@@ -72,14 +71,13 @@ export const deleteFolder = async (req: Request, res: Response) => {
       userId: deletedFolder.ownerId,
       fileId: deletedFolder._id,
       fileName: deletedFolder.name,
-      action: "folder_deleted"
+      action: "folder_deleted",
     });
     await activity.save();
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }
 };
-
 
 export const renameFolder = async (req: Request, res: Response) => {
   try {
@@ -98,7 +96,7 @@ export const renameFolder = async (req: Request, res: Response) => {
       fileId: folder._id,
       fileName: oldName,
       newFileName: newName,
-      action: "folder_renamed"
+      action: "folder_renamed",
     });
     await activity.save();
   } catch (error) {
@@ -110,7 +108,9 @@ export const fetchAllFolders = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId;
     logger.info("fetch_all_folders", { userId });
-    const folders = await Folder.find({ ownerId: userId }).sort({ createdAt: -1 }).select("_id name");
+    const folders = await Folder.find({ ownerId: userId })
+      .sort({ createdAt: -1 })
+      .select("_id name");
     res.status(200).json({ folders });
   } catch (error: any) {
     logger.error("fetch_folders_failed", {
@@ -130,15 +130,19 @@ interface SuggestionRequest {
 export const suggestedFolderNames = async (req: Request, res: Response) => {
   try {
     const { name, type } = req.body as SuggestionRequest;
-    if(!name || !type) {
+    if (!name || !type) {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const genai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY_1!,
     });
-    const existingFoldersName = await Folder.find({ ownerId: (req as any).userId }).select("name -_id");
-    const existingNamesList = existingFoldersName.map(folder => folder.name).join(", ");
-   
+    const existingFoldersName = await Folder.find({
+      ownerId: (req as any).userId,
+    }).select("name -_id");
+    const existingNamesList = existingFoldersName
+      .map((folder) => folder.name)
+      .join(", ");
+
     const prompt = `Analyze the uploaded file and existing folders to determine the best storage location.
 
 FILE DETAILS:
@@ -168,12 +172,11 @@ RULES:
 - Do not include markdown, backticks, or explanations.
 - The response must be directly parsable using JSON.parse()`;
 
-
-const response = await genai.models.generateContent({
-  model: "gemini-2.5-flash-lite",
-  contents: prompt,
-});
-console.log("Suggested folder names raw response:", response);
+    const response = await genai.models.generateContent({
+      model: "gemini-3.1-flash-lite-preview",
+      contents: prompt,
+    });
+    console.log("Suggested folder names raw response:", response);
 
     const folderNames = response.text as string | undefined;
     console.log("Suggested folder names response:", folderNames);
@@ -188,11 +191,16 @@ console.log("Suggested folder names raw response:", response);
         jsonToParse = jsonMatch[0];
       } else {
         // Fallback: remove common code fence markers and trim
-        jsonToParse = jsonToParse.replace(/```\w*\n?/g, "").replace(/```/g, "").trim();
+        jsonToParse = jsonToParse
+          .replace(/```\w*\n?/g, "")
+          .replace(/```/g, "")
+          .trim();
       }
 
       const parsed = JSON.parse(jsonToParse);
-      return res.status(200).json({ suggestedFolders: parsed.suggestedFolders || [] });
+      return res
+        .status(200)
+        .json({ suggestedFolders: parsed.suggestedFolders || [] });
     } catch (parseError: any) {
       logger.error("suggested_folder_parse_failed", {
         userId: (req as any).userId,
@@ -204,11 +212,10 @@ console.log("Suggested folder names raw response:", response);
       });
       return res.status(200).json({ suggestedFolders: [] });
     }
-  } catch (error : any) {
+  } catch (error: any) {
     res.status(500).json({ message: "Server error 2", error });
   }
 };
-
 
 export const findFolderByNameOrCreate = async (req: Request, res: Response) => {
   try {
