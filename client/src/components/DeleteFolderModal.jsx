@@ -9,13 +9,13 @@ const DeleteFolderModal = ({ isOpen, onClose, onConfirm, folderName, loading, er
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-red-500/30 rounded-lg shadow-2xl hover:shadow-red-500/10 max-w-md w-full transition-all duration-300 overflow-hidden">
+    <div className="fixed inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-300/50 dark:border-zinc-700/50 hover:border-red-500/30 rounded-lg shadow-2xl hover:shadow-red-500/10 max-w-md w-full transition-all duration-300 overflow-hidden">
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-transparent group-hover:from-red-500/3 transition-all duration-300 pointer-events-none" />
         
         {/* Header */}
-        <div className="relative flex items-center justify-between p-6 border-b border-zinc-700/30">
+        <div className="relative flex items-center justify-between p-6 border-b border-zinc-300/30 dark:border-zinc-700/30">
           <h3 className="text-lg font-semibold bg-gradient-to-r from-red-300 to-pink-300 bg-clip-text text-transparent">Delete Folder</h3>
           <button
             onClick={onClose}
@@ -33,11 +33,11 @@ const DeleteFolderModal = ({ isOpen, onClose, onConfirm, folderName, loading, er
             </div>
           </div>
 
-          <p className="text-zinc-300 text-center mb-2">
-            Are you sure you want to delete <span className="font-semibold text-white">"{folderName}"</span>?
+          <p className="text-zinc-700 dark:text-zinc-300 text-center mb-2">
+            Are you sure you want to delete <span className="font-semibold text-zinc-900 dark:text-white">"{folderName}"</span>?
           </p>
 
-          <p className="text-zinc-400 text-sm text-center font-mono">
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm text-center font-mono">
             This action cannot be undone. All files and subfolders within this folder will also be deleted.
           </p>
 
@@ -49,17 +49,17 @@ const DeleteFolderModal = ({ isOpen, onClose, onConfirm, folderName, loading, er
         </div>
 
         {/* Actions */}
-        <div className="relative flex gap-3 p-6 border-t border-zinc-700/30">
+        <div className="relative flex gap-3 p-6 border-t border-zinc-300/30 dark:border-zinc-700/30">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-gradient-to-br from-zinc-700/50 to-zinc-800/50 hover:from-zinc-700 hover:to-zinc-800 border border-zinc-600/30 text-zinc-300 hover:text-white rounded-lg font-medium transition-all disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-gradient-to-br from-zinc-700/50 to-zinc-800/50 hover:from-zinc-700 hover:to-zinc-800 border border-zinc-600/30 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:text-white rounded-lg font-medium transition-all disabled:opacity-50"
             disabled={loading}
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 relative overflow-hidden px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-red-500/20 group/btn"
+            className="flex-1 relative overflow-hidden px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-zinc-900 dark:text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-red-500/20 group/btn"
             disabled={loading}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />

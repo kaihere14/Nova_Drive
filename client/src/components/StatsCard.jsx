@@ -5,7 +5,7 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {/* Files Card */}
-      <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-700/30 hover:border-blue-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1">
+      <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-300/30 dark:border-zinc-700/30 hover:border-blue-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/5 transition-all duration-300 pointer-events-none" />
         <div className="relative p-5">
           <div className="relative mb-3 h-12 flex items-center justify-center">
@@ -15,14 +15,14 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
           </div>
-          <div className="text-xs text-zinc-400 font-mono mb-1">FILES</div>
-          <div className="text-2xl font-bold text-white group-hover:text-blue-300 transition-colors duration-200">{files}</div>
+          <div className="text-xs text-zinc-600 dark:text-zinc-400 font-mono mb-1">FILES</div>
+          <div className="text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-blue-300 transition-colors duration-200">{files}</div>
           <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500/0 to-transparent group-hover:via-blue-500/50 transition-all duration-300" />
         </div>
       </div>
 
       {/* Storage Card */}
-      <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-700/30 hover:border-cyan-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1">
+      <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-300/30 dark:border-zinc-700/30 hover:border-cyan-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-transparent group-hover:from-cyan-500/5 transition-all duration-300 pointer-events-none" />
         <div className="relative p-5">
           <div className="relative mb-3 h-12 flex items-center justify-center">
@@ -32,14 +32,14 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
           </div>
-          <div className="text-xs text-zinc-400 font-mono mb-1">STORAGE</div>
-          <div className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-200">{storage}</div>
+          <div className="text-xs text-zinc-600 dark:text-zinc-400 font-mono mb-1">STORAGE</div>
+          <div className="text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-cyan-300 transition-colors duration-200">{storage}</div>
           <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-500/0 to-transparent group-hover:via-cyan-500/50 transition-all duration-300" />
         </div>
       </div>
 
       {/* Folders Card */}
-      <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-700/30 hover:border-purple-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-1">
+      <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-300/30 dark:border-zinc-700/30 hover:border-purple-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-1">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-transparent group-hover:from-purple-500/5 transition-all duration-300 pointer-events-none" />
         <div className="relative p-5">
           <div className="relative mb-3 h-12 flex items-center justify-center">
@@ -49,14 +49,14 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
           </div>
-          <div className="text-xs text-zinc-400 font-mono mb-1">FOLDERS</div>
-          <div className="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors duration-200">{folders}</div>
+          <div className="text-xs text-zinc-600 dark:text-zinc-400 font-mono mb-1">FOLDERS</div>
+          <div className="text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-purple-300 transition-colors duration-200">{folders}</div>
           <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-purple-500/0 to-transparent group-hover:via-purple-500/50 transition-all duration-300" />
         </div>
       </div>
 
       {/* Favorites Card */}
-      <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-700/30 hover:border-pink-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/10 hover:-translate-y-1">
+      <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-300/30 dark:border-zinc-700/30 hover:border-pink-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/10 hover:-translate-y-1">
         <div className="absolute inset-0 bg-gradient-to-br from-pink-500/0 to-transparent group-hover:from-pink-500/5 transition-all duration-300 pointer-events-none" />
         <div className="relative p-5">
           <div className="relative mb-3 h-12 flex items-center justify-center">
@@ -66,8 +66,8 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
           </div>
-          <div className="text-xs text-zinc-400 font-mono mb-1">FAVORITES</div>
-          <div className="text-2xl font-bold text-white group-hover:text-pink-300 transition-colors duration-200">{favorites}</div>
+          <div className="text-xs text-zinc-600 dark:text-zinc-400 font-mono mb-1">FAVORITES</div>
+          <div className="text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-pink-300 transition-colors duration-200">{favorites}</div>
           <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-pink-500/0 to-transparent group-hover:via-pink-500/50 transition-all duration-300" />
         </div>
       </div>

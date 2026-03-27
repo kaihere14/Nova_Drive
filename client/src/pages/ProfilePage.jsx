@@ -290,7 +290,7 @@ const ProfilePage = () => {
       case "file_initiated":
         return "from-yellow-500/20 to-yellow-600/10 border-yellow-500/20 text-yellow-400";
       default:
-        return "from-zinc-500/20 to-zinc-600/10 border-zinc-500/20 text-zinc-400";
+        return "from-zinc-500/20 to-zinc-600/10 border-zinc-500/20 text-zinc-600 dark:text-zinc-400";
     }
   };
 
@@ -302,79 +302,79 @@ const ProfilePage = () => {
         return (
           <>
             Uploaded file{" "}
-            <span className="font-semibold text-white">{fileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span>
           </>
         );
       case "file_deleted":
         return (
           <>
             Deleted file{" "}
-            <span className="font-semibold text-white">{fileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span>
           </>
         );
       case "file_renamed":
         return (
           <>
             Renamed file from{" "}
-            <span className="font-semibold text-white">{fileName}</span> to{" "}
-            <span className="font-semibold text-white">{newFileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span> to{" "}
+            <span className="font-semibold text-zinc-900 dark:text-white">{newFileName}</span>
           </>
         );
       case "file_moved":
         return (
           <>
             Moved file{" "}
-            <span className="font-semibold text-white">{fileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span>
           </>
         );
       case "folder_created":
         return (
           <>
             Created folder{" "}
-            <span className="font-semibold text-white">{fileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span>
           </>
         );
       case "folder_deleted":
         return (
           <>
             Deleted folder{" "}
-            <span className="font-semibold text-white">{fileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span>
           </>
         );
       case "folder_renamed":
         return (
           <>
             Renamed folder from{" "}
-            <span className="font-semibold text-white">{fileName}</span> to{" "}
-            <span className="font-semibold text-white">{newFileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span> to{" "}
+            <span className="font-semibold text-zinc-900 dark:text-white">{newFileName}</span>
           </>
         );
       case "file_initiated":
         return (
           <>
             Initiated upload for{" "}
-            <span className="font-semibold text-white">{fileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span>
           </>
         );
       case "setFavorite":
         return (
           <>
             Added to favorites{" "}
-            <span className="font-semibold text-white">{fileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span>
           </>
         );
       case "removeFavorite":
         return (
           <>
             Removed from favorites{" "}
-            <span className="font-semibold text-white">{fileName}</span>
+            <span className="font-semibold text-zinc-900 dark:text-white">{fileName}</span>
           </>
         );
       default:
         return (
           <>
             Performed action on{" "}
-            <span className="font-semibold text-white">
+            <span className="font-semibold text-zinc-900 dark:text-white">
               {fileName || "unknown"}
             </span>
           </>
@@ -470,17 +470,17 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[100dvh] bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-zinc-400 font-mono">LOADING_PROFILE...</p>
+          <p className="text-zinc-600 dark:text-zinc-400 font-mono">LOADING_PROFILE...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-950 font-sans selection:bg-white/20 selection:text-white">
+    <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-950 font-sans selection:bg-white/20 selection:text-zinc-900 dark:text-white">
       {/* Grid Background */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"
@@ -498,7 +498,7 @@ const ProfilePage = () => {
           <div className="mb-8 flex items-center justify-between">
             <button
               onClick={() => navigate("/upload")}
-              className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="font-mono">BACK_TO_FILES</span>
@@ -513,13 +513,13 @@ const ProfilePage = () => {
           </div>
 
           {/* Profile Card */}
-          <div className="relative bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 sm:p-8 backdrop-blur-md mb-6">
+          <div className="relative bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 backdrop-blur-md mb-6">
             {/* Edit button placed top-right of the card */}
             <button
               onClick={() => setShowEditModal(true)}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-10 h-10 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 rounded-lg transition-colors"
             >
-              <Edit2 className="w-4 h-4 text-zinc-400" />
+              <Edit2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
             </button>
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
               {/* Avatar */}
@@ -531,7 +531,7 @@ const ProfilePage = () => {
                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-[0_0_30px_-5px_rgba(6,182,212,0.4)]"
                   />
                 ) : (
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold shadow-[0_0_30px_-5px_rgba(6,182,212,0.4)]">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-full flex items-center justify-center text-zinc-900 dark:text-white text-2xl sm:text-3xl font-bold shadow-[0_0_30px_-5px_rgba(6,182,212,0.4)]">
                     {user?.username
                       ? user.username.substring(0, 2).toUpperCase()
                       : "U"}
@@ -544,7 +544,7 @@ const ProfilePage = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between mb-3 sm:mb-4 w-full">
                   <div className="text-center sm:text-left">
                     <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap mb-1">
-                      <h1 className="text-2xl sm:text-3xl font-bold text-white">
+                      <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white">
                         {user?.username || "User"}
                       </h1>
                       {user?.admin && (
@@ -554,7 +554,7 @@ const ProfilePage = () => {
                         </span>
                       )}
                     </div>
-                    <p className="text-zinc-400 font-mono text-sm">
+                    <p className="text-zinc-600 dark:text-zinc-400 font-mono text-sm">
                       ACCOUNT_PROFILE
                     </p>
                   </div>
@@ -562,17 +562,17 @@ const ProfilePage = () => {
 
                 {/* Details */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-center sm:justify-start gap-3 text-zinc-300">
+                  <div className="flex items-center justify-center sm:justify-start gap-3 text-zinc-700 dark:text-zinc-300">
                     <Mail className="w-4 h-4 text-cyan-400" />
                     <span className="text-sm">{user?.email || "No email"}</span>
                   </div>
-                  <div className="flex items-center justify-center sm:justify-start gap-3 text-zinc-300">
+                  <div className="flex items-center justify-center sm:justify-start gap-3 text-zinc-700 dark:text-zinc-300">
                     <Calendar className="w-4 h-4 text-cyan-400" />
                     <span className="text-sm">
                       Joined {formatDate(user?.createdAt)}
                     </span>
                   </div>
-                  <div className="flex items-center justify-center sm:justify-start gap-3 text-zinc-300">
+                  <div className="flex items-center justify-center sm:justify-start gap-3 text-zinc-700 dark:text-zinc-300">
                     <Shield className="w-4 h-4 text-cyan-400" />
                     <span className="text-sm font-mono">
                       ID: {user?._id?.slice(-8) || "N/A"}
@@ -591,9 +591,9 @@ const ProfilePage = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 rounded-lg flex items-center justify-center border border-cyan-500/20 group-hover:border-cyan-500/40 group-hover:scale-110 transition-all duration-300">
                   <HardDrive className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
                 </div>
-                <h3 className="text-sm font-mono text-zinc-400">TOTAL_FILES</h3>
+                <h3 className="text-sm font-mono text-zinc-600 dark:text-zinc-400">TOTAL_FILES</h3>
               </div>
-              <p className="relative text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+              <p className="relative text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-cyan-300 transition-colors">
                 {stats.totalFiles}
               </p>
             </div>
@@ -604,11 +604,11 @@ const ProfilePage = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-lg flex items-center justify-center border border-blue-500/20 group-hover:border-blue-500/40 group-hover:scale-110 transition-all duration-300">
                   <HardDrive className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors" />
                 </div>
-                <h3 className="text-sm font-mono text-zinc-400">
+                <h3 className="text-sm font-mono text-zinc-600 dark:text-zinc-400">
                   STORAGE_USED
                 </h3>
               </div>
-              <p className="relative text-2xl font-bold text-white group-hover:text-blue-300 transition-colors">
+              <p className="relative text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-blue-300 transition-colors">
                 {stats.storageUsed}
               </p>
             </div>
@@ -619,18 +619,18 @@ const ProfilePage = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-lg flex items-center justify-center border border-purple-500/20 group-hover:border-purple-500/40 group-hover:scale-110 transition-all duration-300">
                   <Calendar className="w-5 h-5 text-purple-400 group-hover:text-purple-300 transition-colors" />
                 </div>
-                <h3 className="text-sm font-mono text-zinc-400">ACCOUNT_AGE</h3>
+                <h3 className="text-sm font-mono text-zinc-600 dark:text-zinc-400">ACCOUNT_AGE</h3>
               </div>
-              <p className="relative text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">
+              <p className="relative text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-purple-300 transition-colors">
                 {stats.accountAge}
               </p>
             </div>
           </div>
 
           {/* Activity Log */}
-          <div className="relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 border border-zinc-700/50 rounded-xl p-6 overflow-hidden mb-6">
+          <div className="relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 border border-zinc-300/50 dark:border-zinc-700/50 rounded-xl p-6 overflow-hidden mb-6">
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-transparent pointer-events-none" />
-            <h2 className="relative text-xl font-bold text-white mb-4 font-mono bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent flex items-center gap-2">
+            <h2 className="relative text-xl font-bold text-zinc-900 dark:text-white mb-4 font-mono bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent flex items-center gap-2">
               <Activity className="w-5 h-5 text-cyan-400" />
               RECENT_ACTIVITY
             </h2>
@@ -648,7 +648,7 @@ const ProfilePage = () => {
             ) : activities.length === 0 ? (
               <div className="relative text-center py-8">
                 <Activity className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
-                <p className="text-zinc-500 font-mono text-sm">
+                <p className="text-zinc-500 dark:text-zinc-400 font-mono text-sm">
                   NO_ACTIVITY_YET
                 </p>
               </div>
@@ -658,7 +658,7 @@ const ProfilePage = () => {
                   (activity) => (
                     <div
                       key={activity._id}
-                      className="group relative flex items-start gap-3 p-4 bg-gradient-to-br from-zinc-800/30 to-zinc-900/30 hover:from-zinc-800/50 hover:to-zinc-900/50 border border-zinc-700/30 hover:border-zinc-600/50 rounded-lg transition-all duration-200"
+                      className="group relative flex items-start gap-3 p-4 bg-gradient-to-br from-zinc-800/30 to-zinc-900/30 hover:from-zinc-800/50 hover:to-zinc-900/50 border border-zinc-300/30 dark:border-zinc-700/30 hover:border-zinc-400 dark:hover:border-zinc-600/50 rounded-lg transition-all duration-200"
                     >
                       {/* Activity Icon */}
                       <div
@@ -671,10 +671,10 @@ const ProfilePage = () => {
 
                       {/* Activity Content */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-zinc-300 leading-relaxed">
+                        <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
                           {getActivityText(activity)}
                         </p>
-                        <p className="text-xs text-zinc-500 font-mono mt-1">
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 font-mono mt-1">
                           {formatActivityTime(activity.createdAt)}
                         </p>
                       </div>
@@ -734,9 +734,9 @@ const ProfilePage = () => {
           </div>
 
           {/* Account Settings */}
-          <div className="relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 border border-zinc-700/50 rounded-xl p-6 overflow-hidden">
+          <div className="relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 border border-zinc-300/50 dark:border-zinc-700/50 rounded-xl p-6 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent pointer-events-none" />
-            <h2 className="relative text-xl font-bold text-white mb-4 font-mono bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">
+            <h2 className="relative text-xl font-bold text-zinc-900 dark:text-white mb-4 font-mono bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">
               ACCOUNT_SETTINGS
             </h2>
             <div className="relative space-y-3">
@@ -746,16 +746,16 @@ const ProfilePage = () => {
                     onClick={() => setShowPasswordModal(true)}
                     className="group w-full flex items-center justify-between px-4 py-3 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 hover:from-zinc-800 hover:to-zinc-900 border border-blue-500/10 hover:border-blue-500/30 rounded-lg transition-all duration-200 text-left hover:shadow-lg hover:shadow-blue-500/5"
                   >
-                    <span className="text-zinc-200 font-medium group-hover:text-blue-300 transition-colors">
+                    <span className="text-zinc-800 dark:text-zinc-200 font-medium group-hover:text-blue-300 transition-colors">
                       Change Password
                     </span>
-                    <Edit2 className="w-4 h-4 text-zinc-400 group-hover:text-blue-400 transition-colors" />
+                    <Edit2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-blue-400 transition-colors" />
                   </button>
                   <button className="group w-full flex items-center justify-between px-4 py-3 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 hover:from-zinc-800 hover:to-zinc-900 border border-cyan-500/10 hover:border-cyan-500/30 rounded-lg transition-all duration-200 text-left hover:shadow-lg hover:shadow-cyan-500/5">
-                    <span className="text-zinc-200 font-medium group-hover:text-cyan-300 transition-colors">
+                    <span className="text-zinc-800 dark:text-zinc-200 font-medium group-hover:text-cyan-300 transition-colors">
                       Update Email
                     </span>
-                    <Edit2 className="w-4 h-4 text-zinc-400 group-hover:text-cyan-400 transition-colors" />
+                    <Edit2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-cyan-400 transition-colors" />
                   </button>
                 </>
               )}
@@ -783,8 +783,8 @@ const ProfilePage = () => {
 
       {/* Edit Profile Modal */}
       {showEditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-cyan-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 dark:bg-black/70 backdrop-blur-sm p-4">
+          <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-300/50 dark:border-zinc-700/50 hover:border-cyan-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-transparent group-hover:from-cyan-500/3 transition-all duration-300 pointer-events-none" />
             <button
               onClick={() => {
@@ -820,7 +820,7 @@ const ProfilePage = () => {
               <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent mb-2 font-mono">
                 EDIT_PROFILE
               </h3>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Update your username and avatar.
               </p>
             </div>
@@ -843,19 +843,19 @@ const ProfilePage = () => {
               <div>
                 <label
                   htmlFor="username"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   USERNAME
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type="text"
                     id="username"
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
                     required
-                    className="w-full pl-11 pr-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
                     placeholder="Enter new username"
                   />
                 </div>
@@ -864,7 +864,7 @@ const ProfilePage = () => {
               <div>
                 <label
                   htmlFor="avatar"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   AVATAR
                 </label>
@@ -876,7 +876,7 @@ const ProfilePage = () => {
                   />
                   <label
                     htmlFor="avatar-upload"
-                    className="cursor-pointer flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-all font-mono text-sm border border-zinc-700 hover:border-zinc-600 text-center"
+                    className="cursor-pointer flex-1 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg transition-all font-mono text-sm border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:border-zinc-600 text-center"
                   >
                     Choose File
                   </label>
@@ -894,14 +894,14 @@ const ProfilePage = () => {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-all font-mono text-sm border border-zinc-700 hover:border-zinc-600"
+                  className="flex-1 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg transition-all font-mono text-sm border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:border-zinc-600"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={editLoading}
-                  className="flex-1 px-4 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_-5px_rgba(6,182,212,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono text-sm"
+                  className="flex-1 px-4 py-3 bg-cyan-600 hover:bg-cyan-700 text-zinc-900 dark:text-white rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_-5px_rgba(6,182,212,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono text-sm"
                 >
                   {editLoading ? (
                     <>
@@ -920,8 +920,8 @@ const ProfilePage = () => {
 
       {/* Change Password Modal */}
       {showPasswordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-blue-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 dark:bg-black/70 backdrop-blur-sm p-4">
+          <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-300/50 dark:border-zinc-700/50 hover:border-blue-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/3 transition-all duration-300 pointer-events-none" />
 
@@ -961,7 +961,7 @@ const ProfilePage = () => {
               <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent mb-2 font-mono">
                 CHANGE_PASSWORD
               </h3>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Update your password to keep your account secure.
               </p>
             </div>
@@ -993,25 +993,25 @@ const ProfilePage = () => {
               <div>
                 <label
                   htmlFor="oldPassword"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   OLD_PASSWORD
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type={showOldPassword ? "text" : "password"}
                     id="oldPassword"
                     value={oldPassword}
                     onChange={(e) => setOldPassword(e.target.value)}
                     required
-                    className="w-full pl-11 pr-11 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-11 pr-11 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowOldPassword(!showOldPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 transition-colors"
                   >
                     {showOldPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -1026,25 +1026,25 @@ const ProfilePage = () => {
               <div>
                 <label
                   htmlFor="newPassword"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   NEW_PASSWORD
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type={showNewPassword ? "text" : "password"}
                     id="newPassword"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
-                    className="w-full pl-11 pr-11 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-11 pr-11 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 transition-colors"
                   >
                     {showNewPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -1059,25 +1059,25 @@ const ProfilePage = () => {
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   CONFIRM_PASSWORD
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    className="w-full pl-11 pr-11 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-11 pr-11 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 transition-colors"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -1100,14 +1100,14 @@ const ProfilePage = () => {
                     setPasswordError("");
                     setPasswordSuccess("");
                   }}
-                  className="flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-all font-mono text-sm border border-zinc-700 hover:border-zinc-600"
+                  className="flex-1 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg transition-all font-mono text-sm border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:border-zinc-600"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono text-sm"
+                  className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono text-sm"
                 >
                   {passwordLoading ? (
                     <>
@@ -1126,8 +1126,8 @@ const ProfilePage = () => {
 
       {/* Delete Account Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-red-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 dark:bg-black/70 backdrop-blur-sm p-4">
+          <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-300/50 dark:border-zinc-700/50 hover:border-red-500/30 rounded-2xl p-8 max-w-md w-full transition-all duration-300 overflow-hidden">
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-transparent group-hover:from-red-500/3 transition-all duration-300 pointer-events-none" />
 
@@ -1164,7 +1164,7 @@ const ProfilePage = () => {
               <h3 className="text-2xl font-bold bg-gradient-to-r from-red-300 to-pink-300 bg-clip-text text-transparent mb-2 font-mono">
                 DELETE_ACCOUNT
               </h3>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 This action cannot be undone. All your files and data will be
                 permanently deleted.
               </p>
@@ -1184,7 +1184,7 @@ const ProfilePage = () => {
             <div className="relative mb-6">
               <label
                 htmlFor="deleteConfirm"
-                className="block text-sm font-mono text-zinc-400 mb-2"
+                className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
               >
                 TYPE "delete" TO CONFIRM
               </label>
@@ -1197,7 +1197,7 @@ const ProfilePage = () => {
                   setDeleteError("");
                 }}
                 placeholder="delete"
-                className="w-full px-4 py-3 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-red-500/20 hover:border-red-500/40 focus:border-red-500/60 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500/30 transition-all"
+                className="w-full px-4 py-3 bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 border border-red-500/20 hover:border-red-500/40 focus:border-red-500/60 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500/30 transition-all"
               />
             </div>
 
@@ -1205,7 +1205,7 @@ const ProfilePage = () => {
             <button
               onClick={handleDeleteAccount}
               disabled={deleteLoading || deleteInput !== "delete"}
-              className="relative w-full py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 font-mono overflow-hidden group/btn"
+              className="relative w-full py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-zinc-900 dark:text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 font-mono overflow-hidden group/btn"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
               {deleteLoading ? (
@@ -1229,7 +1229,7 @@ const ProfilePage = () => {
                 setDeleteError("");
               }}
               disabled={deleteLoading}
-              className="relative w-full mt-3 py-3 bg-gradient-to-br from-zinc-700/50 to-zinc-800/50 hover:from-zinc-700 hover:to-zinc-800 text-zinc-300 hover:text-white font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed font-mono border border-zinc-600/30"
+              className="relative w-full mt-3 py-3 bg-gradient-to-br from-zinc-700/50 to-zinc-800/50 hover:from-zinc-700 hover:to-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:text-white font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed font-mono border border-zinc-600/30"
             >
               CANCEL
             </button>

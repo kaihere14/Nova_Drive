@@ -27,9 +27,9 @@ const ArchitecturePage = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-950 text-zinc-100 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-950 text-zinc-100 relative overflow-hidden">
       {/* Animated Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-20" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-20" />
 
       <Navbar />
 
@@ -37,16 +37,16 @@ const ArchitecturePage = () => {
       <main className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
         {/* Title Section */}
         <div className="mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-zinc-900 dark:text-white">
             System Architecture
           </h1>
-          <p className="text-zinc-400 text-base sm:text-lg">
+          <p className="text-zinc-600 dark:text-zinc-400 text-base sm:text-lg">
             Technical overview of NovaDrive's infrastructure
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 sm:gap-2 mb-6 sm:mb-8 border-b border-zinc-800 overflow-x-auto">
+        <div className="flex gap-1 sm:gap-2 mb-6 sm:mb-8 border-b border-zinc-200 dark:border-zinc-800 overflow-x-auto">
           {[
             {
               id: "overview",
@@ -74,8 +74,8 @@ const ArchitecturePage = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 sm:px-6 py-3 text-xs sm:text-sm flex items-center gap-2 transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "text-white border-b-2 border-white"
-                  : "text-zinc-400 hover:text-white"
+                  ? "text-zinc-900 dark:text-white border-b-2 border-white"
+                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:text-white"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -90,26 +90,26 @@ const ArchitecturePage = () => {
           {activeTab === "overview" && (
             <div className="space-y-8">
               {/* Architecture Diagram */}
-              <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-4 sm:p-6 md:p-8">
-                <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white">
+              <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-6 md:p-8">
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-zinc-900 dark:text-white">
                   System Components
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   {/* Client Layer */}
-                  <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700 hover:border-zinc-600 transition-all">
+                  <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-xl p-6 border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center">
-                        <Code className="w-6 h-6 text-white" />
+                        <Code className="w-6 h-6 text-zinc-900 dark:text-white" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-white">
+                        <h3 className="font-bold text-zinc-900 dark:text-white">
                           Client
                         </h3>
                         <p className="text-xs text-zinc-500">React Frontend</p>
                       </div>
                     </div>
-                    <ul className="space-y-2 text-sm text-zinc-400">
+                    <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-white rounded-full" />
                         React + Vite
@@ -134,19 +134,19 @@ const ArchitecturePage = () => {
                   </div>
 
                   {/* Server Layer */}
-                  <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700 hover:border-zinc-600 transition-all">
+                  <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-xl p-6 border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center">
-                        <Server className="w-6 h-6 text-white" />
+                        <Server className="w-6 h-6 text-zinc-900 dark:text-white" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-white">
+                        <h3 className="font-bold text-zinc-900 dark:text-white">
                           Server
                         </h3>
                         <p className="text-xs text-zinc-500">Node.js Backend</p>
                       </div>
                     </div>
-                    <ul className="space-y-2 text-sm text-zinc-400">
+                    <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-white rounded-full" />
                         Express.js
@@ -171,19 +171,19 @@ const ArchitecturePage = () => {
                   </div>
 
                   {/* Storage Layer */}
-                  <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700 hover:border-zinc-600 transition-all">
+                  <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-xl p-6 border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center">
-                        <Database className="w-6 h-6 text-white" />
+                        <Database className="w-6 h-6 text-zinc-900 dark:text-white" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-white">
+                        <h3 className="font-bold text-zinc-900 dark:text-white">
                           Storage
                         </h3>
                         <p className="text-xs text-zinc-500">Data Layer</p>
                       </div>
                     </div>
-                    <ul className="space-y-2 text-sm text-zinc-400">
+                    <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-white rounded-full" />
                         MongoDB
@@ -211,99 +211,99 @@ const ArchitecturePage = () => {
 
               {/* Key Features */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-6">
+                <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <Upload className="w-6 h-6 text-white" />
-                    <h3 className="text-xl font-bold text-white">
+                    <Upload className="w-6 h-6 text-zinc-900 dark:text-white" />
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-white">
                       Chunked Upload
                     </h3>
                   </div>
-                  <p className="text-zinc-400 mb-4">
+                  <p className="text-zinc-600 dark:text-zinc-400 mb-4">
                     Files are split into 5MB chunks and uploaded in parallel
                     batches of 4, dramatically improving upload speeds for large
                     files.
                   </p>
                   <div className="flex gap-2 flex-wrap">
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       5MB Chunks
                     </span>
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       4x Parallel
                     </span>
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       Resumable
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-6">
+                <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <Shield className="w-6 h-6 text-white" />
-                    <h3 className="text-xl font-bold text-white">JWT Authentication</h3>
+                    <Shield className="w-6 h-6 text-zinc-900 dark:text-white" />
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-white">JWT Authentication</h3>
                   </div>
-                  <p className="text-zinc-400 mb-4">
+                  <p className="text-zinc-600 dark:text-zinc-400 mb-4">
                     Secure authentication using JWT tokens with automatic
                     refresh mechanism. Access tokens expire in 15 minutes,
                     refresh tokens in 7 days.
                   </p>
                   <div className="flex gap-2 flex-wrap">
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       Bcrypt
                     </span>
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       Auto Refresh
                     </span>
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       Secure
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-6">
+                <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <Cloud className="w-6 h-6 text-white" />
-                    <h3 className="text-xl font-bold text-white">
+                    <Cloud className="w-6 h-6 text-zinc-900 dark:text-white" />
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-white">
                       R2 Storage
                     </h3>
                   </div>
-                  <p className="text-zinc-400 mb-4">
+                  <p className="text-zinc-600 dark:text-zinc-400 mb-4">
                     Cloudflare R2 provides S3-compatible object storage with
                     zero egress fees. Files are uploaded directly using
                     presigned URLs.
                   </p>
                   <div className="flex gap-2 flex-wrap">
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       S3 Compatible
                     </span>
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       Zero Egress
                     </span>
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       Multipart
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-6">
+                <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <Zap className="w-6 h-6 text-white" />
-                    <h3 className="text-xl font-bold text-white">
+                    <Zap className="w-6 h-6 text-zinc-900 dark:text-white" />
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-white">
                       Deduplication
                     </h3>
                   </div>
-                  <p className="text-zinc-400 mb-4">
+                  <p className="text-zinc-600 dark:text-zinc-400 mb-4">
                     SHA-256 hash of the first 4MB is computed to detect
                     duplicate files, preventing redundant uploads and saving
                     storage space.
                   </p>
                   <div className="flex gap-2 flex-wrap">
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       SHA-256
                     </span>
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       Smart
                     </span>
-                    <span className="px-3 py-1 bg-white/5 text-zinc-300 rounded-full text-xs">
+                    <span className="px-3 py-1 bg-white/5 text-zinc-700 dark:text-zinc-300 rounded-full text-xs">
                       Efficient
                     </span>
                   </div>
@@ -315,8 +315,8 @@ const ArchitecturePage = () => {
           {/* Data Flow Tab */}
           {activeTab === "flow" && (
             <div className="space-y-8">
-              <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8">
-                <h2 className="text-2xl font-bold mb-6 text-white">
+              <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8">
+                <h2 className="text-2xl font-bold mb-6 text-zinc-900 dark:text-white">
                   Upload Flow
                 </h2>
 
@@ -349,17 +349,17 @@ const ArchitecturePage = () => {
                   ].map((item) => (
                     <div
                       key={item.step}
-                      className="p-6 bg-zinc-800 rounded-xl border border-zinc-700"
+                      className="p-6 bg-zinc-100 dark:bg-zinc-800 rounded-xl border border-zinc-300 dark:border-zinc-700"
                     >
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center text-white">
+                        <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center text-zinc-900 dark:text-white">
                           {item.icon && <item.icon className="w-6 h-6" />}
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-white">
+                          <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
                             {item.title}
                           </h3>
-                          <p className="text-sm text-zinc-400">
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
                             {item.desc}
                           </p>
                         </div>
@@ -378,18 +378,18 @@ const ArchitecturePage = () => {
           {/* Tech Stack Tab */}
           {activeTab === "stack" && (
             <div className="space-y-8">
-              <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8">
-                <h2 className="text-2xl font-bold mb-6 text-white">
+              <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8">
+                <h2 className="text-2xl font-bold mb-6 text-zinc-900 dark:text-white">
                   Tech Stack
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Frontend Stack */}
-                  <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700">
-                    <h3 className="text-lg font-semibold mb-4 text-white">
+                  <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-xl p-6 border border-zinc-300 dark:border-zinc-700">
+                    <h3 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">
                       Frontend
                     </h3>
-                    <ul className="space-y-2 text-sm text-zinc-400">
+                    <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-white rounded-full" />
                         React
@@ -414,11 +414,11 @@ const ArchitecturePage = () => {
                   </div>
 
                   {/* Backend Stack */}
-                  <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700">
-                    <h3 className="text-lg font-semibold mb-4 text-white">
+                  <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-xl p-6 border border-zinc-300 dark:border-zinc-700">
+                    <h3 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">
                       Backend
                     </h3>
-                    <ul className="space-y-2 text-sm text-zinc-400">
+                    <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-white rounded-full" />
                         Node.js
@@ -449,21 +449,21 @@ const ArchitecturePage = () => {
           {/* Security Tab */}
           {activeTab === "security" && (
             <div className="space-y-8">
-              <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl p-8">
-                <h2 className="text-2xl font-bold mb-6 text-white">
+              <div className="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8">
+                <h2 className="text-2xl font-bold mb-6 text-zinc-900 dark:text-white">
                   Security Features
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700">
-                    <h3 className="text-lg font-semibold mb-4 text-white">
+                  <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-xl p-6 border border-zinc-300 dark:border-zinc-700">
+                    <h3 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">
                       Authentication
                     </h3>
-                    <p className="text-sm text-zinc-400 mb-4">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
                       Secure login and registration with email verification and
                       password hashing.
                     </p>
-                    <ul className="space-y-2 text-sm text-zinc-400">
+                    <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-white rounded-full" />
                         JWT for secure token-based authentication.
@@ -479,14 +479,14 @@ const ArchitecturePage = () => {
                     </ul>
                   </div>
 
-                  <div className="bg-zinc-800/50 rounded-xl p-6 border border-zinc-700">
-                    <h3 className="text-lg font-semibold mb-4 text-white">
+                  <div className="bg-zinc-100 dark:bg-zinc-800/50 rounded-xl p-6 border border-zinc-300 dark:border-zinc-700">
+                    <h3 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-white">
                       Data Security
                     </h3>
-                    <p className="text-sm text-zinc-400 mb-4">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
                       Protection against data breaches and unauthorized access.
                     </p>
-                    <ul className="space-y-2 text-sm text-zinc-400">
+                    <ul className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
                       <li className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-white rounded-full" />
                         Environment variables for sensitive config.

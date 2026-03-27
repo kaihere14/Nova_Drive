@@ -401,7 +401,7 @@ const FilesList = forwardRef(
     if (loading) {
       return (
         <div className="w-full">
-          <div className="text-center py-10 text-zinc-400">
+          <div className="text-center py-10 text-zinc-600 dark:text-zinc-400">
             Loading files...
           </div>
         </div>
@@ -422,10 +422,10 @@ const FilesList = forwardRef(
         <div className="w-full">
           <div className="text-center py-20">
             <Trash2 className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
-            <h3 className="text-2xl font-semibold text-zinc-200 mb-2 font-mono">
+            <h3 className="text-2xl font-semibold text-zinc-800 dark:text-zinc-200 mb-2 font-mono">
               Recycle Bin — Coming Soon
             </h3>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
               We're working on recycle bin functionality. Deleted files will be
               visible here once available.
             </p>
@@ -509,9 +509,9 @@ const FilesList = forwardRef(
       <div className="w-full">
         {/* Tag Filter */}
         {lastTenTags.length > 0 && (
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-3 sm:p-5 mb-5">
+          <div className="bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 sm:p-5 mb-5">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <span className="text-xs sm:text-sm font-semibold text-zinc-400 font-mono whitespace-nowrap">
+              <span className="text-xs sm:text-sm font-semibold text-zinc-600 dark:text-zinc-400 font-mono whitespace-nowrap">
                 FILTER_BY_TAG:
               </span>
               <div className="flex items-center gap-2 flex-wrap">
@@ -519,8 +519,8 @@ const FilesList = forwardRef(
                   onClick={() => setSelectedTag("")}
                   className={`px-3 py-1.5 text-sm rounded-lg font-mono transition-all ${
                     selectedTag === ""
-                      ? "bg-cyan-500 text-white shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)]"
-                      : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                      ? "bg-cyan-500 text-zinc-900 dark:text-white shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)]"
+                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700"
                   }`}
                 >
                   All Files
@@ -531,8 +531,8 @@ const FilesList = forwardRef(
                     onClick={() => setSelectedTag(tag)}
                     className={`px-3 py-1.5 text-sm rounded-lg font-mono transition-all ${
                       selectedTag === tag
-                        ? "bg-cyan-500 text-white shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)]"
-                        : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                        ? "bg-cyan-500 text-zinc-900 dark:text-white shadow-[0_0_15px_-3px_rgba(6,182,212,0.4)]"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700"
                     }`}
                   >
                     {tag}
@@ -541,7 +541,7 @@ const FilesList = forwardRef(
                 {lastTenTags.length > 3 && (
                   <button
                     onClick={() => setShowAllTags(!showAllTags)}
-                    className="px-3 py-1.5 text-sm rounded-lg font-mono transition-all bg-zinc-800/50 text-cyan-400 hover:bg-zinc-700 border border-zinc-700"
+                    className="px-3 py-1.5 text-sm rounded-lg font-mono transition-all bg-zinc-100/50 dark:bg-zinc-800/50 text-cyan-400 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-700"
                   >
                     {showAllTags
                       ? "Show Less"
@@ -554,17 +554,17 @@ const FilesList = forwardRef(
         )}
 
         {/* Files Table */}
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden">
-          <div className="flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 border-b border-zinc-800">
-            <h3 className="text-base sm:text-lg font-semibold text-zinc-100 font-mono">
+        <div className="bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+          <div className="flex justify-between items-center px-4 sm:px-6 py-4 sm:py-5 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="text-base sm:text-lg font-semibold text-zinc-800 dark:text-zinc-100 font-mono">
               YOUR_FILES
             </h3>
             <button
-              className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+              className="w-9 h-9 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-lg transition-colors"
               onClick={fetchFiles}
             >
               <RefreshCw
-                className={`w-4 h-4 text-zinc-400 transition-transform duration-500 ${
+                className={`w-4 h-4 text-zinc-600 dark:text-zinc-400 transition-transform duration-500 ${
                   isRefreshing ? "animate-spin" : ""
                 }`}
               />
@@ -574,13 +574,13 @@ const FilesList = forwardRef(
           {filteredFiles.length === 0 ? (
             <div className="text-center py-16">
               <Folder className="w-16 h-16 mx-auto mb-4 text-zinc-700" />
-              <p className="text-lg font-semibold text-zinc-200 mb-2 font-mono">
+              <p className="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2 font-mono">
                 {activeView === "files" && "NO_FILES_UPLOADED"}
                 {activeView === "recent" && "NO_RECENT_FILES"}
                 {activeView === "favorites" && "NO_FAVORITE_FILES"}
                 {activeView === "trash" && "RECYCLE_BIN_EMPTY"}
               </p>
-              <span className="text-sm text-zinc-400">
+              <span className="text-sm text-zinc-600 dark:text-zinc-400">
                 {activeView === "files" &&
                   "Upload your first file to get started"}
                 {activeView === "recent" &&
@@ -595,28 +595,28 @@ const FilesList = forwardRef(
               {/* Desktop Table */}
               <div className="overflow-x-auto hidden md:block">
                 <table className="w-full">
-                  <thead className="bg-zinc-900/50">
+                  <thead className="bg-white/50 dark:bg-zinc-900/50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-mono">
                         FILE_NAME
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-mono">
                         OWNER
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-mono">
                         LAST_MODIFIED
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider font-mono">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-mono">
                         FILE_SIZE
                       </th>
                       <th className="px-6 py-4"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800">
+                  <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
                     {filteredFiles.map((file, index) => (
                       <tr
                         key={index}
-                        className="hover:bg-zinc-800/50 transition-colors cursor-pointer"
+                        className="hover:bg-zinc-100/50 dark:bg-zinc-800/50 transition-colors cursor-pointer"
                         onClick={() => handleView(file)}
                       >
                         <td className="px-6 py-4">
@@ -624,7 +624,7 @@ const FilesList = forwardRef(
                             <FileText className="w-5 h-5 text-cyan-400" />
                             <div className="flex flex-col">
                               <span
-                                className="font-medium text-zinc-200"
+                                className="font-medium text-zinc-800 dark:text-zinc-200"
                                 title={file.originalFileName}
                               >
                                 {file.originalFileName &&
@@ -663,20 +663,20 @@ const FilesList = forwardRef(
                                 )}
                               {file.aiStatus === "completed" &&
                                 file.summary && (
-                                  <p className="text-xs text-zinc-400 mt-1 max-w-md">
+                                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 max-w-md">
                                     {file.summary}
                                   </p>
                                 )}
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-zinc-300">
+                        <td className="px-6 py-4 text-sm text-zinc-700 dark:text-zinc-300">
                           {username}
                         </td>
-                        <td className="px-6 py-4 text-sm text-zinc-400">
+                        <td className="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">
                           {formatDate(file.createdAt)}
                         </td>
-                        <td className="px-6 py-4 text-sm text-zinc-300">
+                        <td className="px-6 py-4 text-sm text-zinc-700 dark:text-zinc-300">
                           {formatFileSize(file.size)}
                         </td>
                         <td
@@ -703,18 +703,18 @@ const FilesList = forwardRef(
                               )}
                             </button>
                             <button
-                              className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
+                              className="w-8 h-8 flex items-center justify-center hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-md transition-colors"
                               title="Download"
                               onClick={() => handleDownload(file)}
                             >
-                              <Download className="w-4 h-4 text-zinc-400" />
+                              <Download className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
                             </button>
                             <button
-                              className="w-8 h-8 flex items-center justify-center hover:bg-zinc-700 rounded-md transition-colors"
+                              className="w-8 h-8 flex items-center justify-center hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-md transition-colors"
                               title="Share"
                               onClick={() => handleShare(file)}
                             >
-                              <Share2 className="w-4 h-4 text-zinc-400" />
+                              <Share2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
                             </button>
                             <button
                               className="w-8 h-8 flex items-center justify-center hover:bg-cyan-500/10 rounded-md transition-colors group"
@@ -723,14 +723,14 @@ const FilesList = forwardRef(
                                 setMoveModal({ open: true, file: file })
                               }
                             >
-                              <FolderInput className="w-4 h-4 text-zinc-400 group-hover:text-cyan-400" />
+                              <FolderInput className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-cyan-400" />
                             </button>
                             <button
                               className="w-8 h-8 flex items-center justify-center hover:bg-red-500/10 rounded-md transition-colors group"
                               title="Delete"
                               onClick={() => handleDelete(file)}
                             >
-                              <Trash2 className="w-4 h-4 text-zinc-400 group-hover:text-red-400" />
+                              <Trash2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-red-400" />
                             </button>
                           </div>
                         </td>
@@ -741,21 +741,21 @@ const FilesList = forwardRef(
               </div>
 
               {/* Mobile Card Layout */}
-              <div className="md:hidden divide-y divide-zinc-800">
+              <div className="md:hidden divide-y divide-zinc-200 dark:divide-zinc-800">
                 {filteredFiles.map((file, index) => (
                   <div
                     key={index}
-                    className="p-4 hover:bg-zinc-800/30 transition-colors cursor-pointer"
+                    className="p-4 hover:bg-zinc-100/30 dark:bg-zinc-800/30 transition-colors cursor-pointer"
                     onClick={() => handleView(file)}
                   >
                     <div className="flex items-start gap-3 mb-3">
                       <FileText className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-1" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-1">
-                          <h4 className="font-medium text-zinc-200 break-words flex-1">
+                          <h4 className="font-medium text-zinc-800 dark:text-zinc-200 break-words flex-1">
                             {file.originalFileName || getFileName(file.r2Key)}
                           </h4>
-                          <span className="text-xs text-zinc-500 font-mono whitespace-nowrap">
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono whitespace-nowrap">
                             Tap to preview
                           </span>
                         </div>
@@ -785,29 +785,29 @@ const FilesList = forwardRef(
                                 </span>
                               ))}
                               {file.tags.length > 2 && (
-                                <span className="text-xs px-2 py-0.5 text-zinc-500 font-mono">
+                                <span className="text-xs px-2 py-0.5 text-zinc-500 dark:text-zinc-400 font-mono">
                                   +{file.tags.length - 2} more
                                 </span>
                               )}
                             </div>
                           )}
                         {file.aiStatus === "completed" && file.summary && (
-                          <p className="text-xs text-zinc-400 mb-2">
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2">
                             {file.summary}
                           </p>
                         )}
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500 font-mono">
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                           <span>{formatFileSize(file.size)}</span>
                           <span>{formatDate(file.createdAt)}</span>
                         </div>
                       </div>
                     </div>
                     <div
-                      className="flex gap-2 justify-end border-t border-zinc-800 pt-3"
+                      className="flex gap-2 justify-end border-t border-zinc-200 dark:border-zinc-800 pt-3"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
-                        className="px-3 py-2 bg-zinc-800 hover:bg-yellow-500/10 rounded-md transition-colors"
+                        className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-yellow-500/10 rounded-md transition-colors"
                         title={
                           file.favourite
                             ? "Remove from favourites"
@@ -825,31 +825,31 @@ const FilesList = forwardRef(
                         )}
                       </button>
                       <button
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors text-sm"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-md transition-colors text-sm"
                         onClick={() => handleDownload(file)}
                       >
-                        <Download className="w-4 h-4 text-zinc-400" />
-                        <span className="text-zinc-300">Download</span>
+                        <Download className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                        <span className="text-zinc-700 dark:text-zinc-300">Download</span>
                       </button>
                       <button
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors text-sm"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-md transition-colors text-sm"
                         onClick={() => handleShare(file)}
                       >
-                        <Share2 className="w-4 h-4 text-zinc-400" />
-                        <span className="text-zinc-300">Share</span>
+                        <Share2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+                        <span className="text-zinc-700 dark:text-zinc-300">Share</span>
                       </button>
                       <button
-                        className="px-3 py-2 bg-zinc-800 hover:bg-cyan-500/10 rounded-md transition-colors group"
+                        className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-cyan-500/10 rounded-md transition-colors group"
                         title="Move to folder"
                         onClick={() => setMoveModal({ open: true, file: file })}
                       >
-                        <FolderInput className="w-4 h-4 text-zinc-400 group-hover:text-cyan-400" />
+                        <FolderInput className="w-4 h-4 text-zinc-600 dark:text-zinc-400 group-hover:text-cyan-400" />
                       </button>
                       <button
-                        className="px-3 py-2 bg-zinc-800 hover:bg-red-500/10 rounded-md transition-colors"
+                        className="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-red-500/10 rounded-md transition-colors"
                         onClick={() => handleDelete(file)}
                       >
-                        <Trash2 className="w-4 h-4 text-zinc-400 hover:text-red-400" />
+                        <Trash2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400 hover:text-red-400" />
                       </button>
                     </div>
                   </div>
@@ -862,33 +862,33 @@ const FilesList = forwardRef(
         {/* Share Modal */}
         {shareModal.open && (
           <div
-            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-white/70 dark:bg-black/70 flex items-center justify-center z-50"
             onClick={closeShareModal}
           >
             <div
-              className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg mx-4"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-lg mx-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-center px-6 py-5 border-b border-zinc-800">
-                <h3 className="text-lg font-semibold text-zinc-100 font-mono">
+              <div className="flex justify-between items-center px-6 py-5 border-b border-zinc-200 dark:border-zinc-800">
+                <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-100 font-mono">
                   SHARE_FILE
                 </h3>
                 <button
-                  className="w-8 h-8 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                  className="w-8 h-8 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-lg transition-colors"
                   onClick={closeShareModal}
                 >
-                  <X className="w-5 h-5 text-zinc-400" />
+                  <X className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                 </button>
               </div>
               <div className="px-6 py-6 space-y-4">
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <FileText className="w-5 h-5 text-cyan-400" />
-                    <span className="font-medium text-zinc-200">
+                    <span className="font-medium text-zinc-800 dark:text-zinc-200">
                       {shareModal.file?.originalName}
                     </span>
                   </div>
-                  <p className="text-sm text-zinc-400 mb-4">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
                     Anyone with this link can download the file. Link expires in
                     60 seconds.
                   </p>
@@ -898,11 +898,11 @@ const FilesList = forwardRef(
                     type="text"
                     value={shareModal.url}
                     readOnly
-                    className="flex-1 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-sm text-zinc-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
+                    className="flex-1 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl text-sm text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
                   />
                   <button
                     onClick={handleCopyLink}
-                    className="px-4 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)]"
+                    className="px-4 py-3 bg-cyan-500 hover:bg-cyan-600 text-zinc-900 dark:text-white rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)]"
                   >
                     {copied ? (
                       <>
@@ -925,52 +925,52 @@ const FilesList = forwardRef(
         {/* Preview Modal */}
         {previewModal.open && (
           <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             onClick={closePreviewModal}
           >
             <div
-              className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-5xl h-[95vh] min-h-[400px] overflow-hidden flex flex-col shadow-2xl"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl w-full max-w-5xl h-[95vh] min-h-[400px] overflow-hidden flex flex-col shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex justify-between items-center px-5 py-4 border-b border-zinc-800 bg-zinc-900/95">
+              <div className="flex justify-between items-center px-5 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <Eye className="w-5 h-5 text-cyan-400 shrink-0" />
-                  <span className="font-medium text-zinc-200 truncate text-sm">
+                  <span className="font-medium text-zinc-800 dark:text-zinc-200 truncate text-sm">
                     {previewModal.file?.originalFileName}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                    className="w-9 h-9 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-lg transition-colors"
                     title="Download"
                     onClick={() => handleDownload(previewModal.file)}
                   >
-                    <Download className="w-4 h-4 text-zinc-400" />
+                    <Download className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
                   </button>
                   <button
-                    className="w-9 h-9 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                    className="w-9 h-9 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-lg transition-colors"
                     title="Share"
                     onClick={() => handleShare(previewModal.file)}
                   >
-                    <Share2 className="w-4 h-4 text-zinc-400" />
+                    <Share2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
                   </button>
                   <button
-                    className="w-8 h-8 shrink-0 ml-2 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+                    className="w-8 h-8 shrink-0 ml-2 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 rounded-lg transition-colors"
                     onClick={closePreviewModal}
                   >
-                    <X className="w-5 h-5 text-zinc-400" />
+                    <X className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                   </button>
                 </div>
               </div>
 
               {/* Preview Content */}
-              <div className="flex-1 bg-zinc-950 overflow-hidden flex items-center justify-center">
+              <div className="flex-1 bg-zinc-50 dark:bg-zinc-950 overflow-hidden flex items-center justify-center">
                 {previewModal.loading ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-3"></div>
-                      <p className="text-zinc-400 text-sm font-mono">
+                      <p className="text-zinc-600 dark:text-zinc-400 text-sm font-mono">
                         Loading preview...
                       </p>
                     </div>
@@ -1015,7 +1015,7 @@ const FilesList = forwardRef(
                   </>
                 ) : (
                   <div className="flex items-center justify-center h-full min-h-[400px]">
-                    <p className="text-zinc-400">Failed to load preview</p>
+                    <p className="text-zinc-600 dark:text-zinc-400">Failed to load preview</p>
                   </div>
                 )}
               </div>
@@ -1036,18 +1036,18 @@ const FilesList = forwardRef(
         {/* Delete Confirmation Modal */}
         {deleteModal.open && (
           <div
-            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-white/70 dark:bg-black/70 flex items-center justify-center z-50"
             onClick={() =>
               !deleteModal.isDeleting &&
               setDeleteModal({ open: false, file: null, isDeleting: false })
             }
           >
             <div
-              className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md mx-4 shadow-2xl"
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-md mx-4 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="px-6 py-5 border-b border-zinc-800">
-                <h3 className="text-lg font-semibold text-zinc-100 font-mono">
+              <div className="px-6 py-5 border-b border-zinc-200 dark:border-zinc-800">
+                <h3 className="text-lg font-semibold text-zinc-800 dark:text-zinc-100 font-mono">
                   DELETE_FILE
                 </h3>
               </div>
@@ -1057,29 +1057,29 @@ const FilesList = forwardRef(
                     <Trash2 className="w-5 h-5 text-red-400" />
                   </div>
                   <div>
-                    <p className="font-semibold text-zinc-100 mb-1">
+                    <p className="font-semibold text-zinc-800 dark:text-zinc-100 mb-1">
                       Are you sure?
                     </p>
-                    <p className="text-sm text-zinc-400">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
                       This will permanently delete "{deleteModal.file?.originalFileName}". This action cannot be undone.
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="px-6 py-4 border-t border-zinc-800 flex gap-3">
+              <div className="px-6 py-4 border-t border-zinc-200 dark:border-zinc-800 flex gap-3">
                 <button
                   onClick={() =>
                     setDeleteModal({ open: false, file: null, isDeleting: false })
                   }
                   disabled={deleteModal.isDeleting}
-                  className="flex-1 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono"
+                  className="flex-1 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono"
                 >
                   CANCEL
                 </button>
                 <button
                   onClick={confirmDelete}
                   disabled={deleteModal.isDeleting}
-                  className="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_-5px_rgba(239,68,68,0.4)] font-mono"
+                  className="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-zinc-900 dark:text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_-5px_rgba(239,68,68,0.4)] font-mono"
                 >
                   {deleteModal.isDeleting ? (
                     <>

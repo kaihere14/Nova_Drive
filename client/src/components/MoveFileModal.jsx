@@ -62,13 +62,13 @@ const MoveFileModal = ({ isOpen, onClose, onConfirm, fileName, currentFolderId, 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-cyan-500/30 rounded-lg shadow-2xl hover:shadow-cyan-500/10 max-w-md w-full transition-all duration-300 overflow-hidden">
+    <div className="fixed inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-300/50 dark:border-zinc-700/50 hover:border-cyan-500/30 rounded-lg shadow-2xl hover:shadow-cyan-500/10 max-w-md w-full transition-all duration-300 overflow-hidden">
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-transparent group-hover:from-cyan-500/3 transition-all duration-300 pointer-events-none" />
 
         {/* Header */}
-        <div className="relative flex items-center justify-between p-6 border-b border-zinc-700/30">
+        <div className="relative flex items-center justify-between p-6 border-b border-zinc-300/30 dark:border-zinc-700/30">
           <h3 className="text-lg font-semibold bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">
             Move File
           </h3>
@@ -82,8 +82,8 @@ const MoveFileModal = ({ isOpen, onClose, onConfirm, fileName, currentFolderId, 
 
         {/* Content */}
         <div className="relative p-6">
-          <p className="text-zinc-300 text-center mb-4 text-sm">
-            Select a folder to move <span className="font-semibold text-white">"{fileName}"</span>
+          <p className="text-zinc-700 dark:text-zinc-300 text-center mb-4 text-sm">
+            Select a folder to move <span className="font-semibold text-zinc-900 dark:text-white">"{fileName}"</span>
           </p>
 
           {loading ? (
@@ -98,7 +98,7 @@ const MoveFileModal = ({ isOpen, onClose, onConfirm, fileName, currentFolderId, 
                 className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center gap-3 ${
                   selectedFolderId === null
                     ? "bg-cyan-500/20 border-2 border-cyan-500/50 text-cyan-300"
-                    : "bg-zinc-800/50 border-2 border-transparent hover:bg-zinc-700/50 text-zinc-300"
+                    : "bg-zinc-100/50 dark:bg-zinc-800/50 border-2 border-transparent hover:bg-zinc-300 dark:hover:bg-zinc-200/50 dark:bg-zinc-700/50 text-zinc-700 dark:text-zinc-300"
                 }`}
               >
                 <Home className="w-5 h-5 flex-shrink-0" />
@@ -116,7 +116,7 @@ const MoveFileModal = ({ isOpen, onClose, onConfirm, fileName, currentFolderId, 
                       className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center gap-3 ${
                         selectedFolderId === folder._id
                           ? "bg-cyan-500/20 border-2 border-cyan-500/50 text-cyan-300"
-                          : "bg-zinc-800/50 border-2 border-transparent hover:bg-zinc-700/50 text-zinc-300"
+                          : "bg-zinc-100/50 dark:bg-zinc-800/50 border-2 border-transparent hover:bg-zinc-300 dark:hover:bg-zinc-200/50 dark:bg-zinc-700/50 text-zinc-700 dark:text-zinc-300"
                       }`}
                     >
                       <FolderOpen className="w-5 h-5 flex-shrink-0" />
@@ -126,7 +126,7 @@ const MoveFileModal = ({ isOpen, onClose, onConfirm, fileName, currentFolderId, 
                     </button>
                   ))
               ) : (
-                <p className="text-zinc-500 text-center py-4 text-sm">No folders available</p>
+                <p className="text-zinc-500 dark:text-zinc-400 text-center py-4 text-sm">No folders available</p>
               )}
             </div>
           )}
@@ -139,17 +139,17 @@ const MoveFileModal = ({ isOpen, onClose, onConfirm, fileName, currentFolderId, 
         </div>
 
         {/* Actions */}
-        <div className="relative flex gap-3 p-6 border-t border-zinc-700/30">
+        <div className="relative flex gap-3 p-6 border-t border-zinc-300/30 dark:border-zinc-700/30">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-gradient-to-br from-zinc-700/50 to-zinc-800/50 hover:from-zinc-700 hover:to-zinc-800 border border-zinc-600/30 text-zinc-300 hover:text-white rounded-lg font-medium transition-all disabled:opacity-50"
+            className="flex-1 px-4 py-2 bg-gradient-to-br from-zinc-700/50 to-zinc-800/50 hover:from-zinc-700 hover:to-zinc-800 border border-zinc-600/30 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:text-white rounded-lg font-medium transition-all disabled:opacity-50"
             disabled={moving}
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 relative overflow-hidden px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-cyan-500/20 group/btn"
+            className="flex-1 relative overflow-hidden px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-zinc-900 dark:text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-cyan-500/20 group/btn"
             disabled={moving || loading || selectedFolderId === currentFolderId || (selectedFolderId === null && currentFolderId === null)}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />

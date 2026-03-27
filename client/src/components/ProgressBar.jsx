@@ -14,7 +14,7 @@ const ProgressBar = ({ uploading, processing, progress }) => {
             ></div>
           </div>
           <div className="flex justify-between items-center text-sm font-mono">
-            <span className="text-zinc-400">UPLOADING_CHUNKS</span>
+            <span className="text-zinc-600 dark:text-zinc-400">UPLOADING_CHUNKS</span>
             <span className="text-cyan-400 font-semibold">{progress}%</span>
           </div>
         </>
@@ -22,7 +22,7 @@ const ProgressBar = ({ uploading, processing, progress }) => {
       {processing && (
         <div className="flex items-center gap-3 text-sm font-mono p-3 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 border border-blue-500/20 rounded-lg">
           <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full animate-pulse shadow-lg shadow-blue-500/30"></div>
-          <span className="text-zinc-300">PROCESSING_FILE...</span>
+          <span className="text-zinc-700 dark:text-zinc-300">PROCESSING_FILE...</span>
         </div>
       )}
     </div>

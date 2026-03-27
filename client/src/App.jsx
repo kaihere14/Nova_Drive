@@ -12,13 +12,15 @@ import PricingPage from "./pages/PricingPage";
 import ProfilePage from "./pages/ProfilePage";
 import ForgotPassword from "./pages/ForgotPassword";
 import OAuthPage from "./pages/OAuthPage";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
   return (
-    <UserProvider>
-      <FolderProvider>
-        <div className="App">
-          <Routes>
+    <ThemeProvider>
+      <UserProvider>
+        <FolderProvider>
+          <div className="App bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-200 min-h-screen transition-colors duration-300">
+            <Routes>
             <Route path="/architecture" element={<ArchitecturePage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<SignupPage />} />
@@ -33,6 +35,7 @@ function App() {
         </div>
       </FolderProvider>
     </UserProvider>
+    </ThemeProvider>
   );
 }
 

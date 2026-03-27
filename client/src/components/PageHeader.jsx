@@ -51,17 +51,17 @@ const PageHeader = ({
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">
           {displayTitle}
         </h1>
-        <p className="mt-2 text-zinc-500 font-mono text-xs sm:text-sm">
+        <p className="mt-2 text-zinc-500 dark:text-zinc-400 font-mono text-xs sm:text-sm">
           {displayDescription}
         </p>
       </div>
       <div className="flex gap-3 w-full sm:w-auto">
         {showCreateFolderButton && (
           <button
-            className="flex-1 sm:flex-none px-4 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+            className="flex-1 sm:flex-none px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
             onClick={handleCreateFolderClick}
           >
             <FolderPlus className="w-5 h-5" />
@@ -70,7 +70,7 @@ const PageHeader = ({
         )}
         {showUploadButton && (
           <button
-            className="flex-1 sm:flex-none px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg font-medium transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2"
+            className="flex-1 sm:flex-none px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-zinc-900 dark:text-white rounded-lg font-medium transition-all shadow-[0_0_20px_-5px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2"
             onClick={handleUploadClick}
           >
             <Upload className="w-5 h-5" />

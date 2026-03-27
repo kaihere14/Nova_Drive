@@ -41,9 +41,9 @@ const Header = ({
       };
     return {
       label: "No strong matches",
-      color: "text-zinc-400",
-      bgColor: "bg-zinc-800/50",
-      borderColor: "border-zinc-700",
+      color: "text-zinc-600 dark:text-zinc-400",
+      bgColor: "bg-zinc-100/50 dark:bg-zinc-800/50",
+      borderColor: "border-zinc-300 dark:border-zinc-700",
     };
   };
 
@@ -145,14 +145,14 @@ const Header = ({
   }, []);
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 px-4 sm:px-6 lg:px-8 py-4 bg-zinc-900/50 backdrop-blur-md border-b border-zinc-800 lg:static">
+      <header className="fixed inset-x-0 top-0 z-50 px-4 sm:px-6 lg:px-8 py-4 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 lg:static">
         {/* Mobile Layout - Single Row */}
         <div className="flex lg:hidden items-center gap-3 w-full  ">
           <button
-            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
+            className="p-2 hover:bg-zinc-100 dark:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
             onClick={() => setShowSidebar(true)}
           >
-            <Menu className="w-5 h-5 text-zinc-400" />
+            <Menu className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
           </button>
 
           {/* Mobile: Gradient border outer wrapper */}
@@ -161,13 +161,13 @@ const Header = ({
               className={`relative p-[1px] rounded-full transition-all duration-300 ease-in-out ${
                 aiSearch
                   ? "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 shadow-[0_0_12px_rgba(168,85,247,0.12)]"
-                  : "bg-zinc-700/20"
+                  : "bg-zinc-200/20 dark:bg-zinc-700/20"
               }`}
             >
-              <div className="relative flex items-center gap-2 bg-zinc-900 rounded-full px-3 py-2 w-full min-w-0 overflow-hidden">
+              <div className="relative flex items-center gap-2 bg-white dark:bg-zinc-900 rounded-full px-3 py-2 w-full min-w-0 overflow-hidden">
                 <Search
                   className={`w-4 h-4 transition-colors duration-300 ${
-                    aiSearch ? "text-purple-400" : "text-zinc-500"
+                    aiSearch ? "text-purple-400" : "text-zinc-500 dark:text-zinc-400"
                   }`}
                 />
                 <input
@@ -175,19 +175,19 @@ const Header = ({
                   placeholder={aiSearch ? "Ask anything..." : "Search..."}
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-zinc-100 placeholder-zinc-500 font-mono"
+                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 font-mono"
                 />
                 <button
                   onClick={() => setAiSearch(!aiSearch)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                     aiSearch
-                      ? "bg-zinc-800 text-transparent  bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 border border-zinc-700/30"
-                      : "text-zinc-400 hover:text-zinc-200 border border-zinc-700/40 hover:bg-zinc-800"
+                      ? "bg-zinc-100 dark:bg-zinc-800 text-transparent  bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 border border-zinc-300/30 dark:border-zinc-700/30"
+                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:text-zinc-200 border border-zinc-300/40 dark:border-zinc-700/40 hover:bg-zinc-100 dark:bg-zinc-800"
                   }`}
                 >
                   <Sparkles
                     className={`w-3.5 h-3.5 ${
-                      aiSearch ? "text-pink-400" : "text-zinc-400"
+                      aiSearch ? "text-pink-400" : "text-zinc-600 dark:text-zinc-400"
                     }`}
                   />
                   <span>AI</span>
@@ -196,7 +196,7 @@ const Header = ({
             </div>
           </div>
           <div
-            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
+            className="p-2 hover:bg-zinc-100 dark:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
             onClick={() => navigate("/profile")}
           >
             {user?.avatar ? (
@@ -206,7 +206,7 @@ const Header = ({
                 className="w-8 h-8 rounded-lg object-cover"
               />
             ) : (
-              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
+              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-zinc-900 dark:text-white text-xs font-semibold">
                 {user?.username
                   ? user.username.substring(0, 2).toUpperCase()
                   : "U"}
@@ -218,21 +218,21 @@ const Header = ({
         {/* Desktop Layout */}
         <div className="hidden lg:flex justify-between items-center">
           <div
-            className={`flex items-center gap-2 bg-zinc-800/50 rounded-lg w-96 transition-all duration-200 ${
+            className={`flex items-center gap-2 bg-zinc-100/50 dark:bg-zinc-800/50 rounded-lg w-96 transition-all duration-200 ${
               aiSearch
                 ? "p-[1px] bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500"
-                : "border border-zinc-700 px-4 py-2.5"
+                : "border border-zinc-300 dark:border-zinc-700 px-4 py-2.5"
             }`}
           >
             {aiSearch ? (
-              <div className="flex items-center gap-2 bg-zinc-900 rounded-lg px-4 py-2.5 w-full">
-                <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+              <div className="flex items-center gap-2 bg-white dark:bg-zinc-900 rounded-lg px-4 py-2.5 w-full">
+                <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400 flex-shrink-0" />
                 <input
                   type="text"
                   placeholder="Search files..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
+                  className="flex-1 min-w-0 bg-transparent border-none outline-none text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 font-mono"
                 />
                 <button
                   onClick={() => setAiSearch(!aiSearch)}
@@ -244,17 +244,17 @@ const Header = ({
               </div>
             ) : (
               <>
-                <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+                <Search className="w-4 h-4 text-zinc-500 dark:text-zinc-400 flex-shrink-0" />
                 <input
                   type="text"
                   placeholder="Search files..."
                   value={searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-200 placeholder-zinc-500 font-mono"
+                  className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 font-mono"
                 />
                 <button
                   onClick={() => setAiSearch(!aiSearch)}
-                  className="flex items-center  gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 border border-zinc-700 text-zinc-400 bg-transparent hover:border-zinc-600 hover:text-zinc-300"
+                  className="flex items-center  gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 bg-transparent hover:border-zinc-400 dark:border-zinc-600 hover:text-zinc-700 dark:text-zinc-300"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>AI Mode</span>
@@ -263,18 +263,18 @@ const Header = ({
             )}
           </div>
           <div className="flex items-center gap-3">
-            <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
-              <Bell className="w-5 h-5 text-zinc-400" />
+            <button className="w-10 h-10 flex items-center justify-center bg-zinc-100/50 dark:bg-zinc-800/50 hover:bg-zinc-300 dark:hover:bg-zinc-200/50 dark:bg-zinc-700/50 border border-zinc-300 dark:border-zinc-700 rounded-lg transition-colors">
+              <Bell className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
             </button>
-            <button className="w-10 h-10 flex items-center justify-center bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg transition-colors">
-              <Settings className="w-5 h-5 text-zinc-400" />
+            <button className="w-10 h-10 flex items-center justify-center bg-zinc-100/50 dark:bg-zinc-800/50 hover:bg-zinc-300 dark:hover:bg-zinc-200/50 dark:bg-zinc-700/50 border border-zinc-300 dark:border-zinc-700 rounded-lg transition-colors">
+              <Settings className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
             </button>
             <div
-              className="flex items-center gap-2.5 px-3 py-2 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-600 transition-colors"
+              className="flex items-center gap-2.5 px-3 py-2 bg-zinc-100/50 dark:bg-zinc-800/50 border border-zinc-300 dark:border-zinc-700 rounded-lg cursor-pointer hover:border-zinc-400 dark:border-zinc-600 transition-colors"
               onClick={() => navigate("/profile")}
             >
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-medium text-zinc-200">
+                <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
                   {user?.username || "User"}
                 </span>
                 {user?.admin && (
@@ -291,7 +291,7 @@ const Header = ({
                   className="w-8 h-8 rounded-lg object-cover"
                 />
               ) : (
-                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
+                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center text-zinc-900 dark:text-white text-xs font-semibold">
                   {user?.username
                     ? user.username.substring(0, 2).toUpperCase()
                     : "U"}
@@ -307,7 +307,7 @@ const Header = ({
 
       {/* AI Search Results Dropdown */}
       {aiSearch && showAiResults && (
-        <div className="relative z-50 px-4 sm:px-6 lg:px-8 py-3 bg-zinc-900/80 backdrop-blur-md border-b border-zinc-800">
+        <div className="relative z-50 px-4 sm:px-6 lg:px-8 py-3 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
           {aiLoading ? (
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-cyan-400 text-sm">
@@ -320,7 +320,7 @@ const Header = ({
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="h-10 bg-zinc-800 rounded animate-pulse"
+                    className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse"
                   />
                 ))}
               </div>
@@ -328,15 +328,15 @@ const Header = ({
           ) : aiResults.length > 0 ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs text-zinc-400">AI Search Results</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">AI Search Results</p>
                 <button
                   onClick={() => {
                     setShowAiResults(false);
                     setAiResults([]);
                   }}
-                  className="p-1 hover:bg-zinc-800 rounded transition-colors"
+                  className="p-1 hover:bg-zinc-100 dark:bg-zinc-800 rounded transition-colors"
                 >
-                  <X className="w-4 h-4 text-zinc-400" />
+                  <X className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
                 </button>
               </div>
               <div className="space-y-4 max-h-96 overflow-y-auto overflow-x-hidden">
@@ -359,7 +359,7 @@ const Header = ({
                       {group.results.map((result) => (
                         <div
                           key={result.id}
-                          className={`p-3 ${group.category.bgColor} border ${group.category.borderColor} rounded-lg hover:bg-zinc-700/50 transition-colors cursor-pointer min-w-0`}
+                          className={`p-3 ${group.category.bgColor} border ${group.category.borderColor} rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-200/50 dark:bg-zinc-700/50 transition-colors cursor-pointer min-w-0`}
                           onClick={() => {
                             // Close dropdown and request in-app preview for this file
                             setShowAiResults(false);
@@ -377,10 +377,10 @@ const Header = ({
                         >
                           <div className="flex items-center justify-between gap-2 min-w-0">
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-zinc-200 truncate">
+                              <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">
                                 {result.name}
                               </p>
-                              <p className="text-xs text-zinc-500 truncate">
+                              <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
                                 {result.path}
                               </p>
                             </div>
@@ -391,7 +391,7 @@ const Header = ({
                                 >
                                   {result.relevance}%
                                 </p>
-                                <p className="text-xs text-zinc-500">match</p>
+                                <p className="text-xs text-zinc-500 dark:text-zinc-400">match</p>
                               </div>
                             </div>
                           </div>
@@ -403,7 +403,7 @@ const Header = ({
               </div>
             </div>
           ) : (
-            <p className="text-sm text-zinc-400">No results found</p>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">No results found</p>
           )}
         </div>
       )}

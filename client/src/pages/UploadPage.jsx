@@ -200,17 +200,17 @@ const UploadPage = () => {
   // Show loading state while verifying
   if (loading) {
     return (
-      <div className="min-h-[100dvh] bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-zinc-400 font-mono">VERIFYING_ACCESS...</p>
+          <p className="text-zinc-600 dark:text-zinc-400 font-mono">VERIFYING_ACCESS...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-[100dvh] bg-zinc-950 font-sans selection:bg-white/20 selection:text-white">
+    <div className="flex min-h-[100dvh] bg-zinc-50 dark:bg-zinc-950 font-sans selection:bg-white/20 selection:text-zinc-900 dark:text-white">
       {/* Subtle Grid Background */}
       <div
         className="fixed inset-0 z-0 pointer-events-none"
@@ -245,7 +245,7 @@ const UploadPage = () => {
           setAiSearch={setAiSearch}
         />
 
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 bg-zinc-950">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 bg-zinc-50 dark:bg-zinc-950">
           {/* Page Header Component */}
           <PageHeader
             activeView={activeView}
@@ -267,7 +267,7 @@ const UploadPage = () => {
           {/* Folders Grid */}
           {activeView === "files" && folders.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-sm font-semibold text-zinc-300 mb-4 uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-4 uppercase tracking-wider">
                 Folders
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

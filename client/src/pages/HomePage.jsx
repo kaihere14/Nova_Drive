@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import usePageMeta from "../utils/usePageMeta";
+import { useTheme } from "../context/ThemeContext";
 
 const FolderSuggestionVisual = () => {
   const [selected, setSelected] = useState("Music");
@@ -25,9 +26,9 @@ const FolderSuggestionVisual = () => {
   ];
 
   return (
-    <div className="w-full  bg-[#0c0c0e] border border-[#27272a] rounded-xl overflow-hidden shadow-2xl font-sans">
+    <div className="w-full  bg-white dark:bg-[#0c0c0e] border border-zinc-200 dark:border-[#27272a] rounded-xl overflow-hidden shadow-2xl font-sans">
       {/* Header: More Functional, Less "Gimmicky" */}
-      <div className="p-4 border-b border-[#27272a] bg-[#111114]/50 flex items-center justify-between">
+      <div className="p-4 border-b border-zinc-200 dark:border-[#27272a] bg-zinc-50 dark:bg-[#111114]/50 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
           <span className="text-[11px] uppercase tracking-[0.2em] text-zinc-500 font-bold">
@@ -39,12 +40,12 @@ const FolderSuggestionVisual = () => {
 
       <div className="p-4 space-y-4">
         {/* File Info Card */}
-        <div className="flex items-center gap-3 p-3 bg-[#16161a] border border-[#27272a] rounded-lg">
+        <div className="flex items-center gap-3 p-3 bg-white dark:bg-[#16161a] border border-zinc-200 dark:border-[#27272a] rounded-lg">
           <div className="p-2 bg-indigo-500/10 rounded-md">
             <Fingerprint className="w-4 h-4 text-indigo-400" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xs text-zinc-200 font-medium truncate w-40">
+            <span className="text-xs text-zinc-800 dark:text-zinc-200 font-medium truncate w-40">
               summer_vibes_mix.mp3
             </span>
             <span className="text-[10px] text-zinc-500">
@@ -82,7 +83,7 @@ const FolderSuggestionVisual = () => {
                   />
                   <span
                     className={`text-xs ${
-                      isSelected ? "text-white" : "text-zinc-400"
+                      isSelected ? "text-zinc-900 dark:text-white" : "text-zinc-600 dark:text-zinc-400"
                     }`}
                   >
                     {folder.name}
@@ -91,7 +92,7 @@ const FolderSuggestionVisual = () => {
 
                 <div className="relative z-10 flex items-center gap-2">
                   {/* Confidence Bar */}
-                  <div className="w-12 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="w-12 h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                     <motion.div
                       className="h-full bg-indigo-500"
                       initial={{ width: 0 }}
@@ -111,11 +112,11 @@ const FolderSuggestionVisual = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-3 bg-[#111114]/50 border-t border-[#27272a] flex justify-between items-center">
-        <button className="text-[11px] text-zinc-400 hover:text-white transition-colors">
+      <div className="px-4 py-3 bg-zinc-50 dark:bg-[#111114]/50 border-t border-zinc-200 dark:border-[#27272a] flex justify-between items-center">
+        <button className="text-[11px] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:text-white transition-colors">
           Ignore Suggestion
         </button>
-        <button className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold rounded-md transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+        <button className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-zinc-900 dark:text-white text-[11px] font-semibold rounded-md transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)]">
           Confirm Path
         </button>
       </div>
@@ -134,12 +135,12 @@ const ChunkUploadVisual = () => {
   ];
 
   return (
-    <div className="w-full  bg-[#09090b] border border-zinc-800 rounded-xl overflow-hidden shadow-2xl font-mono">
+    <div className="w-full  bg-zinc-50 dark:bg-[#09090b] border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-2xl font-mono">
       {/* Header: System Monitor Style */}
-      <div className="px-4 py-3 bg-zinc-900/50 border-b border-zinc-800 flex justify-between items-center">
+      <div className="px-4 py-3 bg-white/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Cpu className="w-3.5 h-3.5 text-indigo-500" />
-          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
+          <span className="text-[10px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-tighter">
             Multipart Uploader v2
           </span>
         </div>
@@ -154,7 +155,7 @@ const ChunkUploadVisual = () => {
         {/* File Stats Header */}
         <div className="flex justify-between items-end">
           <div>
-            <h3 className="text-white text-xs font-bold truncate w-48">
+            <h3 className="text-zinc-900 dark:text-white text-xs font-bold truncate w-48">
               project_alpha_v2.pdf
             </h3>
             <p className="text-[10px] text-zinc-500">
@@ -162,14 +163,14 @@ const ChunkUploadVisual = () => {
             </p>
           </div>
           <div className="text-right">
-            <span className="text-lg font-bold text-white tracking-tighter">
+            <span className="text-lg font-bold text-zinc-900 dark:text-white tracking-tighter">
               {progress}%
             </span>
           </div>
         </div>
 
         {/* Global Progress Bar */}
-        <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+        <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
@@ -185,7 +186,7 @@ const ChunkUploadVisual = () => {
               className={`group flex items-center justify-between p-2 rounded border transition-all duration-300 ${
                 chunk.status === "active"
                   ? "bg-indigo-500/5 border-indigo-500/30"
-                  : "bg-zinc-900/40 border-zinc-800/50"
+                  : "bg-white/80 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/50"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -214,7 +215,7 @@ const ChunkUploadVisual = () => {
                     className={`text-[11px] ${
                       chunk.status === "pending"
                         ? "text-zinc-600"
-                        : "text-zinc-300"
+                        : "text-zinc-700 dark:text-zinc-300"
                     }`}
                   >
                     PART_0{chunk.id}
@@ -249,12 +250,12 @@ const ChunkUploadVisual = () => {
       </div>
 
       {/* Footer Log */}
-      <div className="px-4 py-2 bg-black border-t border-zinc-800 flex justify-between items-center text-[9px]">
+      <div className="px-4 py-2 bg-white dark:bg-black border-t border-zinc-200 dark:border-zinc-800 flex justify-between items-center text-[9px]">
         <span className="text-zinc-600">
-          Speed: <span className="text-zinc-400">2.4 MB/s</span>
+          Speed: <span className="text-zinc-600 dark:text-zinc-400">2.4 MB/s</span>
         </span>
         <span className="text-zinc-600">
-          ETA: <span className="text-zinc-400">4s</span>
+          ETA: <span className="text-zinc-600 dark:text-zinc-400">4s</span>
         </span>
       </div>
     </div>
@@ -262,17 +263,18 @@ const ChunkUploadVisual = () => {
 };
 
 const HomePage = () => {
+  const { theme } = useTheme();
   usePageMeta(
     "NovaDrive — Smart Cloud Storage",
     "NovaDrive is secure, fast cloud storage with AI-powered auto-tagging, search, and smart organization."
   );
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 font-sans selection:bg-blue-500/30 selection:text-blue-200">
       <div
         className="fixed inset-0 z-0 pointer-events-none"
         style={{
-          backgroundImage: "radial-gradient(#27272a 1px, transparent 1px)",
+          backgroundImage: theme === "dark" ? "radial-gradient(#27272a 1px, transparent 1px)" : "radial-gradient(#e4e4e7 1px, transparent 1px)",
           backgroundSize: "24px 24px",
           opacity: "0.3",
         }}
@@ -287,12 +289,12 @@ const HomePage = () => {
               v1.0 Live
             </span>
 
-            <h1 className="mt-6 text-5xl md:text-6xl font-bold text-white tracking-tight leading-tight">
+            <h1 className="mt-6 text-5xl md:text-6xl font-bold text-zinc-900 dark:text-white tracking-tight leading-tight">
               Cloud storage that <br />
               <span className="text-zinc-500">organizes itself.</span>
             </h1>
 
-            <p className="mt-6 text-xl text-zinc-400 leading-relaxed max-w-lg">
+            <p className="mt-6 text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-lg">
               NovaDrive is secure, fast storage with a brain. You just upload
               the file, and our AI handles the naming, tagging, and sorting for
               you.
@@ -300,12 +302,12 @@ const HomePage = () => {
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link to="/login">
-                <button className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-md font-medium transition-all shadow-lg shadow-blue-500/20">
+                <button className="bg-blue-600 hover:bg-blue-500 text-zinc-900 dark:text-white px-8 py-3 rounded-md font-medium transition-all shadow-lg shadow-blue-500/20">
                   Start Now
                 </button>
               </Link>
               <Link to="/architecture">
-                <button className="px-8 py-3 rounded-md font-medium text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-all">
+                <button className="px-8 py-3 rounded-md font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
                   See Architecture
                 </button>
               </Link>
@@ -327,18 +329,18 @@ const HomePage = () => {
               <ChunkUploadVisual />
             </div>
 
-            <div className="absolute  -bottom-10 -left-6 bg-black border border-zinc-800 p-4 rounded-lg shadow-xl w-64">
+            <div className="absolute  -bottom-10 -left-6 bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 p-4 rounded-lg shadow-xl w-64">
               <div className="text-xs text-zinc-500 uppercase mb-2 font-mono tracking-wider">
                 AI Auto-Tagging
               </div>
               <div className="flex flex-wrap gap-2">
-                <span className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded">
+                <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs px-2 py-1 rounded">
                   #Financial
                 </span>
-                <span className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded">
+                <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs px-2 py-1 rounded">
                   #Q3_Summary
                 </span>
-                <span className="bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded">
+                <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs px-2 py-1 rounded">
                   #Priority
                 </span>
               </div>
@@ -346,10 +348,10 @@ const HomePage = () => {
           </div>
         </div>
 
-        <section className="mb-24 border-y border-zinc-800 bg-zinc-900/20">
+        <section className="mb-24 border-y border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/20">
           <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-zinc-800">
             <div className="p-6 text-center">
-              <div className="text-2xl font-bold text-white font-mono">
+              <div className="text-2xl font-bold text-zinc-900 dark:text-white font-mono">
                 10 GB
               </div>
               <div className="text-xs text-zinc-500 uppercase tracking-widest mt-1">
@@ -357,7 +359,7 @@ const HomePage = () => {
               </div>
             </div>
             <div className="p-6 text-center">
-              <div className="text-2xl font-bold text-white font-mono">
+              <div className="text-2xl font-bold text-zinc-900 dark:text-white font-mono">
                 Fast
               </div>
               <div className="text-xs text-zinc-500 uppercase tracking-widest mt-1">
@@ -365,7 +367,7 @@ const HomePage = () => {
               </div>
             </div>
             <div className="p-6 text-center">
-              <div className="text-2xl font-bold text-white font-mono">
+              <div className="text-2xl font-bold text-zinc-900 dark:text-white font-mono">
                 Active
               </div>
               <div className="text-xs text-zinc-500 uppercase tracking-widest mt-1">
@@ -373,7 +375,7 @@ const HomePage = () => {
               </div>
             </div>
             <div className="p-6 text-center">
-              <div className="text-2xl font-bold text-white font-mono">
+              <div className="text-2xl font-bold text-zinc-900 dark:text-white font-mono">
                 Global
               </div>
               <div className="text-xs text-zinc-500 uppercase tracking-widest mt-1">
@@ -385,17 +387,17 @@ const HomePage = () => {
 
         <section className="mb-24">
           <div className="mb-12">
-            <h2 className="text-3xl font-semibold text-white mb-4">
+            <h2 className="text-3xl font-semibold text-zinc-900 dark:text-white mb-4">
               Why use NovaDrive?
             </h2>
-            <p className="text-zinc-400 text-lg">
+            <p className="text-zinc-600 dark:text-zinc-400 text-lg">
               Everything you expect from a modern drive, plus the intelligence
               you've been missing.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2 bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors relative overflow-hidden group">
+            <div className="md:col-span-2 bg-white/80 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-8 rounded-xl hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-30 transition-opacity">
                 <Sparkles className="w-32 h-32 text-blue-500" />
               </div>
@@ -405,29 +407,29 @@ const HomePage = () => {
                   NEW FEATURE
                 </span>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-2">
                 Smart Folder Suggestions
               </h3>
-              <p className="text-zinc-400 max-w-sm mb-4">
+              <p className="text-zinc-600 dark:text-zinc-400 max-w-sm mb-4">
                 AI analyzes your file and instantly suggests where to store it.
                 If folders exist, it finds them. If not, it creates smart
                 suggestions like "Music", "Documents", or "Photos" — all with
                 one click.
               </p>
               <div className="flex flex-wrap gap-2 text-xs">
-                <span className="bg-zinc-800/40 border border-zinc-700 text-zinc-300 px-3 py-1 rounded-full font-mono">
+                <span className="bg-zinc-100 dark:bg-zinc-800/40 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full font-mono">
                   Auto-detect
                 </span>
-                <span className="bg-zinc-800/40 border border-zinc-700 text-zinc-300 px-3 py-1 rounded-full font-mono">
+                <span className="bg-zinc-100 dark:bg-zinc-800/40 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full font-mono">
                   One-click organize
                 </span>
-                <span className="bg-zinc-800/40 border border-zinc-700 text-zinc-300 px-3 py-1 rounded-full font-mono">
+                <span className="bg-zinc-100 dark:bg-zinc-800/40 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full font-mono">
                   AI-powered
                 </span>
               </div>
             </div>
 
-            <div className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors relative overflow-hidden group">
+            <div className="bg-white/80 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-8 rounded-xl hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity">
                 <svg
                   className="w-32 h-32 text-blue-500"
@@ -443,16 +445,16 @@ const HomePage = () => {
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-2">
                 AI Auto-Tagging
               </h3>
-              <p className="text-zinc-400 max-w-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 max-w-sm">
                 Stop organizing manually. Our AI scans your files and generates
                 relevant tags like #Finance or #Vacation automatically.
               </p>
             </div>
 
-            <div className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors">
+            <div className="bg-white/80 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-8 rounded-xl hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
               <div className="text-blue-500 mb-4">
                 <svg
                   className="w-8 h-8"
@@ -468,16 +470,16 @@ const HomePage = () => {
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-2">
                 Instant Summaries
               </h3>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Don't have time to read? We generate a 1-2 sentence summary for
                 every document.
               </p>
             </div>
 
-            <div className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors">
+            <div className="bg-white/80 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-8 rounded-xl hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
               <div className="text-blue-500 mb-4">
                 <svg
                   className="w-8 h-8"
@@ -493,16 +495,16 @@ const HomePage = () => {
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-2">
                 Deep Search
               </h3>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Type "invoice from October" and our AI will find the document
                 based on its actual content.
               </p>
             </div>
 
-            <div className="bg-zinc-900/50 border border-zinc-800 p-8 rounded-xl hover:border-zinc-600 transition-colors">
+            <div className="bg-white/80 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 p-8 rounded-xl hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors">
               <div className="text-blue-500 mb-4">
                 <svg
                   className="w-8 h-8"
@@ -518,10 +520,10 @@ const HomePage = () => {
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-2">
                 Quick Share
               </h3>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Create secure, time-limited share links to send files instantly.
               </p>
             </div>
@@ -530,56 +532,56 @@ const HomePage = () => {
 
         <section className="mb-24">
           <div className="mb-12">
-            <h2 className="text-3xl font-semibold text-white mb-4">
+            <h2 className="text-3xl font-semibold text-zinc-900 dark:text-white mb-4">
               How it Works
             </h2>
-            <p className="text-zinc-400 text-lg">
+            <p className="text-zinc-600 dark:text-zinc-400 text-lg">
               A quick look at the tech that keeps your files safe.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-lg">
-              <h3 className="text-zinc-200 font-semibold mb-2">
+            <div className="bg-white/80 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 p-6 rounded-lg">
+              <h3 className="text-zinc-800 dark:text-zinc-200 font-semibold mb-2">
                 Easy Interface
               </h3>
-              <p className="text-zinc-400 text-sm mb-4">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
                 A simple dashboard to upload and find files instantly.
               </p>
-              <span className="text-[10px] font-mono bg-zinc-800 text-zinc-500 px-2 py-1 rounded">
+              <span className="text-[10px] font-mono bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-1 rounded">
                 FAST
               </span>
             </div>
-            <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-lg">
-              <h3 className="text-zinc-200 font-semibold mb-2">
+            <div className="bg-white/80 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 p-6 rounded-lg">
+              <h3 className="text-zinc-800 dark:text-zinc-200 font-semibold mb-2">
                 Smart Gateway
               </h3>
-              <p className="text-zinc-400 text-sm mb-4">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
                 A security guard that checks every request.
               </p>
-              <span className="text-[10px] font-mono bg-zinc-800 text-zinc-500 px-2 py-1 rounded">
+              <span className="text-[10px] font-mono bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-1 rounded">
                 SECURE
               </span>
             </div>
-            <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-lg">
-              <h3 className="text-zinc-200 font-semibold mb-2">
+            <div className="bg-white/80 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 p-6 rounded-lg">
+              <h3 className="text-zinc-800 dark:text-zinc-200 font-semibold mb-2">
                 AI Processing
               </h3>
-              <p className="text-zinc-400 text-sm mb-4">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
                 We organize files in the background so you don't have to.
               </p>
-              <span className="text-[10px] font-mono bg-zinc-800 text-zinc-500 px-2 py-1 rounded">
+              <span className="text-[10px] font-mono bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-1 rounded">
                 SMART
               </span>
             </div>
-            <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-lg">
-              <h3 className="text-zinc-200 font-semibold mb-2">
+            <div className="bg-white/80 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 p-6 rounded-lg">
+              <h3 className="text-zinc-800 dark:text-zinc-200 font-semibold mb-2">
                 Global Storage
               </h3>
-              <p className="text-zinc-400 text-sm mb-4">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
                 Your files are stored in a distributed cloud that never sleeps.
               </p>
-              <span className="text-[10px] font-mono bg-zinc-800 text-zinc-500 px-2 py-1 rounded">
+              <span className="text-[10px] font-mono bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-1 rounded">
                 RELIABLE
               </span>
             </div>
@@ -588,66 +590,66 @@ const HomePage = () => {
 
         <section className="mb-24">
           <div className="mb-12">
-            <h2 className="text-3xl font-semibold text-white mb-4">
+            <h2 className="text-3xl font-semibold text-zinc-900 dark:text-white mb-4">
               Simple Pricing{" "}
-              <span className="text-sm font-normal text-zinc-500 ml-2 bg-zinc-900 px-2 py-1 rounded border border-zinc-800">
+              <span className="text-sm font-normal text-zinc-500 ml-2 bg-white dark:bg-zinc-900 px-2 py-1 rounded border border-zinc-200 dark:border-zinc-800">
                 (Upcoming)
               </span>
             </h2>
-            <p className="text-zinc-400 text-lg">
+            <p className="text-zinc-600 dark:text-zinc-400 text-lg">
               Fair pricing for everyone. Start for free, upgrade when you grow.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-xl flex flex-col hover:border-zinc-700 transition-colors">
-              <h3 className="text-zinc-400 font-mono text-sm uppercase tracking-wider mb-2">
+            <div className="bg-white/80 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 p-8 rounded-xl flex flex-col hover:border-zinc-300 dark:border-zinc-700 transition-colors">
+              <h3 className="text-zinc-600 dark:text-zinc-400 font-mono text-sm uppercase tracking-wider mb-2">
                 Starter
               </h3>
-              <div className="text-4xl font-bold text-white mb-6">
+              <div className="text-4xl font-bold text-zinc-900 dark:text-white mb-6">
                 ₹0<span className="text-lg text-zinc-500 font-normal">/mo</span>
               </div>
-              <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-300">
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
-                  <span>Storage</span> <span className="text-white">10 GB</span>
+              <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-700 dark:text-zinc-300">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
+                  <span>Storage</span> <span className="text-zinc-900 dark:text-white">10 GB</span>
                 </li>
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
                   <span>Bandwidth</span>{" "}
-                  <span className="text-white">Standard</span>
+                  <span className="text-zinc-900 dark:text-white">Standard</span>
                 </li>
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
                   <span>AI Analysis</span>{" "}
-                  <span className="text-white">Basic</span>
+                  <span className="text-zinc-900 dark:text-white">Basic</span>
                 </li>
               </ul>
-              <button className="w-full py-3 rounded bg-white text-black font-semibold hover:bg-zinc-200 transition-colors">
+              <button className="w-full py-3 rounded bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 dark:text-black font-semibold hover:bg-zinc-300 dark:hover:bg-zinc-200 transition-colors">
                 Current Plan
               </button>
             </div>
 
-            <div className="bg-zinc-900/80 border border-blue-500/30 p-8 rounded-xl flex flex-col relative overflow-hidden">
-              <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">
+            <div className="bg-white/80 dark:bg-zinc-900/80 border border-blue-500/30 p-8 rounded-xl flex flex-col relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-blue-600 text-zinc-900 dark:text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">
                 RECOMMENDED
               </div>
               <h3 className="text-blue-400 font-mono text-sm uppercase tracking-wider mb-2">
                 Pro
               </h3>
-              <div className="text-4xl font-bold text-white mb-6">
+              <div className="text-4xl font-bold text-zinc-900 dark:text-white mb-6">
                 ₹499
                 <span className="text-lg text-zinc-500 font-normal">/mo</span>
               </div>
-              <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-300">
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
+              <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-700 dark:text-zinc-300">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
                   <span>Storage</span>{" "}
-                  <span className="text-white">300 GB</span>
+                  <span className="text-zinc-900 dark:text-white">300 GB</span>
                 </li>
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
                   <span>Bandwidth</span>{" "}
-                  <span className="text-white">Unlimited</span>
+                  <span className="text-zinc-900 dark:text-white">Unlimited</span>
                 </li>
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
                   <span>AI Analysis</span>{" "}
-                  <span className="text-white">Advanced</span>
+                  <span className="text-zinc-900 dark:text-white">Advanced</span>
                 </li>
               </ul>
               <button
@@ -658,28 +660,28 @@ const HomePage = () => {
               </button>
             </div>
 
-            <div className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-xl flex flex-col hover:border-zinc-700 transition-colors">
-              <h3 className="text-zinc-400 font-mono text-sm uppercase tracking-wider mb-2">
+            <div className="bg-white/80 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 p-8 rounded-xl flex flex-col hover:border-zinc-300 dark:border-zinc-700 transition-colors">
+              <h3 className="text-zinc-600 dark:text-zinc-400 font-mono text-sm uppercase tracking-wider mb-2">
                 Team
               </h3>
-              <div className="text-4xl font-bold text-white mb-6">Custom</div>
-              <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-300">
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
+              <div className="text-4xl font-bold text-zinc-900 dark:text-white mb-6">Custom</div>
+              <ul className="space-y-4 mb-8 flex-1 text-sm text-zinc-700 dark:text-zinc-300">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
                   <span>Storage</span>{" "}
-                  <span className="text-white">Unlimited</span>
+                  <span className="text-zinc-900 dark:text-white">Unlimited</span>
                 </li>
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
                   <span>Support</span>{" "}
-                  <span className="text-white">Priority</span>
+                  <span className="text-zinc-900 dark:text-white">Priority</span>
                 </li>
-                <li className="flex justify-between border-b border-zinc-800 pb-2">
+                <li className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2">
                   <span>API Access</span>{" "}
-                  <span className="text-white">Full</span>
+                  <span className="text-zinc-900 dark:text-white">Full</span>
                 </li>
               </ul>
               <button
                 disabled
-                className="w-full py-3 rounded border border-zinc-700 text-zinc-500 font-medium cursor-not-allowed"
+                className="w-full py-3 rounded border border-zinc-300 dark:border-zinc-700 text-zinc-500 font-medium cursor-not-allowed"
               >
                 Contact Sales
               </button>
@@ -687,16 +689,16 @@ const HomePage = () => {
           </div>
         </section>
 
-        <footer className="border-t border-zinc-800 pt-12 pb-12 flex justify-between items-center text-sm text-zinc-500">
-          <div className="font-bold text-zinc-300">NovaDrive &copy; 2025</div>
+        <footer className="border-t border-zinc-200 dark:border-zinc-800 pt-12 pb-12 flex justify-between items-center text-sm text-zinc-500">
+          <div className="font-bold text-zinc-700 dark:text-zinc-300">NovaDrive &copy; 2025</div>
           <div className="flex gap-6">
-            <Link to="/privacy" className="hover:text-white">
+            <Link to="/privacy" className="hover:text-zinc-900 dark:text-white">
               Privacy
             </Link>
-            <Link to="/terms" className="hover:text-white">
+            <Link to="/terms" className="hover:text-zinc-900 dark:text-white">
               Terms
             </Link>
-            <a href="https://github.com" className="hover:text-white">
+            <a href="https://github.com" className="hover:text-zinc-900 dark:text-white">
               GitHub
             </a>
           </div>

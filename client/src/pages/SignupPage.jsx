@@ -138,7 +138,7 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-zinc-950 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden">
       {/* Animated Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 
@@ -157,20 +157,20 @@ const SignupPage = () => {
                 alt="NovaDrive logo"
                 className="w-20 h-20 object-contain"
               />
-              <span className="text-3xl font-bold text-white">NovaDrive</span>
+              <span className="text-3xl font-bold text-zinc-900 dark:text-white">NovaDrive</span>
             </div>
-            <p className="text-zinc-400 font-mono text-sm">
+            <p className="text-zinc-600 dark:text-zinc-400 font-mono text-sm">
               SECURE_CLOUD_STORAGE
             </p>
           </div>
 
           {/* Signup Card */}
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 backdrop-blur-md">
+          <div className="bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 backdrop-blur-md">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-zinc-100 mb-2 font-mono">
+              <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-2 font-mono">
                 CREATE_ACCOUNT
               </h2>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Start your secure storage journey
               </p>
             </div>
@@ -189,12 +189,12 @@ const SignupPage = () => {
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   FULL_NAME
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type="text"
                     id="name"
@@ -202,7 +202,7 @@ const SignupPage = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full pl-11 pr-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="John Doe"
                   />
                 </div>
@@ -212,12 +212,12 @@ const SignupPage = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   EMAIL_ADDRESS
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type="email"
                     id="email"
@@ -225,7 +225,7 @@ const SignupPage = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full pl-11 pr-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-11 pr-4 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="user@example.com"
                   />
                 </div>
@@ -235,12 +235,12 @@ const SignupPage = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   PASSWORD
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
@@ -249,13 +249,13 @@ const SignupPage = () => {
                     onChange={handleChange}
                     required
                     minLength={8}
-                    className="w-full pl-11 pr-11 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-11 pr-11 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -264,7 +264,7 @@ const SignupPage = () => {
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-zinc-500 mt-1.5">
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5">
                   Minimum 8 characters
                 </p>
               </div>
@@ -273,12 +273,12 @@ const SignupPage = () => {
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-mono text-zinc-400 mb-2"
+                  className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
                 >
                   CONFIRM_PASSWORD
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
@@ -286,13 +286,13 @@ const SignupPage = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="w-full pl-11 pr-11 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-11 pr-11 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="••••••••"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-400 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 transition-colors"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -309,9 +309,9 @@ const SignupPage = () => {
                   type="checkbox"
                   id="terms"
                   required
-                  className="w-4 h-4 mt-0.5 bg-zinc-800 border-zinc-700 rounded text-blue-500 focus:ring-2 focus:ring-blue-500"
+                  className="w-4 h-4 mt-0.5 bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-700 rounded text-blue-500 focus:ring-2 focus:ring-blue-500"
                 />
-                <label htmlFor="terms" className="text-sm text-zinc-400">
+                <label htmlFor="terms" className="text-sm text-zinc-600 dark:text-zinc-400">
                   I agree to the{" "}
                   <Link
                     to="/terms"
@@ -333,7 +333,7 @@ const SignupPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono"
+                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white font-semibold rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono"
               >
                 {loading ? (
                   <>
@@ -352,10 +352,10 @@ const SignupPage = () => {
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-800"></div>
+                <div className="w-full border-t border-zinc-200 dark:border-zinc-800"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-zinc-900/50 text-zinc-500 font-mono">
+                <span className="px-4 bg-white/50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 font-mono">
                   OR
                 </span>
               </div>
@@ -392,7 +392,7 @@ const SignupPage = () => {
 
             {/* Login Link */}
             <div className="text-center">
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Already have an account?{" "}
                 <Link
                   to="/login"
@@ -406,7 +406,7 @@ const SignupPage = () => {
 
           {/* Security Badge */}
           <div className="mt-6 text-center">
-            <div className="inline-flex items-center gap-2 text-zinc-500 text-sm">
+            <div className="inline-flex items-center gap-2 text-zinc-500 dark:text-zinc-400 text-sm">
               <Shield className="w-4 h-4" />
               <span className="font-mono">256-BIT_ENCRYPTION</span>
             </div>
@@ -416,8 +416,8 @@ const SignupPage = () => {
 
       {/* OTP Modal */}
       {showOtpModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 max-w-md w-full relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 dark:bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 max-w-md w-full relative">
             {/* Close Button */}
             <button
               onClick={() => {
@@ -425,7 +425,7 @@ const SignupPage = () => {
                 setOtp("");
                 setOtpError("");
               }}
-              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 transition-colors"
+              className="absolute top-4 right-4 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:text-zinc-300 transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -445,10 +445,10 @@ const SignupPage = () => {
 
             {/* Modal Header */}
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-zinc-100 mb-2 font-mono">
+              <h3 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 mb-2 font-mono">
                 VERIFY_EMAIL
               </h3>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 Enter the 6-digit code sent to{" "}
                 <span className="text-blue-400">{formData.email}</span>
               </p>
@@ -468,7 +468,7 @@ const SignupPage = () => {
             <div className="mb-6">
               <label
                 htmlFor="otp"
-                className="block text-sm font-mono text-zinc-400 mb-2"
+                className="block text-sm font-mono text-zinc-600 dark:text-zinc-400 mb-2"
               >
                 ENTER_OTP
               </label>
@@ -485,7 +485,7 @@ const SignupPage = () => {
                 }}
                 maxLength={6}
                 placeholder="000000"
-                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-200 text-center text-2xl tracking-widest font-mono placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-800 dark:text-zinc-200 text-center text-2xl tracking-widest font-mono placeholder-zinc-400 dark:placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
 
@@ -493,7 +493,7 @@ const SignupPage = () => {
             <button
               onClick={handleVerifyOtp}
               disabled={otpLoading || otp.length !== 6}
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-zinc-900 dark:text-white font-semibold rounded-lg transition-all shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.6)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-mono"
             >
               {otpLoading ? (
                 <>

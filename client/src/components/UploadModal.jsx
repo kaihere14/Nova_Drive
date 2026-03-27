@@ -26,22 +26,22 @@ const UploadModal = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={() => setShowUploadModal(false)}
     >
       <div
-        className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-700/50 hover:border-cyan-500/30 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 overflow-hidden"
+        className="group relative bg-gradient-to-br from-zinc-800/60 to-zinc-900/60 border border-zinc-300/50 dark:border-zinc-700/50 hover:border-cyan-500/30 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-transparent group-hover:from-cyan-500/3 transition-all duration-300 pointer-events-none" />
         
-        <div className="relative flex justify-between items-center px-6 py-5 border-b border-zinc-700/30">
+        <div className="relative flex justify-between items-center px-6 py-5 border-b border-zinc-300/30 dark:border-zinc-700/30">
           <div>
             <h2 className="text-xl font-semibold bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">
               Upload New File
             </h2>
-            <p className="text-sm text-zinc-400 font-mono mt-1">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 font-mono mt-1">
               Chunked upload with resume support
             </p>
           </div>
@@ -66,9 +66,9 @@ const UploadModal = ({
                 <span className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
                   Click to upload
                 </span>
-                <span className="text-zinc-400"> or drag and drop</span>
+                <span className="text-zinc-600 dark:text-zinc-400"> or drag and drop</span>
               </label>
-              <p className="text-sm text-zinc-400 mt-2 font-mono">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 font-mono">
                 Any file type // 250MB daily limit
               </p>
               <input
@@ -109,7 +109,7 @@ const UploadModal = ({
                       {suggestedFolders.length === 1 ? 'EXISTING_FOLDER' : 'SUGGESTED_FOLDERS'}
                     </h3>
                   </div>
-                  <p className="text-xs text-zinc-400 font-mono -mt-2">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 font-mono -mt-2">
                     {suggestedFolders.length === 1 
                       ? 'This folder already exists in your drive' 
                       : 'Select or create a folder for your file'}
@@ -122,7 +122,7 @@ const UploadModal = ({
                         className={`group relative flex items-center gap-3 p-3 rounded-lg transition-all duration-200 border ${
                           selectedFolder === folderName
                             ? 'bg-gradient-to-br from-purple-500/20 to-purple-600/10 border-purple-500/50 shadow-lg shadow-purple-500/10'
-                            : 'bg-gradient-to-br from-zinc-800/30 to-zinc-900/30 border-zinc-700/30 hover:border-purple-500/30 hover:from-purple-500/5 hover:to-purple-600/5'
+                            : 'bg-gradient-to-br from-zinc-800/30 to-zinc-900/30 border-zinc-300/30 dark:border-zinc-700/30 hover:border-purple-500/30 hover:from-purple-500/5 hover:to-purple-600/5'
                         }`}
                       >
                         <div
@@ -143,19 +143,19 @@ const UploadModal = ({
                             className={`font-semibold transition-colors ${
                               selectedFolder === folderName
                                 ? 'text-purple-300'
-                                : 'text-zinc-200 group-hover:text-purple-300'
+                                : 'text-zinc-800 dark:text-zinc-200 group-hover:text-purple-300'
                             }`}
                           >
                             {folderName}
                           </p>
-                          <p className="text-xs text-zinc-500 font-mono">
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                             {suggestedFolders.length === 1 ? 'Move to existing' : 'Create new folder'}
                           </p>
                         </div>
                         {selectedFolder === folderName && (
                           <div className="flex-shrink-0 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
                             <svg
-                              className="w-3 h-3 text-white"
+                              className="w-3 h-3 text-zinc-900 dark:text-white"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
