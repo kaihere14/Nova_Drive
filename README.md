@@ -32,7 +32,7 @@ Targeted at developers, startups, and power users who need a self‑hosted, exte
 Current stable version: **1.0.0** (2026‑02‑25).
 
 ---
-## Features
+## Features ✨
 
 | Feature | Description | Status |
 |---------|-------------|--------|
@@ -46,10 +46,10 @@ Current stable version: **1.0.0** (2026‑02‑25).
 | **Real‑time Monitoring** | Express‑status‑monitor dashboard, health endpoint (`/health`). | ✅ Stable |
 | **Logging** | Structured JSON logs (console + rotating files) with Winston. | ✅ Stable |
 | **Responsive UI** | TailwindCSS + Framer Motion, mobile‑first design. | ✅ Stable |
+| **Theme Support** | Seamless toggle between Light and Dark modes with persistent theme context. | ✅ Stable |
 | **Docker Support** | Ready‑to‑run containers for dev & production. | 🟡 Experimental |
 
 ---
-
 ## Tech Stack 🚀
 
 | Layer | Technologies |
