@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell, Settings, Menu, Sparkles, Zap, X, Shield } from "lucide-react";
+import { Search, Bell, Settings, Menu, Sparkles, Zap, X, Shield, Sun, Moon } from "lucide-react";
 import axios from "axios";
 import BASE_URL from "../config";
+import { useTheme } from "../context/ThemeContext";
 
 export const useAiSearch = () => {
   const [aiSearch, setAiSearch] = useState(false);
@@ -18,6 +19,7 @@ const Header = ({
   setAiSearch,
 }) => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResults, setAiResults] = useState([]);
   const [showAiResults, setShowAiResults] = useState(false);
@@ -195,6 +197,13 @@ const Header = ({
               </div>
             </div>
           </div>
+          <button 
+            onClick={toggleTheme}
+            className="p-2 hover:bg-zinc-100 dark:bg-zinc-800 rounded-lg transition-colors flex-shrink-0"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="w-5 h-5 text-zinc-600 dark:text-zinc-400" /> : <Moon className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />}
+          </button>
           <div
             className="p-2 hover:bg-zinc-100 dark:bg-zinc-800 rounded-lg transition-colors cursor-pointer flex-shrink-0"
             onClick={() => navigate("/profile")}
@@ -263,6 +272,13 @@ const Header = ({
             )}
           </div>
           <div className="flex items-center gap-3">
+            <button 
+              onClick={toggleTheme}
+              className="w-10 h-10 flex items-center justify-center bg-zinc-100/50 dark:bg-zinc-800/50 hover:bg-zinc-300 dark:hover:bg-zinc-200/50 dark:bg-zinc-700/50 border border-zinc-300 dark:border-zinc-700 rounded-lg transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="w-5 h-5 text-zinc-600 dark:text-zinc-400" /> : <Moon className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />}
+            </button>
             <button className="w-10 h-10 flex items-center justify-center bg-zinc-100/50 dark:bg-zinc-800/50 hover:bg-zinc-300 dark:hover:bg-zinc-200/50 dark:bg-zinc-700/50 border border-zinc-300 dark:border-zinc-700 rounded-lg transition-colors">
               <Bell className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
             </button>
