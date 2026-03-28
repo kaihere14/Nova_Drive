@@ -5,12 +5,12 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {/* Files Card */}
-      <div className="group relative bg-white dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-blue-500/30 dark:hover:border-blue-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1">
+      <div className="group relative bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:bg-transparent dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-blue-500/30 dark:hover:border-blue-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/5 transition-all duration-300 pointer-events-none" />
         <div className="relative p-5">
           <div className="relative mb-3 h-12 flex items-center justify-center">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-blue-600/5 to-transparent dark:from-blue-500/20 dark:via-blue-600/10 rounded-xl blur-xl group-hover:from-blue-500/15 group-hover:via-blue-600/10 dark:group-hover:from-blue-500/30 dark:group-hover:via-blue-600/20 transition-all duration-300" />
-            <div className="relative bg-blue-50 dark:bg-gradient-to-br dark:from-blue-500/10 dark:to-blue-600/5 p-3 rounded-lg border border-blue-100 dark:border-blue-500/20 group-hover:border-blue-200 dark:group-hover:border-blue-500/40 group-hover:scale-110 transition-all duration-300">
+            <div className="relative bg-blue-50 dark:bg-transparent dark:bg-gradient-to-br dark:from-blue-500/10 dark:to-blue-600/5 p-3 rounded-lg border border-blue-100 dark:border-blue-500/20 group-hover:border-blue-200 dark:group-hover:border-blue-500/40 group-hover:scale-110 transition-all duration-300">
               <BarChart3 className="w-6 h-6 text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-300" />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
@@ -22,12 +22,12 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
       </div>
 
       {/* Storage Card */}
-      <div className="group relative bg-white dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-cyan-500/30 dark:hover:border-cyan-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1">
+      <div className="group relative bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:bg-transparent dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-cyan-500/30 dark:hover:border-cyan-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-1">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-transparent group-hover:from-cyan-500/5 transition-all duration-300 pointer-events-none" />
         <div className="relative p-5">
           <div className="relative mb-3 h-12 flex items-center justify-center">
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-cyan-600/5 to-transparent dark:from-cyan-500/20 dark:via-cyan-600/10 rounded-xl blur-xl group-hover:from-cyan-500/15 group-hover:via-cyan-600/10 dark:group-hover:from-cyan-500/30 dark:group-hover:via-cyan-600/20 transition-all duration-300" />
-            <div className="relative bg-cyan-50 dark:bg-gradient-to-br dark:from-cyan-500/10 dark:to-cyan-600/5 p-3 rounded-lg border border-cyan-100 dark:border-cyan-500/20 group-hover:border-cyan-200 dark:group-hover:border-cyan-500/40 group-hover:scale-110 transition-all duration-300">
+            <div className="relative bg-cyan-50 dark:bg-transparent dark:bg-gradient-to-br dark:from-cyan-500/10 dark:to-cyan-600/5 p-3 rounded-lg border border-cyan-100 dark:border-cyan-500/20 group-hover:border-cyan-200 dark:group-hover:border-cyan-500/40 group-hover:scale-110 transition-all duration-300">
               <HardDrive className="w-6 h-6 text-cyan-500 dark:text-cyan-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors duration-300" />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
@@ -39,12 +39,12 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
       </div>
 
       {/* Folders Card */}
-      <div className="group relative bg-white dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-purple-500/30 dark:hover:border-purple-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-1">
+      <div className="group relative bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:bg-transparent dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-purple-500/30 dark:hover:border-purple-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-1">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-transparent group-hover:from-purple-500/5 transition-all duration-300 pointer-events-none" />
         <div className="relative p-5">
           <div className="relative mb-3 h-12 flex items-center justify-center">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-purple-600/5 to-transparent dark:from-purple-500/20 dark:via-purple-600/10 rounded-xl blur-xl group-hover:from-purple-500/15 group-hover:via-purple-600/10 dark:group-hover:from-purple-500/30 dark:group-hover:via-purple-600/20 transition-all duration-300" />
-            <div className="relative bg-purple-50 dark:bg-gradient-to-br dark:from-purple-500/10 dark:to-purple-600/5 p-3 rounded-lg border border-purple-100 dark:border-purple-500/20 group-hover:border-purple-200 dark:group-hover:border-purple-500/40 group-hover:scale-110 transition-all duration-300">
+            <div className="relative bg-purple-50 dark:bg-transparent dark:bg-gradient-to-br dark:from-purple-500/10 dark:to-purple-600/5 p-3 rounded-lg border border-purple-100 dark:border-purple-500/20 group-hover:border-purple-200 dark:group-hover:border-purple-500/40 group-hover:scale-110 transition-all duration-300">
               <Folder className="w-6 h-6 text-purple-500 dark:text-purple-400 group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors duration-300" />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>
@@ -56,12 +56,12 @@ const StatsCard = ({ files, storage, folders, favorites, formatFileSize }) => {
       </div>
 
       {/* Favorites Card */}
-      <div className="group relative bg-white dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-pink-500/30 dark:hover:border-pink-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-pink-500/10 hover:-translate-y-1">
+      <div className="group relative bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:bg-transparent dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-pink-500/30 dark:hover:border-pink-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-pink-500/10 hover:-translate-y-1">
         <div className="absolute inset-0 bg-gradient-to-br from-pink-500/0 to-transparent group-hover:from-pink-500/5 transition-all duration-300 pointer-events-none" />
         <div className="relative p-5">
           <div className="relative mb-3 h-12 flex items-center justify-center">
             <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-pink-600/5 to-transparent dark:from-pink-500/20 dark:via-pink-600/10 rounded-xl blur-xl group-hover:from-pink-500/15 group-hover:via-pink-600/10 dark:group-hover:from-pink-500/30 dark:group-hover:via-pink-600/20 transition-all duration-300" />
-            <div className="relative bg-pink-50 dark:bg-gradient-to-br dark:from-pink-500/10 dark:to-pink-600/5 p-3 rounded-lg border border-pink-100 dark:border-pink-500/20 group-hover:border-pink-200 dark:group-hover:border-pink-500/40 group-hover:scale-110 transition-all duration-300">
+            <div className="relative bg-pink-50 dark:bg-transparent dark:bg-gradient-to-br dark:from-pink-500/10 dark:to-pink-600/5 p-3 rounded-lg border border-pink-100 dark:border-pink-500/20 group-hover:border-pink-200 dark:group-hover:border-pink-500/40 group-hover:scale-110 transition-all duration-300">
               <Star className="w-6 h-6 text-pink-500 dark:text-pink-400 group-hover:text-pink-600 dark:group-hover:text-pink-300 transition-colors duration-300" />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
             </div>

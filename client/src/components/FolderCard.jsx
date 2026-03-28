@@ -25,7 +25,7 @@ const FolderCard = ({ folder, onDelete, onRename }) => {
   }, [menuOpen]);
 
   return (
-    <div className="group relative bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 hover:from-zinc-800/60 hover:to-zinc-900/60 border border-zinc-300/30 dark:border-zinc-700/30 hover:border-blue-500/30 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1">
+    <div className="group relative bg-white dark:bg-transparent dark:bg-gradient-to-br dark:from-zinc-800/40 dark:to-zinc-900/40 hover:bg-zinc-50 dark:hover:bg-transparent dark:hover:from-zinc-800/60 dark:hover:to-zinc-900/60 border border-zinc-200 dark:border-zinc-700/30 hover:border-blue-500/30 dark:hover:border-blue-500/30 rounded-xl overflow-hidden transition-all duration-300 shadow-sm dark:shadow-none hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1">
       {/* Subtle gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-transparent group-hover:from-blue-500/5 transition-all duration-300 pointer-events-none" />
 
@@ -78,12 +78,12 @@ const FolderCard = ({ folder, onDelete, onRename }) => {
         {/* Folder Icon Container */}
         <div className="relative mb-4 h-20 flex items-center justify-center">
           {/* Background glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-blue-600/10 to-transparent rounded-xl blur-xl group-hover:from-blue-500/30 group-hover:via-blue-600/20 transition-all duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-blue-600/5 to-transparent dark:from-blue-500/20 dark:via-blue-600/10 rounded-xl blur-xl group-hover:from-blue-500/15 group-hover:via-blue-600/10 dark:group-hover:from-blue-500/30 dark:group-hover:via-blue-600/20 transition-all duration-300" />
 
           {/* Icon container */}
-          <div className="relative bg-gradient-to-br from-blue-500/10 to-blue-600/5 p-4 rounded-xl border border-blue-500/20 group-hover:border-blue-500/40 group-hover:scale-110 transition-all duration-300">
+          <div className="relative bg-blue-50 dark:bg-transparent dark:bg-gradient-to-br dark:from-blue-500/10 dark:to-blue-600/5 p-4 rounded-xl border border-blue-100 dark:border-blue-500/20 group-hover:border-blue-200 dark:group-hover:border-blue-500/40 group-hover:scale-110 transition-all duration-300">
             <FolderOpen
-              className="w-9 h-9 text-blue-400 group-hover:text-blue-300 transition-colors duration-300"
+              className="w-9 h-9 text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-300"
               strokeWidth={1.5}
             />
 
@@ -94,7 +94,7 @@ const FolderCard = ({ folder, onDelete, onRename }) => {
 
         {/* Folder Info */}
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-zinc-900 dark:text-white truncate group-hover:text-blue-300 transition-colors duration-200">
+          <h4 className="text-sm font-semibold text-zinc-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-200">
             {folder.name}
           </h4>
 
@@ -112,7 +112,7 @@ const FolderCard = ({ folder, onDelete, onRename }) => {
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <span className="group-hover:text-zinc-600 dark:text-zinc-400 transition-colors">
+            <span className="group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
               {new Date(folder.createdAt).toLocaleDateString()}
             </span>
           </div>
