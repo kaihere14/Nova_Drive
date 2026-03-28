@@ -205,9 +205,18 @@ npm run build   # tsc → ./dist
 npm start       # node dist/index.js
 
 # Frontend
-cd client
-npm run lint
 
+The frontend now includes updated card components (`FolderCard` and `StatsCard`) that fully support light and dark themes with enhanced hover animations.
+
+bash
+cd client
+npm install          # install dependencies
+npm run dev          # start the Vite development server
+npm run lint         # run the linter
+npm run build        # create a production build
+
+
+These changes are reflected in the UI; no additional setup is required.
 # Serve with any static server, e.g. Vercel, Netlify, or Docker:
 npm install -g serve
 serve -s dist
@@ -362,9 +371,18 @@ Rate limits are enforced per IP (100 requests/minute) via `express-rate-limit` (
 
 ```bash
 # Frontend
-cd client
-npm run lint
 
+The frontend now includes updated card components (`FolderCard` and `StatsCard`) that fully support light and dark themes with enhanced hover animations.
+
+bash
+cd client
+npm install          # install dependencies
+npm run dev          # start the Vite development server
+npm run lint         # run the linter
+npm run build        # create a production build
+
+
+These changes are reflected in the UI; no additional setup is required.
 # Backend (TS) 🛠️
 cd ../server
 npx eslint . --ext .ts,.js
