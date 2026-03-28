@@ -206,7 +206,7 @@ npm start       # node dist/index.js
 
 # Frontend
 
-The frontend now includes updated card components (`FolderCard` and `StatsCard`) that fully support light and dark themes with enhanced hover animations.
+The frontend now includes refreshed card components (`FolderCard` and `StatsCard`) with full light‑ and dark‑mode support. Hover animations have been unified with a consistent 300 ms transition and new gradient overlays, giving a smoother visual experience. The three‑dot menu in `FolderCard` now respects dark mode with backdrop‑blur styling, and all icons feature subtle shine effects on hover.
 
 bash
 cd client
@@ -216,7 +216,7 @@ npm run lint         # run the linter
 npm run build        # create a production build
 
 
-These changes are reflected in the UI; no additional setup is required.
+These UI enhancements are applied automatically—no additional setup is required.
 # Serve with any static server, e.g. Vercel, Netlify, or Docker:
 npm install -g serve
 serve -s dist
@@ -372,7 +372,7 @@ Rate limits are enforced per IP (100 requests/minute) via `express-rate-limit` (
 ```bash
 # Frontend
 
-The frontend now includes updated card components (`FolderCard` and `StatsCard`) that fully support light and dark themes with enhanced hover animations.
+The frontend now includes refreshed card components (`FolderCard` and `StatsCard`) with full light‑ and dark‑mode support. Hover animations have been unified with a consistent 300 ms transition and new gradient overlays, giving a smoother visual experience. The three‑dot menu in `FolderCard` now respects dark mode with backdrop‑blur styling, and all icons feature subtle shine effects on hover.
 
 bash
 cd client
@@ -382,7 +382,7 @@ npm run lint         # run the linter
 npm run build        # create a production build
 
 
-These changes are reflected in the UI; no additional setup is required.
+These UI enhancements are applied automatically—no additional setup is required.
 # Backend (TS) 🛠️
 cd ../server
 npx eslint . --ext .ts,.js
